@@ -1,13 +1,13 @@
-package example.com.meneymergebe;
+package example.com.moneymergebe;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MeneymergeBeApplication {
+public class MoneymergeBeApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(MeneymergeBeApplication.class, args);
+        SpringApplication.run(MoneymergeBeApplication.class, args);
     }
 
 }
