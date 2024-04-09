@@ -1,6 +1,6 @@
-package example.com.meneymergebe.global.exception;
+package example.com.moneymergebe.global.exception;
 
-import example.com.meneymergebe.global.response.CommonResponse;
+import example.com.moneymergebe.global.response.CommonResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

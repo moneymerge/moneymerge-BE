@@ -1,4 +1,4 @@
-package example.com.meneymergebe.global.exception;
+package example.com.moneymergebe.global.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

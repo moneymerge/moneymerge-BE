@@ -1,4 +1,4 @@
-package example.com.meneymergebe.global.response;
+package example.com.moneymergebe.global.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
