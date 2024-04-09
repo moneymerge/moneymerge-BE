@@ -1,6 +1,6 @@
-package example.com.meneymergebe.global.security;
+package example.com.moneymergebe.global.security;
 
-import example.com.meneymergebe.global.jwt.JwtUtil;
+import example.com.moneymergebe.global.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;

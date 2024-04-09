@@ -1,7 +1,7 @@
-package example.com.meneymergebe.global.security;
+package example.com.moneymergebe.global.security;
 
-import example.com.meneymergebe.domain.user.entity.User;
-import example.com.meneymergebe.domain.user.repository.UserRepository;
+import example.com.moneymergebe.domain.user.entity.User;
+import example.com.moneymergebe.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

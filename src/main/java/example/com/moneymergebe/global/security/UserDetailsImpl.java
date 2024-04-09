@@ -1,7 +1,7 @@
-package example.com.meneymergebe.global.security;
+package example.com.moneymergebe.global.security;
 
-import example.com.meneymergebe.domain.user.entity.User;
-import example.com.meneymergebe.domain.user.entity.UserRole;
+import example.com.moneymergebe.domain.user.entity.User;
+import example.com.moneymergebe.domain.user.entity.UserRole;
 import java.util.Collection;
 import java.util.List;
 import lombok.Getter;

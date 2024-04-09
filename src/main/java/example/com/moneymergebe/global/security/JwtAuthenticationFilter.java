@@ -1,8 +1,8 @@
-package example.com.meneymergebe.global.security;
+package example.com.moneymergebe.global.security;
 
-import static example.com.meneymergebe.global.jwt.JwtUtil.ACCESS_TOKEN_HEADER;
+import static example.com.moneymergebe.global.jwt.JwtUtil.ACCESS_TOKEN_HEADER;
 
-import example.com.meneymergebe.global.jwt.JwtUtil;
+import example.com.moneymergebe.global.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
