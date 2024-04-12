@@ -10,6 +10,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(GlobalException.class)
     public ResponseEntity<CommonResponse<Void>> handleException(GlobalException e) {
         return ResponseEntity.status(e.getResultCode().getStatus())
-            .body(new CommonResponse<>(e.getResultCode().getStatus().value(), e.getResultCode().getMessage()));
+            .body(new CommonResponse<>(e.getResultCode()));
     }
 }

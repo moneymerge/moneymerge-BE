@@ -1,8 +1,8 @@
 package example.com.moneymergebe.global.exception;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import example.com.moneymergebe.global.response.CommonResponse;
+import example.com.moneymergebe.global.response.ResultCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +33,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         try {
             response.getWriter().write(objectMapper.writeValueAsString(
-                new CommonResponse<>(resultCode.getStatus().value(), resultCode.getMessage())));
+                new CommonResponse<>(resultCode)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
