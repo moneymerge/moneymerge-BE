@@ -3,6 +3,7 @@ package example.com.moneymergebe.domain.user.service;
 import example.com.moneymergebe.domain.book.entity.Book;
 import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.user.dto.request.UserNameReqDto;
+import example.com.moneymergebe.domain.user.dto.response.UserAlarmResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserNameResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserProfileResDto;
@@ -53,6 +54,16 @@ public class UserService {
         verifyUsername(req.getUsername()); // 닉네임 중복 확인
         user.updateUsername(req.getUsername()); // 닉네임 수정
         return new UserNameResDto();
+    }
+
+    /**
+     * 알람 설정(토글)
+     */
+    @Transactional
+    public UserAlarmResDto clickAlarm(Long userId) {
+        User user = findUser(userId);
+        user.changeAlarm();
+        return new UserAlarmResDto();
     }
 
     /**

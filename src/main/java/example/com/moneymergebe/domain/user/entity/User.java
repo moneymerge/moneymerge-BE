@@ -49,4 +49,7 @@ public class User extends BaseEntity {
         this.username = username;
     }
 
+    public void changeAlarm() {
+        this.alarm = !alarm;
+    }
 }

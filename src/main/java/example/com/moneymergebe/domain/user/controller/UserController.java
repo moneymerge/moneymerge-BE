@@ -1,6 +1,7 @@
 package example.com.moneymergebe.domain.user.controller;
 
 import example.com.moneymergebe.domain.user.dto.request.UserNameReqDto;
+import example.com.moneymergebe.domain.user.dto.response.UserAlarmResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserNameResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserProfileResDto;
@@ -58,6 +59,11 @@ public class UserController {
         @RequestBody @Valid UserNameReqDto req) {
         req.setUserId(userDetails.getUser().getUserId());
         return CommonResponse.success(userService.updateUsername(req));
+    }
+
+    @PatchMapping("/alarm")
+    public CommonResponse<UserAlarmResDto> clickAlarm(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return CommonResponse.success(userService.clickAlarm(userDetails.getUser().getUserId()));
     }
 
 //    토큰 발급하기 위해 임시로 사용
