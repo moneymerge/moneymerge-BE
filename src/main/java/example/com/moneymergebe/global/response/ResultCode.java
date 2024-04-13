@@ -14,7 +14,10 @@ public enum ResultCode {
     LOG_IN_REQUIRED(HttpStatus.UNAUTHORIZED, 1004, "다시 로그인 해주세요."),
 
     // 사용자 2000번대
-    NOT_FOUND_USER(HttpStatus.NOT_FOUND, 2000, "사용자를 찾을 수 없습니다.");
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND, 2000, "사용자를 찾을 수 없습니다."),
+
+    // 가계부 3000번대
+    NOT_FOUND_BOOK(HttpStatus.NOT_FOUND, 3000, "가계부를 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final int code;
