@@ -45,4 +45,8 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user")
     private List<BookUser> bookUserList = new ArrayList<>();
 
+    public void updateUsername(String username) {
+        this.username = username;
+    }
+
 }

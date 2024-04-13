@@ -8,13 +8,15 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ResultCode {
     // 글로벌 1000번대
-    SUCCESS(HttpStatus.OK, 1000, "정상 처리 되었습니다."),
+    SUCCESS(HttpStatus.OK, 0, "정상 처리 되었습니다."),
+    INVALID_INPUT(HttpStatus.BAD_REQUEST, 1000, "잘못된 입력값입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, 1001, "권한이 없는 사용자입니다."),
     REFRESH_TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, 1002, "Refresh Token이 필요햡니다."),
     LOG_IN_REQUIRED(HttpStatus.UNAUTHORIZED, 1004, "다시 로그인 해주세요."),
 
     // 사용자 2000번대
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, 2000, "사용자를 찾을 수 없습니다."),
+    DUPLICATED_USERNAME(HttpStatus.CONFLICT, 2001, "중복된 닉네임입니다."),
 
     // 가계부 3000번대
     NOT_FOUND_BOOK(HttpStatus.NOT_FOUND, 3000, "가계부를 찾을 수 없습니다.");

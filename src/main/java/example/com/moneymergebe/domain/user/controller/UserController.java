@@ -1,15 +1,20 @@
 package example.com.moneymergebe.domain.user.controller;
 
+import example.com.moneymergebe.domain.user.dto.request.UserNameReqDto;
 import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoResDto;
+import example.com.moneymergebe.domain.user.dto.response.UserNameResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserProfileResDto;
 import example.com.moneymergebe.domain.user.service.UserService;
 import example.com.moneymergebe.global.jwt.JwtUtil;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,6 +44,20 @@ public class UserController {
     @GetMapping("/profile")
     public CommonResponse<UserProfileResDto> getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return CommonResponse.success(userService.getProfile(userDetails.getUser().getUserId()));
+    }
+
+    /**
+     * 닉네임 수정
+     * @param userDetails 사용자 정보
+     * @param req 사용자 id, 변경할 닉네임
+     * @return {}
+     */
+    @PatchMapping("/username")
+    public CommonResponse<UserNameResDto> updateUsername(
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @RequestBody @Valid UserNameReqDto req) {
+        req.setUserId(userDetails.getUser().getUserId());
+        return CommonResponse.success(userService.updateUsername(req));
     }
 
 //    토큰 발급하기 위해 임시로 사용
