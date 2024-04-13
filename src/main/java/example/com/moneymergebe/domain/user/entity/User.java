@@ -52,4 +52,8 @@ public class User extends BaseEntity {
     public void changeAlarm() {
         this.alarm = !alarm;
     }
+
+    public void updateProfile(String profileUrl) {
+        this.profileUrl = profileUrl;
+    }
 }
