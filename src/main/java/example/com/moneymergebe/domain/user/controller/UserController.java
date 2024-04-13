@@ -1,6 +1,7 @@
 package example.com.moneymergebe.domain.user.controller;
 
 import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoResDto;
+import example.com.moneymergebe.domain.user.dto.response.UserProfileResDto;
 import example.com.moneymergebe.domain.user.service.UserService;
 import example.com.moneymergebe.global.jwt.JwtUtil;
 import example.com.moneymergebe.global.response.CommonResponse;
@@ -28,6 +29,16 @@ public class UserController {
     @GetMapping()
     public CommonResponse<UserBaseInfoResDto> getBaseInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return CommonResponse.success(userService.getBaseInfo(userDetails.getUser().getUserId()));
+    }
+
+    /**
+     * 프로필 조회
+     * @param userDetails 사용자 정보
+     * @return 사용자 정보
+     */
+    @GetMapping("/profile")
+    public CommonResponse<UserProfileResDto> getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return CommonResponse.success(userService.getProfile(userDetails.getUser().getUserId()));
     }
 
 //    토큰 발급하기 위해 임시로 사용

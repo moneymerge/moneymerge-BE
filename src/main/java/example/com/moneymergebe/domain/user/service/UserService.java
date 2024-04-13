@@ -3,6 +3,7 @@ package example.com.moneymergebe.domain.user.service;
 import example.com.moneymergebe.domain.book.entity.Book;
 import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoResDto;
+import example.com.moneymergebe.domain.user.dto.response.UserProfileResDto;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
 import example.com.moneymergebe.global.exception.GlobalException;
@@ -29,6 +30,14 @@ public class UserService {
             bookList.add(bookUser.getBook());
         }
         return new UserBaseInfoResDto(user, bookList);
+    }
+
+    /**
+     * 프로필 조회
+     */
+    public UserProfileResDto getProfile(Long userId) {
+        User user = findUser(userId);
+        return new UserProfileResDto(user);
     }
 
     /**
