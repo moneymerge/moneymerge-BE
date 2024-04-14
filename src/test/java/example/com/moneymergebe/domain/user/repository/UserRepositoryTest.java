@@ -17,7 +17,7 @@ class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
-    static private User user;
+    static User user;
 
     @BeforeEach
     void setUser() {
