@@ -6,8 +6,10 @@ import example.com.moneymergebe.domain.user.dto.response.UserAlarmResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserImageResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserNameResDto;
+import example.com.moneymergebe.domain.user.dto.response.UserPointResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserProfileResDto;
 import example.com.moneymergebe.domain.user.service.UserService;
+import example.com.moneymergebe.global.jwt.JwtUtil;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -28,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     /**
      * 기본 정보 조회
@@ -85,5 +88,15 @@ public class UserController {
         @RequestPart MultipartFile multipartFile) {
         UserImageReqDto req = new UserImageReqDto(userDetails.getUser().getUserId(), multipartFile);
         return CommonResponse.success(userService.updateProfileUrl(req));
+    }
+
+    /**
+     * 사용자 포인트 조회
+     * @param userDetails 사용자 정보
+     * @return 사용자 보유 포인트
+     */
+    @GetMapping("/point")
+    public CommonResponse<UserPointResDto> getUserPoint(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return CommonResponse.success(userService.getUserPoint(userDetails.getUser().getUserId()));
     }
 }
