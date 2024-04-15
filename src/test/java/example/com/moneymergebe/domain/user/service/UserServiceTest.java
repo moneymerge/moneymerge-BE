@@ -177,7 +177,7 @@ class UserServiceTest {
         when(s3Util.uploadFile(any(), any())).thenReturn(updatedProfileUrl);
 
         // when
-        userService.updateProfileUrl(reqDto);
+        userService.updateProfileImage(reqDto);
 
         // then
         assertEquals(updatedProfileUrl, user.getProfileUrl());
@@ -199,7 +199,7 @@ class UserServiceTest {
         GlobalException exception =
             assertThrows(
                 GlobalException.class,
-                () -> { userService.updateProfileUrl(reqDto);});
+                () -> { userService.updateProfileImage(reqDto);});
 
         // then
         assertEquals(INVALID_IMAGE_FILE.getMessage(), exception.getResultCode().getMessage());

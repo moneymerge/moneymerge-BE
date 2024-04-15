@@ -84,6 +84,6 @@ public class UserController {
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @RequestPart MultipartFile multipartFile) {
         UserImageReqDto req = new UserImageReqDto(userDetails.getUser().getUserId(), multipartFile);
-        return CommonResponse.success(userService.updateProfileUrl(req));
+        return CommonResponse.success(userService.updateProfileImage(req));
     }
 }

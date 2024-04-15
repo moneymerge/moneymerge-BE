@@ -83,7 +83,7 @@ public class UserService {
      * 프로필 사진 수정
      */
     @Transactional
-    public UserImageResDto updateProfileUrl(UserImageReqDto req) {
+    public UserImageResDto updateProfileImage(UserImageReqDto req) {
         User user = findUser(req.getUserId());
 
         String profileUrl = user.getProfileUrl(); // 기존 프로필 이미지
