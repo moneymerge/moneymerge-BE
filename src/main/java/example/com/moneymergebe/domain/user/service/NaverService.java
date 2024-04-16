@@ -81,7 +81,7 @@ public class NaverService {
         NaverInsertReq userResource = getNaverUserInfo(tokens);
 
         String email = userResource.getEmail();
-        String nickname = userResource.getNickname();
+        String username = userResource.getUsername();
         String profileUrl = userResource.getProfileUrl();
 
         // 이메일이 없다면 새로운 user객체로 만들어줌
@@ -89,13 +89,13 @@ public class NaverService {
         if (user == null) {
             User newUser =
                 User.builder()
-                    .nickname(nickname)
+                    .username(username)
                     .email(email)
                     .role(UserRole.USER)
                     .social(UserSocialEnum.NAVER)
                     .profileUrl(profileUrl)
                     .points(0)
-                    .characters(0)
+                    .characterId(0)
                     .build();
             user = userRepository.save(newUser);
         }
@@ -108,7 +108,7 @@ public class NaverService {
         returnTokens.put(REFRESH_TOKEN_HEADER, refreshToken);
 
         System.out.println("네이버 이메일 : "+ user.getEmail());
-        System.out.println("네이버 닉네임 : "+ user.getNickname());
+        System.out.println("네이버 닉네임 : "+ user.getUsername());
         System.out.println("네이버 프로필URL : "+ user.getProfileUrl());
 
         return returnTokens;

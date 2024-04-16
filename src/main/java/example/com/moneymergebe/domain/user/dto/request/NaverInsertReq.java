@@ -9,7 +9,7 @@ import lombok.Getter;
 @Builder
 public class NaverInsertReq {
     private String email;
-    private String nickname;
+    private String username;
     private String profileUrl;
     private String accessToken;
     private String refreshToken;
@@ -23,7 +23,7 @@ public class NaverInsertReq {
                     .getAsJsonObject()
                     .get("email")
                     .getAsString())
-            .nickname(
+            .username(
                 element
                     .getAsJsonObject()
                     .get("response")
