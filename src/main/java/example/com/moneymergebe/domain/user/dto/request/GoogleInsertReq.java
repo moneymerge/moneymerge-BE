@@ -7,39 +7,35 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class KakaoInsertReq {
+public class GoogleInsertReq {
     private String email;
-    private String username;
+    private String nickname;
     private String profileUrl;
     private String accessToken;
     private String refreshToken;
 
-    public static KakaoInsertReq of(JsonElement element, HashMap<String, String> tokens) {
-        return KakaoInsertReq.builder()
+    public static GoogleInsertReq of(JsonElement element, HashMap<String, String> tokens) {
+        return GoogleInsertReq.builder()
             .email(
                 element
                     .getAsJsonObject()
-                    .get("kakao_account")
+                    .get("profile")
                     .getAsJsonObject()
                     .get("email")
                     .getAsString())
-            .username(
+            .nickname(
                 element
-                    .getAsJsonObject()
-                    .get("kakao_account")
                     .getAsJsonObject()
                     .get("profile")
                     .getAsJsonObject()
-                    .get("nickname")
+                    .get("name")
                     .getAsString())
             .profileUrl(
                 element
                     .getAsJsonObject()
-                    .get("kakao_account")
-                    .getAsJsonObject()
                     .get("profile")
                     .getAsJsonObject()
-                    .get("profile_image_url")
+                    .get("picture")
                     .getAsString())
             .accessToken(tokens.get("accessToken"))
             .refreshToken(tokens.get("refreshToken"))

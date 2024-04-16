@@ -6,7 +6,7 @@ import static example.com.moneymergebe.global.jwt.JwtUtil.REFRESH_TOKEN_HEADER;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonParser;
-import example.com.moneymergebe.domain.user.dto.request.KakaoInsertReq;
+import example.com.moneymergebe.domain.user.dto.request.GoogleInsertReq;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.entity.UserRole;
 import example.com.moneymergebe.domain.user.entity.UserSocialEnum;
@@ -16,8 +16,10 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,33 +27,33 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class KakaoService {
+public class GoogleService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
-    private String kakaoClientId;
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String googleClientId;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
-    private String kakaoClientSecret;
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+    private String googleClientSecret;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.client-authentication-method}")
-    private String kakaoAuthenticationMethod;
+    @Value("${spring.security.oauth2.client.registration.google.client-authentication-method}")
+    private String googleAuthenticationMethod;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.authorization-grant-type}")
-    private String kakaoGrantType;
+    @Value("${spring.security.oauth2.client.registration.google.authorization-grant-type}")
+    private String googleGrantType;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
-    private String kakaoRedirectUri;
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+    private String googleRedirectUri;
 
-    @Value("${spring.security.oauth2.client.provider.kakao.authorization-uri}")
-    private String kakaoAuthorizationUri;
+    @Value("${spring.security.oauth2.client.provider.google.authorization-uri}")
+    private String googleAuthorizationUri;
 
-    @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
-    private String kakaoTokenUri;
+    @Value("${spring.security.oauth2.client.provider.google.token-uri}")
+    private String googleTokenUri;
 
-    @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
-    private String kakaoUserInfoUri;
+    @Value("${spring.security.oauth2.client.provider.google.user-info-uri}")
+    private String googleUserInfoUri;
 
     @Value("Bearer")
     private String tokenType;
@@ -61,24 +63,29 @@ public class KakaoService {
     private static final String KEY_REFRESH_TOKEN = "refreshToken";
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
-    public String getKakaoLoginPage() { 
+    public String getGoogleLoginPage() {
+        String state = new BigInteger(130, new SecureRandom()).toString();
         //카카오 로그인 요청 주소 반환
-        return kakaoAuthorizationUri
+        return googleAuthorizationUri
             + "?client_id="
-            + kakaoClientId
+            + googleClientId
             + "&redirect_uri="
-            + kakaoRedirectUri
-            + "&response_type=code";
+            + googleRedirectUri
+            + "&response_type=code"
+            + "&scope=https://www.googleapis.com/auth/drive.metadata.readonly"
+            + "&access_type=offline"
+            + "&include_granted_scopes=true&state="
+            + state;
     }
 
-    public HashMap<String, String> kakaoLogin(String code) throws JsonProcessingException {
+    public HashMap<String, String> googleLogin(String code) throws JsonProcessingException {
         // HTML에서 인증 코드(code)를 요청하여 전달받음
-        HashMap<String, String> tokens = getKakaoTokens(code); // 인증 코드로 토큰 요청 getKakaoTokens (access, refresh)
+        HashMap<String, String> tokens = getGoogleTokens(code); // 인증 코드로 토큰 요청 getGoogleTokens (access, refresh)
         // 받은 access 토큰으로 카카오 사용자 정보를 가져옴
-        KakaoInsertReq userResource = getKakaoUserInfo(tokens);
+        GoogleInsertReq userResource = getGoogleUserInfo(tokens);
         // 사용자 정보 꺼냄
         String email = userResource.getEmail();
-        String username = userResource.getUsername();
+        String nickname = userResource.getNickname();
         String profileUrl = userResource.getProfileUrl();
 
         User user = userRepository.findByEmail(email);
@@ -87,17 +94,17 @@ public class KakaoService {
         if (user == null) {
             User newUser =
                 User.builder()
-                    .username(username)
+                    .nickname(nickname)
                     .email(email)
                     .role(UserRole.USER)
-                    .social(UserSocialEnum.KAKAO)
+                    .social(UserSocialEnum.GOOGLE)
                     .profileUrl(profileUrl)
                     .points(0)
-                    .characterId(0)
+                    .characters(0)
                     .build();
             user = userRepository.save(newUser);
         }
-        
+
         // 반환할 토큰 생성
         HashMap<String, String> returnTokens = new HashMap<>();
         String accessToken = jwtUtil.createAccessToken(String.valueOf(user.getId()), String.valueOf(user.getRole()));
@@ -111,25 +118,25 @@ public class KakaoService {
             String.valueOf(user.getId()),
             REFRESH_TOKEN_EXPIRED_TIME);*/
 
-        System.out.println("카카오 이메일 : "+ user.getEmail());
-        System.out.println("카카오 닉네임 : "+ user.getUsername());
-        System.out.println("카카오 프로필URL : "+ user.getProfileUrl());
+        System.out.println("구글 이메일 : "+ user.getEmail());
+        System.out.println("구글 닉네임 : "+ user.getNickname());
+        System.out.println("구글 프로필URL : "+ user.getProfileUrl());
 
         return returnTokens;
     }
 
-    public HashMap<String, String> getKakaoTokens(String code) {
+    public HashMap<String, String> getGoogleTokens(String code) {
         String accessToken = "";
         String refreshToken = "";
 
         HashMap<String, String> keyAndValues = new HashMap<>();
 
-        keyAndValues.put("tokenUri", kakaoTokenUri);
-        keyAndValues.put("authenticationMethod", kakaoAuthenticationMethod);
-        keyAndValues.put("grantType", kakaoGrantType);
-        keyAndValues.put("clientId", kakaoClientId);
-        keyAndValues.put("clientSecret", kakaoClientSecret);
-        keyAndValues.put("redirectUri", kakaoRedirectUri);
+        keyAndValues.put("tokenUri", googleTokenUri);
+        keyAndValues.put("authenticationMethod", googleAuthenticationMethod);
+        keyAndValues.put("grantType", googleGrantType);
+        keyAndValues.put("clientId", googleClientId);
+        keyAndValues.put("clientSecret", googleClientSecret);
+        keyAndValues.put("redirectUri", googleRedirectUri);
 
         try {
             URL url = new URL(keyAndValues.get("tokenUri"));
@@ -180,12 +187,12 @@ public class KakaoService {
         return tokens;
     }
 
-    public KakaoInsertReq getKakaoUserInfo(HashMap<String, String> tokens) {
+    public GoogleInsertReq getGoogleUserInfo(HashMap<String, String> tokens) {
         String userInfoUri = "";
         String authenticationMethod = "";
 
-        userInfoUri = kakaoUserInfoUri;
-        authenticationMethod = kakaoAuthenticationMethod;
+        userInfoUri = googleUserInfoUri;
+        authenticationMethod = googleAuthenticationMethod;
 
         JsonElement element = null;
 
@@ -196,6 +203,7 @@ public class KakaoService {
             conn.setRequestMethod(authenticationMethod);
             conn.setDoOutput(true);
             conn.setRequestProperty(AUTHORIZATION_HEADER, tokenType + " " + tokens.get(KEY_ACCESS_TOKEN));
+            conn.setRequestProperty("ContentType", "0");
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line = "";
@@ -207,12 +215,12 @@ public class KakaoService {
 
             JsonParser parser = new JsonParser();
             element = parser.parse(result);
-
+            System.out.println(element);
             br.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return KakaoInsertReq.of(element, tokens);
+        return GoogleInsertReq.of(element, tokens);
     }
 }
