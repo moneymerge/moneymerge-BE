@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>머니머지</title>
+</head>
+<body>
+  <div class="login_sns">
+    <!-- 카카오 로그인 버튼 -->
+    <button class="sbutton" id="login-kakao-btn">
+      <!--
+      @{${kakaoAuthorizationUri}?client_id=${kakaoClientId}&redirect_uri=${kakaoRedirectUri}&response_type='code'}
+      https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=6ae799c21398028744a91ebd1035fc7a&redirect_uri=http://localhost:8080/auth/kakao/callback
+      -->
+      <a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=6ae799c21398028744a91ebd1035fc7a&redirect_uri=http://localhost:8080/auth/kakao/callback"><img src="/images/kakao_login_button.png" alt="카카오 로그인 버튼"></a>
+    </button>
+
+    <!-- 네이버 로그인 버튼 -->
+    <button class="sbutton" id="login-naver-btn">
+      <a href="https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=h9r5xd35tpbGhFazlIvP&redirect_uri=http://localhost:8080/auth/naver/callback&state=test"
+         target=""><img width="150" src="/images/naver_login_button.png" alt="네이버 로그인 버튼"></a>
+    </button>
+
+    <!-- 구글 로그인 버튼 -->
+    <!--https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/drive.metadata.readonly&access_type=offline&include_granted_scopes=true&response_type=code&state=state_parameter_passthrough_value&redirect_uri=http://localhost:8080/auth/google/callback&client_id=500380432574-a1vgkcd36njsp5qqmirp27lj1davd62m.apps.googleusercontent.com-->
+    <button class="sbutton" id="login-google-btn">
+      <a href="https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/drive.metadata.readonly&access_type=offline&include_granted_scopes=true&response_type=code&state=test&redirect_uri=http://localhost:8080/auth/google/callback&client_id=500380432574-a1vgkcd36njsp5qqmirp27lj1davd62m.apps.googleusercontent.com"
+         target=""><img width="150" src="/images/google_login_button.png" alt="구글 로그인 버튼"></a>
+    </button>
+  </div>
+</body>
+</html>
+

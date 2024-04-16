@@ -1,7 +1,5 @@
 package example.com.moneymergebe.domain.user.controller;
 
-import example.com.moneymergebe.domain.user.service.UserService;
-import example.com.moneymergebe.global.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -13,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
-    private final JwtUtil jwtUtil;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String kakaoClientId;
