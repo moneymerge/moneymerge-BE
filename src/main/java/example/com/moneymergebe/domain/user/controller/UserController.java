@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/api/users")
+@RequestMapping("")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -19,7 +19,7 @@ public class UserController {
     @Value("${spring.security.oauth2.client.provider.kakao.authorization-uri}")
     private String kakaoAuthorizationUri;
 
-    @GetMapping("/login-page")
+    @GetMapping("/api/users/login-page")
     public String loginPage(Model model) {
         model.addAttribute("kakaoAuthorizationUri", kakaoAuthorizationUri);
         model.addAttribute("kakaoClientId", kakaoClientId);
