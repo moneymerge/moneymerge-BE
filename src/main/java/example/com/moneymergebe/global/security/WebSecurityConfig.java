@@ -1,5 +1,6 @@
 package example.com.moneymergebe.global.security;
 
+import example.com.moneymergebe.global.exception.ExceptionHandlerFilter;
 import example.com.moneymergebe.global.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -33,6 +34,11 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    public ExceptionHandlerFilter exceptionHandlerFilter() {
+        return new ExceptionHandlerFilter();
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // CSRF 설정
         http.csrf(AbstractHttpConfigurer::disable);
@@ -50,6 +56,7 @@ public class WebSecurityConfig {
 
         // 필터 관리
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(exceptionHandlerFilter(), JwtAuthenticationFilter.class);
 
         return http.build();
     }

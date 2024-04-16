@@ -14,9 +14,19 @@ public class CommonResponse<T> {
     @JsonInclude(Include.NON_EMPTY)
     private T data;
 
-    public CommonResponse(Integer statusCode, String message) {
-        this.statusCode = statusCode;
-        this.message = message;
+    public CommonResponse(ResultCode resultCode) {
+        this.statusCode = resultCode.getCode();
+        this.message = resultCode.getMessage();
+    }
+
+    public CommonResponse(ResultCode resultCode, T data) {
+        this.statusCode = resultCode.getCode();
+        this.message = resultCode.getMessage();
+        this.data = data;
+    }
+
+    public static <T> CommonResponse<T> success(T data) {
+        return new CommonResponse<>(ResultCode.SUCCESS, data);
     }
 
 }

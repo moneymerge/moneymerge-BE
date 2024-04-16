@@ -2,6 +2,8 @@ package example.com.moneymergebe.global.security;
 
 import static example.com.moneymergebe.global.jwt.JwtUtil.ACCESS_TOKEN_HEADER;
 
+import example.com.moneymergebe.global.exception.GlobalException;
+import example.com.moneymergebe.global.response.ResultCode;
 import example.com.moneymergebe.global.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -47,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // access token 검증
         switch(jwtUtil.validateToken(accessToken)) {
             case VALID -> setAuthentication(jwtUtil.getUserIdFromToken(accessToken));
-            case INVALID -> throw new RuntimeException(); // TODO: 공통 예외 처리하기 (Unauthorized)
+            case INVALID -> throw new GlobalException(ResultCode.UNAUTHORIZED);
             case EXPIRED -> authenticateRefreshToken(request, response);
         }
 
@@ -72,12 +74,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String refreshToken = jwtUtil.getRefreshTokenFromCookie(request);
         log.info("Refresh Token: {}", refreshToken);
 
-        if(refreshToken == null) throw new RuntimeException(); // TODO: 공통 예외 처리하기 (refresh token 요청)
+        if(refreshToken == null) throw new GlobalException(ResultCode.REFRESH_TOKEN_REQUIRED); // refresh token 요청
 
         switch(jwtUtil.validateToken(refreshToken)) {
             case VALID -> renewAccessToken(response, refreshToken);
-            case INVALID -> throw new RuntimeException(); // TODO: 공통 예외 처리하기 (Unauthorized)
-            case EXPIRED -> throw new RuntimeException(); // TODO: 공통 예외 처리하기 (재로그인 요청)
+            case INVALID ->  throw new GlobalException(ResultCode.UNAUTHORIZED); // Unauthorized
+            case EXPIRED -> throw new GlobalException(ResultCode.LOG_IN_REQUIRED); // 재로그인 요청
         }
     }
 

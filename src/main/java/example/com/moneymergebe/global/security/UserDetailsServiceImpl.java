@@ -1,7 +1,10 @@
 package example.com.moneymergebe.global.security;
 
+import static example.com.moneymergebe.global.response.ResultCode.NOT_FOUND_USER;
+
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
+import example.com.moneymergebe.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,8 +19,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         User user = userRepository.findById(Long.parseLong(userId)).orElseThrow(
-            () -> new UsernameNotFoundException(userId)
-            // TODO: 예외 처리 설정 이후 공통 예외로 수정
+            () -> new GlobalException(NOT_FOUND_USER)
         );
 
         return new UserDetailsImpl(user);
