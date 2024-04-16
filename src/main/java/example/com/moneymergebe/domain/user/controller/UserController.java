@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String kakaoClientId;
@@ -21,24 +23,11 @@ public class UserController {
     @Value("${spring.security.oauth2.client.provider.kakao.authorization-uri}")
     private String kakaoAuthorizationUri;
 
-
-    private final UserService userService;
-    private final JwtUtil jwtUtil;
-    //private final RedisUtil redisUtil;
-
-    private static final String LOGOUT_VALUE = "logout";
-
     @GetMapping("/login-page")
     public String loginPage(Model model) {
         model.addAttribute("kakaoAuthorizationUri", kakaoAuthorizationUri);
         model.addAttribute("kakaoClientId", kakaoClientId);
         model.addAttribute("kakaoRedirectUri", kakaoRedirectUri);
-        return "login.html";
+        return "login";
     }
-
-    @GetMapping("/signup-page")
-    public String signupPage() {
-        return "signup.html";
-    }
-
 }
