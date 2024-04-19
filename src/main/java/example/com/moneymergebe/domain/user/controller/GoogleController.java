@@ -10,20 +10,21 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
-//@RequestMapping("")
 public class GoogleController {
     private final GoogleService googleService;
 
     // 카카오 로그인 페이지 가져오기
-    @GetMapping("/google/page")
+    @GetMapping("/api/users/google/page")
     public ResponseEntity<String> getGoogleLoginPage() {
         return new ResponseEntity<>(googleService.getGoogleLoginPage(), HttpStatus.OK);
     }
@@ -37,7 +38,7 @@ public class GoogleController {
         addCookie(tokens.get(ACCESS_TOKEN_HEADER), ACCESS_TOKEN_HEADER, res);
         addCookie(tokens.get(REFRESH_TOKEN_HEADER), REFRESH_TOKEN_HEADER, res);
 
-        System.out.println("구글 로그인 완료");
+        log.info("구글 로그인 완료");
         return "login"; // 로그인 완료시 이동할 페이지
     }
 

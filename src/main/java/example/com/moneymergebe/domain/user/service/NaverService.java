@@ -22,9 +22,11 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NaverService {
@@ -107,9 +109,9 @@ public class NaverService {
         returnTokens.put(ACCESS_TOKEN_HEADER, accessToken);
         returnTokens.put(REFRESH_TOKEN_HEADER, refreshToken);
 
-        System.out.println("네이버 이메일 : "+ user.getEmail());
-        System.out.println("네이버 닉네임 : "+ user.getUsername());
-        System.out.println("네이버 프로필URL : "+ user.getProfileUrl());
+        log.info("네이버 이메일 : "+ user.getEmail());
+        log.info("네이버 닉네임 : "+ user.getUsername());
+        log.info("네이버 프로필URL : "+ user.getProfileUrl());
 
         return returnTokens;
     }

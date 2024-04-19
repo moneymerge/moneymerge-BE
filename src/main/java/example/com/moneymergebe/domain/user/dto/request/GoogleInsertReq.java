@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 public class GoogleInsertReq {
     private String email;
-    private String nickname;
+    private String username;
     private String profileUrl;
     private String accessToken;
     private String refreshToken;
@@ -23,7 +23,7 @@ public class GoogleInsertReq {
                     .getAsJsonObject()
                     .get("email")
                     .getAsString())
-            .nickname(
+            .username(
                 element
                     .getAsJsonObject()
                     .get("profile")

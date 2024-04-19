@@ -20,9 +20,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class KakaoService {
@@ -105,15 +107,9 @@ public class KakaoService {
         returnTokens.put(ACCESS_TOKEN_HEADER, accessToken);
         returnTokens.put(REFRESH_TOKEN_HEADER, refreshToken);
 
-        /* refresh token 저장
-        redisUtil.set(
-            jwtUtil.getTokenWithoutBearer(returnTokens.get(REFRESH_TOKEN_HEADER)),
-            String.valueOf(user.getId()),
-            REFRESH_TOKEN_EXPIRED_TIME);*/
-
-        System.out.println("카카오 이메일 : "+ user.getEmail());
-        System.out.println("카카오 닉네임 : "+ user.getUsername());
-        System.out.println("카카오 프로필URL : "+ user.getProfileUrl());
+        log.info("카카오 이메일 : "+ user.getEmail());
+        log.info("카카오 닉네임 : "+ user.getUsername());
+        log.info("카카오 프로필URL : "+ user.getProfileUrl());
 
         return returnTokens;
     }

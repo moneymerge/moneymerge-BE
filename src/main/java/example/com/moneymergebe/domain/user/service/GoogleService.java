@@ -22,9 +22,11 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GoogleService {
@@ -85,7 +87,7 @@ public class GoogleService {
         GoogleInsertReq userResource = getGoogleUserInfo(tokens);
         // 사용자 정보 꺼냄
         String email = userResource.getEmail();
-        String nickname = userResource.getNickname();
+        String username = userResource.getUsername();
         String profileUrl = userResource.getProfileUrl();
 
         User user = userRepository.findByEmail(email);
@@ -94,13 +96,13 @@ public class GoogleService {
         if (user == null) {
             User newUser =
                 User.builder()
-                    .nickname(nickname)
+                    .username(username)
                     .email(email)
                     .role(UserRole.USER)
                     .social(UserSocialEnum.GOOGLE)
                     .profileUrl(profileUrl)
                     .points(0)
-                    .characters(0)
+                    .characterId(0)
                     .build();
             user = userRepository.save(newUser);
         }
@@ -112,15 +114,9 @@ public class GoogleService {
         returnTokens.put(ACCESS_TOKEN_HEADER, accessToken);
         returnTokens.put(REFRESH_TOKEN_HEADER, refreshToken);
 
-        /* refresh token 저장
-        redisUtil.set(
-            jwtUtil.getTokenWithoutBearer(returnTokens.get(REFRESH_TOKEN_HEADER)),
-            String.valueOf(user.getId()),
-            REFRESH_TOKEN_EXPIRED_TIME);*/
-
-        System.out.println("구글 이메일 : "+ user.getEmail());
-        System.out.println("구글 닉네임 : "+ user.getNickname());
-        System.out.println("구글 프로필URL : "+ user.getProfileUrl());
+        log.info("구글 이메일 : "+ user.getEmail());
+        log.info("구글 닉네임 : "+ user.getUsername());
+        log.info("구글 프로필URL : "+ user.getProfileUrl());
 
         return returnTokens;
     }
