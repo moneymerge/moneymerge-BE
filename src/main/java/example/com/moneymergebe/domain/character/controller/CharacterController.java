@@ -1,5 +1,8 @@
 package example.com.moneymergebe.domain.character.controller;
 
+import example.com.moneymergebe.domain.character.dto.request.CharacterBuyReq;
+import example.com.moneymergebe.domain.character.dto.request.CharacterChangeReq;
+import example.com.moneymergebe.domain.character.dto.response.CharacterBuyRes;
 import example.com.moneymergebe.domain.character.dto.response.CharacterChangeRes;
 import example.com.moneymergebe.domain.character.dto.response.CharacterGetRes;
 import example.com.moneymergebe.domain.character.dto.response.CharacterShopGetRes;
@@ -11,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,11 +50,11 @@ public class CharacterController {
     /**
      * 캐릭터 변경
      * @param userDetails 사용자 정보
-     * @param characterId 바꿀 캐릭터 ID
+     * @param req 바꿀 캐릭터 ID
      */
     @PatchMapping
-    public CommonResponse<CharacterChangeRes> changeCharacter(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody Long characterId) {
-        return CommonResponse.success(characterService.changeCharacter(userDetails.getUser().getUserId(), characterId));
+    public CommonResponse<CharacterChangeRes> changeCharacter(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody CharacterChangeReq req) {
+        return CommonResponse.success(characterService.changeCharacter(userDetails.getUser().getUserId(), req));
     }
 
     /**
@@ -67,5 +71,16 @@ public class CharacterController {
         @RequestParam(value = "isAsc", defaultValue = DEFAULT_IS_ASC) boolean isAsc
     ) {
         return CommonResponse.success(characterService.getShopCharacters(userDetails.getUser().getUserId(), page - 1, size, sortBy, isAsc));
+    }
+
+    /**
+     * 상점 캐릭터 구매
+     * @param userDetails 사용자 정보
+     * @param req 구매할 캐릭터 ID
+     */
+    @PostMapping
+    public CommonResponse<CharacterBuyRes> buyCharacter(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @RequestBody CharacterBuyReq req) {
+        return CommonResponse.success(characterService.buyCharacter(userDetails.getUser().getUserId(), req));
     }
 }

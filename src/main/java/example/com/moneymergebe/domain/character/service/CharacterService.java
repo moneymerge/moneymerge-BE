@@ -1,5 +1,8 @@
 package example.com.moneymergebe.domain.character.service;
 
+import example.com.moneymergebe.domain.character.dto.request.CharacterBuyReq;
+import example.com.moneymergebe.domain.character.dto.request.CharacterChangeReq;
+import example.com.moneymergebe.domain.character.dto.response.CharacterBuyRes;
 import example.com.moneymergebe.domain.character.dto.response.CharacterChangeRes;
 import example.com.moneymergebe.domain.character.dto.response.CharacterGetRes;
 import example.com.moneymergebe.domain.character.dto.response.CharacterShopGetRes;
@@ -46,11 +49,11 @@ public class CharacterService {
      * 캐릭터 변경
      */
     @Transactional
-    public CharacterChangeRes changeCharacter(Long userId, Long characterId) {
+    public CharacterChangeRes changeCharacter(Long userId, CharacterChangeReq req) {
         User user = findUser(userId);
-        Character character = findCharacter(characterId);
-        findUserCharacter(user, character); // 사용자가 가지고 있는 character가 아니면 예외 발생
-        user.updateCharacter(characterId);
+        Character character = findCharacter(req.getCharacterId());
+        UserCharacterValidator.checkCharacterToChange(hasCharacter(user, character)); // 사용자가 가지고 있는 character가 아니면 예외 발생
+        user.updateCharacter(character.getCharacterId());
         return new CharacterChangeRes();
     }
 
@@ -70,6 +73,24 @@ public class CharacterService {
     }
 
     /**
+     * 캐릭터 구매
+     */
+    @Transactional
+    public CharacterBuyRes buyCharacter(Long userId, CharacterBuyReq req) {
+        User user = findUser(userId);
+        Character character = findCharacter(req.getCharacterId());
+
+        UserValidator.checkUserPoints(user, character.getPoints()); // 포인트가 충분한지 검사
+        UserCharacterValidator.checkCharacterToBuy(hasCharacter(user, character)); // 이미 가지고 있는지 검사
+
+        UserCharacter userCharacter = UserCharacter.builder().user(user).character(character).build();
+        userCharacterRepository.save(userCharacter);
+        user.updatePoints(user.getPoints() - character.getPoints());
+
+        return new CharacterBuyRes();
+    }
+
+    /**
      * @throws GlobalException userId에 해당하는 사용자가 존재하지 않는 경우 예외 발생
      */
     private User findUser(Long userId) {
@@ -85,15 +106,6 @@ public class CharacterService {
         Character character = characterRepository.findByCharacterId(characterId);
         CharacterValidator.validate(character);
         return character;
-    }
-
-    /**
-     * @throws GlobalException user가 character를 소유하지 않을 경우 예외 발생
-     */
-    private UserCharacter findUserCharacter(User user, Character character) {
-        UserCharacter userCharacter = userCharacterRepository.findByUserAndCharacter(user, character);
-        UserCharacterValidator.validate(userCharacter);
-        return userCharacter;
     }
 
     /**

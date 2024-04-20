@@ -96,4 +96,8 @@ public class User extends BaseEntity {
         this.characterId = characterId;
     }
 
+    public void updatePoints(int points) {
+        this.points = points;
+    }
+
 }
