@@ -19,9 +19,9 @@ import example.com.moneymergebe.domain.user.dto.response.UserNameResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserProfileResDto;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.entity.UserRole;
+import example.com.moneymergebe.domain.user.entity.UserSocialEnum;
 import example.com.moneymergebe.domain.user.service.UserService;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,7 +64,8 @@ class UserControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(context)
             .apply(springSecurity(new MockSpringSecurityFilter())).build();
 
-        user = new User("username", "email", "profileUrl", 1L, 200L, true, UserRole.USER);
+        user = User.builder().username("username").email("email").profileUrl("profileUrl").role(UserRole.USER).social(
+            UserSocialEnum.KAKAO).characterId(1).points(200).alarm(true).attendance(true).build();
         UserDetails testUserDetails = new UserDetailsImpl(user);
         mockPrincipal = new UsernamePasswordAuthenticationToken(testUserDetails, "", testUserDetails.getAuthorities());
     }

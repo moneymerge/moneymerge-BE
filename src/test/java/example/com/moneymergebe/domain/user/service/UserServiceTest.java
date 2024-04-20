@@ -1,8 +1,6 @@
 package example.com.moneymergebe.domain.user.service;
 
-import static example.com.moneymergebe.global.response.ResultCode.DUPLICATED_USERNAME;
-import static example.com.moneymergebe.global.response.ResultCode.INVALID_IMAGE_FILE;
-import static example.com.moneymergebe.global.response.ResultCode.NOT_FOUND_USER;
+import static example.com.moneymergebe.global.response.ResultCode.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -13,11 +11,11 @@ import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserProfileResDto;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.entity.UserRole;
+import example.com.moneymergebe.domain.user.entity.UserSocialEnum;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
 import example.com.moneymergebe.global.exception.GlobalException;
 import example.com.moneymergebe.infra.s3.S3Util;
 import java.io.IOException;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,7 +44,8 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = new User("username", "email", "profileUrl", 1L, 200L, true, UserRole.USER);
+        user = User.builder().username("username").email("email").profileUrl("profileUrl").role(UserRole.USER).social(
+            UserSocialEnum.KAKAO).characterId(1).points(200).alarm(true).attendance(true).build();
     }
 
     @Test
@@ -54,7 +53,7 @@ class UserServiceTest {
     void getBaseInfoTest() {
         // given
         Long userId = 1L;
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+        when(userRepository.findByUserId(any())).thenReturn(user);
 
         // when
         UserBaseInfoResDto resDto = userService.getBaseInfo(userId);
@@ -71,7 +70,7 @@ class UserServiceTest {
     void getBaseInfoFailureTest() {
         // given
         Long userId = 1L;
-        when(userRepository.findById(any())).thenReturn(Optional.empty());
+        when(userRepository.findByUserId(any())).thenReturn(null);
 
         // when
         GlobalException exception =
@@ -88,7 +87,7 @@ class UserServiceTest {
     void getProfileTest() {
         // given
         Long userId = 1L;
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+        when(userRepository.findByUserId(any())).thenReturn(user);
 
         // when
         UserProfileResDto resDto = userService.getProfile(userId);
@@ -97,7 +96,7 @@ class UserServiceTest {
         assertEquals(user.getUserId(), resDto.getUserId());
         assertEquals(user.getUsername(), resDto.getUsername());
         assertEquals(user.getProfileUrl(), resDto.getProfileUrl());
-        assertEquals(user.getPoint(), resDto.getPoint());
+        assertEquals(user.getPoints(), resDto.getPoints());
         assertEquals(user.isAlarm(), resDto.isAlarm());
     }
 
@@ -112,8 +111,8 @@ class UserServiceTest {
         reqDto.setUserId(userId);
         reqDto.setUsername(username);
 
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
-        when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
+        when(userRepository.findByUserId(any())).thenReturn(user);
+        when(userRepository.findByUsername(any())).thenReturn(null);
 
         // when
         userService.updateUsername(reqDto);
@@ -133,8 +132,8 @@ class UserServiceTest {
         reqDto.setUserId(userId);
         reqDto.setUsername(username);
 
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
-        when(userRepository.findByUsername(any())).thenReturn(Optional.of(user));
+        when(userRepository.findByUserId(any())).thenReturn(user);
+        when(userRepository.findByUsername(any())).thenReturn(user);
 
         // when
         GlobalException exception =
@@ -152,7 +151,7 @@ class UserServiceTest {
         // given
         Long userId = 1L;
         boolean isAlarm = user.isAlarm();
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+        when(userRepository.findByUserId(any())).thenReturn(user);
 
         // when
         userService.clickAlarm(userId);
@@ -171,7 +170,7 @@ class UserServiceTest {
             MediaType.IMAGE_JPEG_VALUE, resource.getInputStream());
         UserImageReqDto reqDto = new UserImageReqDto(userId, multipartFile);
 
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+        when(userRepository.findByUserId(any())).thenReturn(user);
 
         String updatedProfileUrl = "updatedProfileUrl";
         when(s3Util.uploadFile(any(), any())).thenReturn(updatedProfileUrl);
@@ -193,7 +192,7 @@ class UserServiceTest {
             MediaType.APPLICATION_JSON_VALUE, resource.getInputStream());
         UserImageReqDto reqDto = new UserImageReqDto(userId, multipartFile);
 
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+        when(userRepository.findByUserId(any())).thenReturn(user);
 
         // when
         GlobalException exception =
