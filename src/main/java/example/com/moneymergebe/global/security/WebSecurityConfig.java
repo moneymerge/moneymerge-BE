@@ -51,6 +51,18 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
             authorizeHttpRequests
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
+                .requestMatchers("/api/users/login-page")
+                .permitAll()
+                .requestMatchers("/auth/kakao/callback")
+                .permitAll()
+                .requestMatchers("/auth/naver/callback")
+                .permitAll()
+                .requestMatchers("/auth/google/callback")
+                .permitAll()
+                .requestMatchers("/**.html")
+                .permitAll()
+                .requestMatchers("/")
+                .permitAll()
                 .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 

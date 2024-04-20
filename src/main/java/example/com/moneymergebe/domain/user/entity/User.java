@@ -1,6 +1,7 @@
 package example.com.moneymergebe.domain.user.entity;
 
 import example.com.moneymergebe.domain.book.entity.BookUser;
+import jakarta.persistence.Column;
 import example.com.moneymergebe.domain.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,6 +14,7 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,35 +27,57 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    private String username; // 닉네임
+    @Column(nullable = false, unique = true)
+    private String username;
 
+    @Column(nullable = false)
     private String email;
 
-    private String profileUrl; // 프로필 사진 URL
+    @Column(nullable = false)
+    private String profileUrl;
 
-    // TODO: 소셜 종류 추가
+    @Column(nullable = false)
+    private UserRole role;
 
-    private Long characterId; // 현재 캐릭터
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserSocialEnum social;
 
-    private Long point;
+    @Column(nullable = false)
+    private long characterId;
 
-    private boolean alarm; // 알람 설정
+    @Column(nullable = false)
+    private int points;
 
-    @Enumerated(value = EnumType.STRING)
-    private UserRole role; // 권한
+    @Column(nullable = false)
+    private boolean alarm;
+
+    @Column(nullable = false)
+    private boolean attendance;
 
     @OneToMany(mappedBy = "user")
     private List<BookUser> bookUserList = new ArrayList<>();
 
-    public User(String username, String email, String profileUrl, Long characterId, Long point,
-        boolean alarm, UserRole role) {
+    @Builder
+    private User(
+        String username,
+        String email,
+        String profileUrl,
+        UserRole role,
+        UserSocialEnum social,
+        long characterId,
+        int points,
+        boolean alarm,
+        boolean attendance) {
         this.username = username;
         this.email = email;
         this.profileUrl = profileUrl;
-        this.characterId = characterId;
-        this.point = point;
-        this.alarm = alarm;
         this.role = role;
+        this.social = social;
+        this.characterId = characterId;
+        this.points = points;
+        this.alarm = alarm;
+        this.attendance = attendance;
     }
 
     public void updateUsername(String username) {
@@ -67,4 +91,5 @@ public class User extends BaseEntity {
     public void updateProfile(String profileUrl) {
         this.profileUrl = profileUrl;
     }
+
 }
