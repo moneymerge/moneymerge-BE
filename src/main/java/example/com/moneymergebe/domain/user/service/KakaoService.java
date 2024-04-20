@@ -158,7 +158,7 @@ public class KakaoService {
             JsonElement element = parser.parse(result);
 
             //확인
-            System.out.println(result);
+            log.info(result);
 
             accessToken = element.getAsJsonObject().get("access_token").getAsString();
             refreshToken = element.getAsJsonObject().get("refresh_token").getAsString();

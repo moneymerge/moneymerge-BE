@@ -24,7 +24,7 @@ public class KakaoController {
     private final KakaoService kakaoService;
 
     // 카카오 로그인 페이지 가져오기
-    @GetMapping("/api/users//kakao/page")
+    @GetMapping("/api/users/kakao/page")
     public ResponseEntity<String> getKakaoLoginPage() {
         return new ResponseEntity<>(kakaoService.getKakaoLoginPage(), HttpStatus.OK);
     }

@@ -165,7 +165,7 @@ public class GoogleService {
             JsonElement element = parser.parse(result);
 
             //확인
-            System.out.println(result);
+            log.info(result);
 
             accessToken = element.getAsJsonObject().get("access_token").getAsString();
             refreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
@@ -211,7 +211,7 @@ public class GoogleService {
 
             JsonParser parser = new JsonParser();
             element = parser.parse(result);
-            System.out.println(element);
+
             br.close();
         } catch (Exception e) {
             e.printStackTrace();

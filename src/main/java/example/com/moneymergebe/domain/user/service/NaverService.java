@@ -159,6 +159,9 @@ public class NaverService {
             JsonParser parser = new JsonParser();
             JsonElement element = parser.parse(result);
 
+            //확인
+            log.info(result);
+
             accessToken = element.getAsJsonObject().get("access_token").getAsString();
             refreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
 
