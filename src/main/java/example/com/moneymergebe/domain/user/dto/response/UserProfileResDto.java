@@ -8,14 +8,14 @@ public class UserProfileResDto {
     private Long userId;
     private String username;
     private String profileUrl;
-    private Long point;
+    private int points;
     private boolean alarm;
 
     public UserProfileResDto(User user) {
         this.userId = user.getUserId();
         this.username = user.getUsername();
         this.profileUrl = user.getProfileUrl();
-        this.point = user.getPoint();
+        this.points = user.getPoints();
         this.alarm = user.isAlarm();
     }
 }

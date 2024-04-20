@@ -84,8 +84,7 @@ public class S3Util {
         String fileName = getFileNameFromFileUrl(fileUrl, filePath);
 
         // S3에 파일이 존재하는지 확인
-        if (fileName.isBlank()
-            || !amazonS3Client.doesObjectExist(bucketName, filePath.getPath() + fileName)) {
+        if (!exists(fileUrl, filePath)) {
             // 파일을 찾을 수 없다면 NOT_FOUND_FILE 코드와 함께 전역 예외(GlobalException)를 발생
             throw new GlobalException(NOT_FOUND_FILE);
         }
@@ -107,15 +106,25 @@ public class S3Util {
         String fileName = getFileNameFromFileUrl(fileUrl, filePath);
         // 파일명을 UTF-8로 디코딩
         fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
-        System.out.println(fileName);
         // 파일명이 비어있거나 해당 파일이 존재하지 않으면 예외 발생
         if (fileName.isBlank()
             || !amazonS3Client.doesObjectExist(bucketName, filePath.getPath() + fileName)) {
             throw new GlobalException(NOT_FOUND_FILE);
         }
-
         // S3에서 파일 삭제
         amazonS3Client.deleteObject(bucketName, filePath.getPath() + fileName);
+    }
+
+    public boolean exists(String fileUrl, FilePath filePath) {
+        // 파일 URL에서 파일 이름 추출
+        String fileName = getFileNameFromFileUrl(fileUrl, filePath);
+
+        // S3에 파일이 존재하는지 확인
+        if (fileName.isBlank()
+            || !amazonS3Client.doesObjectExist(bucketName, filePath.getPath() + fileName)) {
+            return false; // 파일을 찾을 수 없음
+        }
+        return true;
     }
 
     private String getFileUrl(String fileName, FilePath filePath) {

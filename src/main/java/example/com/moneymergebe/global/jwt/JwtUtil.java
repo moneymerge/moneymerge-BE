@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtil {
     public static final String ACCESS_TOKEN_HEADER = "AccessToken"; // Access Token Key 값
-    private static final String REFRESH_TOKEN_HEADER = "RefreshToken"; // Refresh Token Key 값
+    public static final String REFRESH_TOKEN_HEADER = "RefreshToken"; // Refresh Token Key 값
     private static final String AUTHORIZATION_KEY = "auth"; // 사용자 권한 값의 Key
     private static final String BEARER_PREFIX = "Bearer%20"; // Token 식별자
     private static final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L; // Access Token 만료시간 1시간
