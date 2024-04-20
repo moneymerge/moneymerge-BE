@@ -2,10 +2,13 @@ package example.com.moneymergebe.domain.user.service;
 
 import example.com.moneymergebe.domain.book.entity.Book;
 import example.com.moneymergebe.domain.book.entity.BookUser;
+import example.com.moneymergebe.domain.character.entity.Character;
+import example.com.moneymergebe.domain.character.repository.CharacterRepository;
 import example.com.moneymergebe.domain.user.dto.request.UserImageReqDto;
 import example.com.moneymergebe.domain.user.dto.request.UserNameReqDto;
 import example.com.moneymergebe.domain.user.dto.response.UserAlarmResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoResDto;
+import example.com.moneymergebe.domain.user.dto.response.UserCharacterResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserImageResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserNameResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserPointResDto;
@@ -14,6 +17,7 @@ import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
 import example.com.moneymergebe.global.exception.GlobalException;
 import example.com.moneymergebe.global.response.ResultCode;
+import example.com.moneymergebe.global.validator.CharacterValidator;
 import example.com.moneymergebe.global.validator.UserValidator;
 import example.com.moneymergebe.infra.s3.S3Util;
 import example.com.moneymergebe.infra.s3.S3Util.FilePath;
@@ -29,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final CharacterRepository characterRepository;
     private final S3Util s3Util;
 
     @Value("${default.image.url}")
@@ -120,6 +125,16 @@ public class UserService {
     }
 
     /**
+     * 사용자 캐릭터 조회
+     */
+    @Transactional(readOnly = true)
+    public UserCharacterResDto getUserCharacter(Long userId) {
+        User user = findUser(userId);
+        Character character = findCharacter(user.getCharacterId());
+        return new UserCharacterResDto(character);
+    }
+
+    /**
      * @throws GlobalException userId에 해당하는 사용자가 존재하지 않는 경우 예외 발생
      */
     private User findUser(Long userId) {
@@ -134,5 +149,14 @@ public class UserService {
      */
     private void verifyUsername(String username) {
         UserValidator.checkUsername(userRepository.findByUsername(username));
+    }
+
+    /**
+     * @throws GlobalException characterId에 해당하는 캐릭터가 존재하지 않는 경우 예외 발생
+     */
+    private Character findCharacter(Long characterId) {
+        Character character = characterRepository.findByCharacterId(characterId);
+        CharacterValidator.validate(character);
+        return character;
     }
 }

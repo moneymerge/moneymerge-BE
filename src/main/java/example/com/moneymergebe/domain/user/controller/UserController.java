@@ -4,6 +4,7 @@ import example.com.moneymergebe.domain.user.dto.request.UserImageReqDto;
 import example.com.moneymergebe.domain.user.dto.request.UserNameReqDto;
 import example.com.moneymergebe.domain.user.dto.response.UserAlarmResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoResDto;
+import example.com.moneymergebe.domain.user.dto.response.UserCharacterResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserImageResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserNameResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserPointResDto;
@@ -110,5 +111,15 @@ public class UserController {
     @GetMapping("/point")
     public CommonResponse<UserPointResDto> getUserPoint(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return CommonResponse.success(userService.getUserPoint(userDetails.getUser().getUserId()));
+    }
+
+    /**
+     * 사용자 캐릭터 조회
+     * @param userDetails 사용자 정보
+     * @return 사용자 현재 캐릭터
+     */
+    @GetMapping("/character")
+    public CommonResponse<UserCharacterResDto> getUserCharacter(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return CommonResponse.success(userService.getUserCharacter(userDetails.getUser().getUserId()));
     }
 }

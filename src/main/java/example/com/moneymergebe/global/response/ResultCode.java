@@ -23,7 +23,10 @@ public enum ResultCode {
     DUPLICATED_USERNAME(HttpStatus.CONFLICT, 2001, "중복된 닉네임입니다."),
 
     // 가계부 3000번대
-    NOT_FOUND_BOOK(HttpStatus.NOT_FOUND, 3000, "가계부를 찾을 수 없습니다.");
+    NOT_FOUND_BOOK(HttpStatus.NOT_FOUND, 3000, "가계부를 찾을 수 없습니다."),
+
+    // 캐릭터 4000번대
+    NOT_FOUND_CHARACTER(HttpStatus.NOT_FOUND, 4000, "캐릭터를 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final int code;
