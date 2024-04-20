@@ -2,6 +2,7 @@ package example.com.moneymergebe.domain.character.controller;
 
 import example.com.moneymergebe.domain.character.dto.response.CharacterChangeRes;
 import example.com.moneymergebe.domain.character.dto.response.CharacterGetRes;
+import example.com.moneymergebe.domain.character.dto.response.CharacterShopGetRes;
 import example.com.moneymergebe.domain.character.service.CharacterService;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
@@ -50,5 +51,21 @@ public class CharacterController {
     @PatchMapping
     public CommonResponse<CharacterChangeRes> changeCharacter(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody Long characterId) {
         return CommonResponse.success(characterService.changeCharacter(userDetails.getUser().getUserId(), characterId));
+    }
+
+    /**
+     * 상점 캐릭터 조회
+     * @param userDetails 사용자 정보
+     * @return 상점 캐릭터 내역
+     */
+    @GetMapping("/shop")
+    public CommonResponse<Page<CharacterShopGetRes>> getShoCharacters(
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @RequestParam(value = "page", defaultValue = DEFAULT_PAGE) int page,
+        @RequestParam(value = "size", defaultValue = DEFAULT_SIZE) int size,
+        @RequestParam(value = "sortBy", defaultValue = DEFAULT_SORT_BY) String sortBy,
+        @RequestParam(value = "isAsc", defaultValue = DEFAULT_IS_ASC) boolean isAsc
+    ) {
+        return CommonResponse.success(characterService.getShopCharacters(userDetails.getUser().getUserId(), page - 1, size, sortBy, isAsc));
     }
 }

@@ -2,6 +2,7 @@ package example.com.moneymergebe.domain.character.service;
 
 import example.com.moneymergebe.domain.character.dto.response.CharacterChangeRes;
 import example.com.moneymergebe.domain.character.dto.response.CharacterGetRes;
+import example.com.moneymergebe.domain.character.dto.response.CharacterShopGetRes;
 import example.com.moneymergebe.domain.character.entity.Character;
 import example.com.moneymergebe.domain.character.repository.CharacterRepository;
 import example.com.moneymergebe.domain.user.entity.User;
@@ -54,6 +55,21 @@ public class CharacterService {
     }
 
     /**
+     * 모든(상점) 캐릭터 조회
+     */
+    @Transactional(readOnly = true)
+    public Page<CharacterShopGetRes> getShopCharacters(Long userId, int page, int size, String sortBy, boolean isAsc) {
+        User user = findUser(userId);
+        Sort.Direction direction = isAsc ? Direction.ASC : Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return characterRepository.findAll(pageable).map(
+            character -> new CharacterShopGetRes(character, hasCharacter(user, character))
+        );
+    }
+
+    /**
      * @throws GlobalException userId에 해당하는 사용자가 존재하지 않는 경우 예외 발생
      */
     private User findUser(Long userId) {
@@ -78,5 +94,13 @@ public class CharacterService {
         UserCharacter userCharacter = userCharacterRepository.findByUserAndCharacter(user, character);
         UserCharacterValidator.validate(userCharacter);
         return userCharacter;
+    }
+
+    /**
+     * UserCharacter 존재 유무 반환
+     */
+    private boolean hasCharacter(User user, Character character) {
+        UserCharacter userCharacter = userCharacterRepository.findByUserAndCharacter(user, character);
+        return userCharacter != null;
     }
 }
