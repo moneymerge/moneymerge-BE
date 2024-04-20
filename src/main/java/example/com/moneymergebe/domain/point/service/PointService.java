@@ -5,7 +5,7 @@ import example.com.moneymergebe.domain.point.repository.PointRepository;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
 import example.com.moneymergebe.global.exception.GlobalException;
-import example.com.moneymergebe.global.response.ResultCode;
+import example.com.moneymergebe.global.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,7 +38,8 @@ public class PointService {
      * @throws GlobalException userId에 해당하는 사용자가 존재하지 않는 경우 예외 발생
      */
     private User findUser(Long userId) {
-        return userRepository.findById(userId).orElseThrow(
-            () -> new GlobalException(ResultCode.NOT_FOUND_USER));
+        User user = userRepository.findByUserId(userId);
+        UserValidator.validate(user);
+        return user;
     }
 }

@@ -116,7 +116,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserPointResDto getUserPoint(Long userId) {
         User user = findUser(userId);
-        return new UserPointResDto(user.getPoint());
+        return new UserPointResDto(user.getPoints());
     }
 
     /**

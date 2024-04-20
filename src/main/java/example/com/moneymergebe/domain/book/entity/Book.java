@@ -43,7 +43,7 @@ public class Book extends BaseEntity {
     private List<BookUser> bookUserList = new ArrayList<>();
 
     @Builder
-    public Book(String title, Long yearGoal, Long monthGoal, String color, int startDate) {
+    private Book(String title, Long yearGoal, Long monthGoal, String color, int startDate) {
         this.title = title;
         this.yearGoal = yearGoal;
         this.monthGoal = monthGoal;

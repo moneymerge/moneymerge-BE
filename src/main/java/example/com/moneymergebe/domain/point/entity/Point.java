@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,15 +24,16 @@ public class Point extends BaseEntity {
     private Long pointId;
 
     private String detail;
-    private Long point;
+    private int points;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Point(String detail, Long point, User user) {
+    @Builder
+    private Point(String detail, int points, User user) {
         this.detail = detail;
-        this.point = point;
+        this.points = points;
         this.user = user;
     }
 }

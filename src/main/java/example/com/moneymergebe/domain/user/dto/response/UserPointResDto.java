@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public class UserPointResDto {
-    private Long point;
+    private int points;
 
-    public UserPointResDto(Long point) {
-        this.point = point;
+    public UserPointResDto(int points) {
+        this.points = points;
     }
 }

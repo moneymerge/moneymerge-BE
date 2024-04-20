@@ -9,12 +9,12 @@ public class PointGetRes {
     private Long pointId;
     private LocalDateTime createdAt;
     private String detail;
-    private Long point;
+    private int points;
 
     public PointGetRes(Point point) {
         this.pointId = point.getPointId();
         this.createdAt = point.getCreatedAt();
         this.detail = point.getDetail();
-        this.point = point.getPoint();
+        this.points = point.getPoints();
     }
 }
