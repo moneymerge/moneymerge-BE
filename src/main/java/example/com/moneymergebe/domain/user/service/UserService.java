@@ -13,11 +13,11 @@ import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
 import example.com.moneymergebe.global.exception.GlobalException;
 import example.com.moneymergebe.global.response.ResultCode;
+import example.com.moneymergebe.global.validator.UserValidator;
 import example.com.moneymergebe.infra.s3.S3Util;
 import example.com.moneymergebe.infra.s3.S3Util.FilePath;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -113,8 +113,9 @@ public class UserService {
      * @throws GlobalException userId에 해당하는 사용자가 존재하지 않는 경우 예외 발생
      */
     private User findUser(Long userId) {
-        return userRepository.findById(userId).orElseThrow(
-            () -> new GlobalException(ResultCode.NOT_FOUND_USER));
+        User user = userRepository.findByUserId(userId);
+        UserValidator.validate(user);
+        return user;
     }
 
     /**
@@ -122,9 +123,6 @@ public class UserService {
      * @throws GlobalException username에 해당하는 사용자가 존재하는 경우 예외 발생
      */
     private void verifyUsername(String username) {
-        Optional<User> user = userRepository.findByUsername(username);
-        if(user.isPresent()) {
-            throw new GlobalException(ResultCode.DUPLICATED_USERNAME);
-        }
+        UserValidator.checkUsername(userRepository.findByUsername(username));
     }
 }
