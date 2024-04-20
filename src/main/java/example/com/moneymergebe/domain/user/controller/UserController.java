@@ -29,6 +29,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
     private final UserService userService;
 
+    @GetMapping("/login-page")
+    public String loginPage() {
+        return "login";
+    }
+
     /**
      * 기본 정보 조회
      * @param userDetails 사용자 정보
