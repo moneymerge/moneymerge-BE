@@ -1,5 +1,6 @@
 package example.com.moneymergebe.domain.character.controller;
 
+import example.com.moneymergebe.domain.character.dto.response.CharacterChangeRes;
 import example.com.moneymergebe.domain.character.dto.response.CharacterGetRes;
 import example.com.moneymergebe.domain.character.service.CharacterService;
 import example.com.moneymergebe.global.response.CommonResponse;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,5 +40,15 @@ public class CharacterController {
         @RequestParam(value = "isAsc", defaultValue = DEFAULT_IS_ASC) boolean isAsc
     ) {
         return CommonResponse.success(characterService.getUserCharacters(userDetails.getUser().getUserId(), page - 1, size, sortBy, isAsc));
+    }
+
+    /**
+     * 캐릭터 변경
+     * @param userDetails 사용자 정보
+     * @param characterId 바꿀 캐릭터 ID
+     */
+    @PatchMapping
+    public CommonResponse<CharacterChangeRes> changeCharacter(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody Long characterId) {
+        return CommonResponse.success(characterService.changeCharacter(userDetails.getUser().getUserId(), characterId));
     }
 }
