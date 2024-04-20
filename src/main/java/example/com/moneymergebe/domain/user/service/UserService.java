@@ -88,7 +88,7 @@ public class UserService {
 
         String profileUrl = user.getProfileUrl(); // 기존 프로필 이미지
         if (req.getImage() != null && !req.getImage().isEmpty()) { // 새로 입력한 이미지 파일이 있는 경우
-            if (!profileUrl.equals(defaultProfileImage)) { // 기존 이미지가 기본 프로필이 아닌 경우
+            if (!profileUrl.equals(defaultProfileImage) && s3Util.exists(profileUrl, FilePath.PROFILE)) { // 기존 이미지가 기본 프로필이 아니고 존재하는 경우
                 s3Util.deleteFile(profileUrl, FilePath.PROFILE); // 기존 이미지 삭제
             }
             checkImage(req.getImage()); // 이미지 파일인지 확인
