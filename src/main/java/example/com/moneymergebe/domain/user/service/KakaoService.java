@@ -91,14 +91,19 @@ public class KakaoService {
                 User.builder()
                     .username(username)
                     .email(email)
+                    .profileUrl(profileUrl)
                     .role(UserRole.USER)
                     .social(UserSocialEnum.KAKAO)
-                    .profileUrl(profileUrl)
+                    .characterId(1)
                     .points(0)
-                    .characterId(0)
+                    .alarm(false)
+                    .attendance(false)
                     .build();
+
             user = userRepository.save(newUser);
         }
+
+        // TODO: attendance가 false라면 출석 포인트 적립 후 true로 변경
         
         // 반환할 토큰 생성
         HashMap<String, String> returnTokens = new HashMap<>();
