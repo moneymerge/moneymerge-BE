@@ -108,6 +108,7 @@ public class UserController {
      * @param userDetails 사용자 정보
      * @return 사용자 보유 포인트
      */
+    @ResponseBody
     @GetMapping("/point")
     public CommonResponse<UserPointResDto> getUserPoint(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return CommonResponse.success(userService.getUserPoint(userDetails.getUser().getUserId()));
@@ -118,6 +119,7 @@ public class UserController {
      * @param userDetails 사용자 정보
      * @return 사용자 현재 캐릭터
      */
+    @ResponseBody
     @GetMapping("/character")
     public CommonResponse<UserCharacterResDto> getUserCharacter(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return CommonResponse.success(userService.getUserCharacter(userDetails.getUser().getUserId()));
