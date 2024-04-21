@@ -25,6 +25,7 @@ public enum ResultCode {
 
     // 가계부 3000번대
     NOT_FOUND_BOOK(HttpStatus.NOT_FOUND, 3000, "가계부를 찾을 수 없습니다."),
+    NOT_BOOK_MEMBER(HttpStatus.BAD_REQUEST, 3001, "입력한 가계부의 멤버가 아닙니다."),
 
     // 캐릭터 4000번대
     NOT_FOUND_CHARACTER(HttpStatus.NOT_FOUND, 4000, "캐릭터를 찾을 수 없습니다."),
