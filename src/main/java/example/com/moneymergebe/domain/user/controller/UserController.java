@@ -33,7 +33,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
-    private final JwtUtil jwtUtil;
 
     @GetMapping("/login-page")
     public String loginPage() {
