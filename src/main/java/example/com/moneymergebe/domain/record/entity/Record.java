@@ -51,10 +51,6 @@ public class Record extends BaseEntity {
     private String image;
 
     @ManyToOne
-    @JoinColumn(name = "book_id")
-    private Book book;
-
-    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -65,7 +61,7 @@ public class Record extends BaseEntity {
 
     @Builder
     private Record(LocalDate date, RecordType recordType, int amount, AssetType assetType,
-        String content, String memo, String image, Book book, User user) {
+        String content, String memo, String image, User user) {
         this.date = date;
         this.recordType = recordType;
         this.amount = amount;
@@ -73,7 +69,6 @@ public class Record extends BaseEntity {
         this.content = content;
         this.memo = memo;
         this.image = image;
-        this.book = book;
         this.user = user;
     }
 }

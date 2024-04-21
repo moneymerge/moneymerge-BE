@@ -30,7 +30,11 @@ public enum ResultCode {
     // 캐릭터 4000번대
     NOT_FOUND_CHARACTER(HttpStatus.NOT_FOUND, 4000, "캐릭터를 찾을 수 없습니다."),
     NOT_USER_CHARACTER(HttpStatus.BAD_REQUEST, 4001, "사용자가 소유하고 있는 캐릭터가 아닙니다."),
-    ALREADY_USER_CHARACTER(HttpStatus.BAD_REQUEST, 4002, "사용자가 이미 소유하고 있는 캐릭터입니다.");
+    ALREADY_USER_CHARACTER(HttpStatus.BAD_REQUEST, 4002, "사용자가 이미 소유하고 있는 캐릭터입니다."),
+
+    // 레코드 5000번대
+    NOT_FOUND_RECORD(HttpStatus.NOT_FOUND, 5000, "레코드를 찾을 수 없습니다."),
+    NOT_BOOK_RECORD(HttpStatus.BAD_REQUEST, 5001, "가계부의 레코드가 아닙니다.");
 
     private final HttpStatus status;
     private final int code;

@@ -1,15 +1,15 @@
-package example.com.moneymergebe.domain.user.dto.response;
+package example.com.moneymergebe.domain.book.dto.response;
 
 import example.com.moneymergebe.domain.book.entity.Book;
 import lombok.Getter;
 
 @Getter
-public class UserBookResDto {
+public class BookGetRes {
     private Long bookId;
     private String bookTitle;
     private String bookColor;
 
-    public UserBookResDto(Book book) {
+    public BookGetRes(Book book) {
         this.bookId = book.getBookId();
         this.bookTitle = book.getTitle();
         this.bookColor = book.getColor();

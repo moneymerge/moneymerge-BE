@@ -1,21 +1,32 @@
 package example.com.moneymergebe.domain.record.service;
 
+import example.com.moneymergebe.domain.book.dto.response.BookGetRes;
 import example.com.moneymergebe.domain.book.entity.Book;
+import example.com.moneymergebe.domain.book.entity.BookRecord;
 import example.com.moneymergebe.domain.book.entity.BookUser;
+import example.com.moneymergebe.domain.book.repository.BookRecordRepository;
 import example.com.moneymergebe.domain.book.repository.BookRepository;
 import example.com.moneymergebe.domain.book.repository.BookUserRepository;
 import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
+import example.com.moneymergebe.domain.record.dto.response.RecordCommentGetRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
+import example.com.moneymergebe.domain.record.dto.response.RecordGetRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordSaveRes;
 import example.com.moneymergebe.domain.record.entity.Record;
+import example.com.moneymergebe.domain.record.repository.RecordCommentRepository;
+import example.com.moneymergebe.domain.record.repository.RecordReactionRepository;
 import example.com.moneymergebe.domain.record.repository.RecordRepository;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
 import example.com.moneymergebe.global.exception.GlobalException;
+import example.com.moneymergebe.global.validator.BookRecordValidator;
 import example.com.moneymergebe.global.validator.BookUserValidator;
 import example.com.moneymergebe.global.validator.BookValidator;
+import example.com.moneymergebe.global.validator.RecordValidator;
 import example.com.moneymergebe.global.validator.UserValidator;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +39,9 @@ public class RecordService {
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
+    private final BookRecordRepository bookRecordRepository;
+    private final RecordCommentRepository recordCommentRepository;
+    private final RecordReactionRepository recordReactionRepository;
 
     /**
      * 레코드 생성
@@ -35,13 +49,15 @@ public class RecordService {
     @Transactional
     public RecordSaveRes saveRecord(RecordSaveReq req) {
         User user = findUser(req.getUserId());
+        Record record = recordRepository.save(Record.builder().date(req.getDate()).recordType(req.getRecordType()).amount(req.getAmount()).assetType(req.getAssetType())
+            .content(req.getContent()).memo(req.getMemo()).image(req.getImage()).user(user).build());
+
         for(Long bookId : req.getBookList()) {
             Book book = findBook(bookId);
             checkBookMember(user, book); // 가계부 권한 검사
-            Record record = Record.builder().date(req.getDate()).recordType(req.getRecordType()).amount(req.getAmount()).assetType(req.getAssetType())
-                .content(req.getContent()).memo(req.getMemo()).image(req.getImage()).book(book).user(user).build(); // TODO: 카테고리 추가
-            recordRepository.save(record);
+            bookRecordRepository.save(BookRecord.builder().book(book).record(record).build());
         }
+
         return new RecordSaveRes();
     }
 
@@ -57,9 +73,52 @@ public class RecordService {
         LocalDate startDate = LocalDate.of(year, month, 1); // 시작일
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth()); // 마지막일
 
-        return recordRepository.findAllByBookAndDateBetweenOrderByDate(book, startDate, endDate).stream().map(
-            record -> new RecordGetMonthRes(record, bookUser)
+        List<BookRecord> bookRecordList = bookRecordRepository.findAllByBook(book);
+        List<RecordGetMonthRes> resList = new ArrayList<>();
+        for(BookRecord bookRecord : bookRecordList) {
+            Record record = bookRecord.getRecord();
+            if(!record.getDate().isBefore(startDate) && !record.getDate().isAfter(endDate)) {
+                resList.add(new RecordGetMonthRes(record, bookUser));
+            }
+        }
+
+        resList.sort(Comparator.comparing(RecordGetMonthRes::getDate));
+
+        return resList;
+    }
+
+    /**
+     * 레코드 상세 조회
+     */
+    @Transactional(readOnly = true)
+    public RecordGetRes getRecord(Long userId, Long bookId, Long recordId) {
+        User user = findUser(userId);
+        Book book = findBook(bookId); // 현재 접속 중인 가계부
+        Record record = findRecord(recordId);
+
+        BookUser bookUser = checkBookMember(user, book); // 가계부 권한 검사
+        checkBookRecord(book, record); // 가계부의 레코드인지 검사
+
+        // 레코드 가계부 목록
+        List<BookRecord> bookRecordList = bookRecordRepository.findAllByRecord(record);
+        List<BookGetRes> bookGetResList = new ArrayList<>();
+        for(BookRecord bookRecord : bookRecordList) {
+            if(isBookMember(user, bookRecord.getBook())) { // 사용자가 멤버인 가계부만 보여줌
+                bookGetResList.add(new BookGetRes(bookRecord.getBook()));
+            }
+        }
+
+        // 레코드 댓글 목록
+        List<RecordCommentGetRes> commentGetResList = recordCommentRepository.findAllByRecord(record).stream().map(
+            recordComment -> new RecordCommentGetRes(recordComment, bookUser)
         ).toList();
+
+        // 좋아요 개수
+        int likes = recordReactionRepository.countByRecordAndReaction(record, true);
+        // 싫어요 개수
+        int dislikes = recordReactionRepository.countByRecordAndReaction(record, false);
+
+        return new RecordGetRes(record, bookGetResList, commentGetResList, likes, dislikes);
     }
 
     /**
@@ -81,11 +140,34 @@ public class RecordService {
     }
 
     /**
+     * @throws GlobalException recordId에 해당하는 레코드가 존재하지 않는 경우 예외 발생
+     */
+    private Record findRecord(Long recordId) {
+        Record record = recordRepository.findByRecordId(recordId);
+        RecordValidator.validate(record);
+        return record;
+    }
+
+    /**
      * @throws GlobalException user가 book의 멤버가 아닌 경우 예외 발생
      */
     private BookUser checkBookMember(User user, Book book) {
         BookUser bookUser = bookUserRepository.findByUserAndBook(user, book);
         BookUserValidator.checkMember(bookUser);
         return bookUser;
+    }
+
+    private BookRecord checkBookRecord(Book book, Record record) {
+        BookRecord bookRecord = bookRecordRepository.findByBookAndRecord(book, record);
+        BookRecordValidator.checkRecord(bookRecord);
+        return bookRecord;
+    }
+
+    /**
+     * 사용자의 가계부 멤버 여부를 반환
+     */
+    private boolean isBookMember(User user, Book book) {
+        BookUser bookUser = bookUserRepository.findByUserAndBook(user, book);
+        return bookUser != null;
     }
 }
