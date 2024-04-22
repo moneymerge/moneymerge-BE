@@ -11,10 +11,6 @@ public class RecordValidator {
         if(checkIsNull(record)) throw new GlobalException(NOT_FOUND_RECORD);
     }
 
-    public static void checkUser(User accessor, User author) {
-        if(!accessor.getUserId().equals(author.getUserId())) throw new GlobalException(UNAUTHORIZED);
-    }
-
     private static boolean checkIsNull(Record record) {
         return record == null;
     }

@@ -7,10 +7,12 @@ import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.book.repository.BookRecordRepository;
 import example.com.moneymergebe.domain.book.repository.BookRepository;
 import example.com.moneymergebe.domain.book.repository.BookUserRepository;
+import example.com.moneymergebe.domain.record.dto.request.RecordCommentModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordCommentSaveReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
 import example.com.moneymergebe.domain.record.dto.response.RecordCommentGetRes;
+import example.com.moneymergebe.domain.record.dto.response.RecordCommentModifyRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordCommentSaveRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordDeleteRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordDislikeRes;
@@ -33,6 +35,7 @@ import example.com.moneymergebe.global.exception.GlobalException;
 import example.com.moneymergebe.global.validator.BookRecordValidator;
 import example.com.moneymergebe.global.validator.BookUserValidator;
 import example.com.moneymergebe.global.validator.BookValidator;
+import example.com.moneymergebe.global.validator.RecordCommentValidator;
 import example.com.moneymergebe.global.validator.RecordValidator;
 import example.com.moneymergebe.global.validator.UserValidator;
 import java.time.LocalDate;
@@ -142,7 +145,7 @@ public class RecordService {
         Record record = findRecord(req.getRecordId());
 
         checkBookRecord(book, record); // 가계부의 레코드인지 검사
-        RecordValidator.checkUser(user, record.getUser()); // 작성자와 수정자가 동일한지 검사
+        UserValidator.checkUser(user, record.getUser()); // 작성자와 수정자가 동일한지 검사
 
         bookRecordRepository.deleteAllByRecord(record); // 레코드의 기존 가계부 삭제
         record.update(req); // 레코드 수정
@@ -166,7 +169,7 @@ public class RecordService {
         Record record = findRecord(recordId);
 
         checkBookRecord(book, record); // 가계부의 레코드인지 검사
-        RecordValidator.checkUser(user, record.getUser()); // 작성자와 삭제자가 동일한지 검사
+        UserValidator.checkUser(user, record.getUser()); // 작성자와 삭제자가 동일한지 검사
 
         // bookRecord, 기록 반응, 댓글 삭제
         bookRecordRepository.deleteAllByRecord(record);
@@ -269,6 +272,25 @@ public class RecordService {
         return new RecordCommentSaveRes();
     }
 
+    /**
+     * 레코드 댓글 수정
+     */
+    @Transactional
+    public RecordCommentModifyRes modifyRecordComment(RecordCommentModifyReq req) {
+        User user = findUser(req.getUserId());
+        Book book = findBook(req.getBookId());
+        Record record = findRecord(req.getRecordId());
+        RecordComment recordComment = findRecordComment(req.getCommentId());
+
+        checkBookRecord(book, record); // 가계부의 레코드인지 검사
+        RecordCommentValidator.checkRecordComment(record, recordComment.getRecord()); // 레코드의 댓글인지 검사
+        UserValidator.checkUser(user, recordComment.getUser()); // 작성자와 수정자가 동일한지 검사
+
+        recordComment.update(req.getContent());
+
+        return new RecordCommentModifyRes();
+    }
+
 
     /**
      * @throws GlobalException userId에 해당하는 사용자가 존재하지 않는 경우 예외 발생
@@ -295,6 +317,15 @@ public class RecordService {
         Record record = recordRepository.findByRecordId(recordId);
         RecordValidator.validate(record);
         return record;
+    }
+
+    /**
+     * @throws GlobalException recordCommentId에 해당하는 레코드가 존재하지 않는 경우 예외 발생
+     */
+    private RecordComment findRecordComment(Long recordCommentId) {
+        RecordComment recordComment = recordCommentRepository.findByRecordCommentId(recordCommentId);
+        RecordCommentValidator.validate(recordComment);
+        return recordComment;
     }
 
     /**

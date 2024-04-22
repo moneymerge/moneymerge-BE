@@ -9,4 +9,6 @@ public interface RecordCommentRepository extends JpaRepository<RecordComment, Lo
     List<RecordComment> findAllByRecord(Record record);
 
     void deleteAllByRecord(Record record);
+
+    RecordComment findByRecordCommentId(Long recordCommentId);
 }

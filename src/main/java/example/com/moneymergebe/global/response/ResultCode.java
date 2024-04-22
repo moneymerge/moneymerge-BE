@@ -34,7 +34,11 @@ public enum ResultCode {
 
     // 레코드 5000번대
     NOT_FOUND_RECORD(HttpStatus.NOT_FOUND, 5000, "레코드를 찾을 수 없습니다."),
-    NOT_BOOK_RECORD(HttpStatus.BAD_REQUEST, 5001, "가계부의 레코드가 아닙니다.");
+    NOT_BOOK_RECORD(HttpStatus.BAD_REQUEST, 5001, "가계부의 레코드가 아닙니다."),
+
+    // 댓글 6000번대
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, 6000, "댓글을 찾을 수 없습니다."),
+    UNMATCHED_RECORD_COMMENT(HttpStatus.BAD_REQUEST, 6001, "해당 레코드의 댓글이 아닙니다.");
 
     private final HttpStatus status;
     private final int code;

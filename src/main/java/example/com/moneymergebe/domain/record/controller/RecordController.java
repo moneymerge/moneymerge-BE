@@ -1,8 +1,10 @@
 package example.com.moneymergebe.domain.record.controller;
 
+import example.com.moneymergebe.domain.record.dto.request.RecordCommentModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordCommentSaveReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
+import example.com.moneymergebe.domain.record.dto.response.RecordCommentModifyRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordCommentSaveRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordDeleteRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordDislikeRes;
@@ -166,5 +168,23 @@ public class RecordController {
         req.setBookId(bookId);
         req.setRecordId(recordId);
         return CommonResponse.success(recordService.saveRecordComment(req));
+    }
+
+    /**
+     * 레코드 댓글 수정
+     * @param userDetails 사용자 정보
+     * @param bookId 가계부 ID
+     * @param recordId 레코드 ID
+     * @param commentId 수정할 댓글 ID
+     * @param req 수정할 댓글 내용
+     */
+    @PutMapping("/{recordId}/comments/{commentId}")
+    public CommonResponse<RecordCommentModifyRes> modifyRecordComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long bookId, @PathVariable Long recordId, @PathVariable Long commentId, @RequestBody RecordCommentModifyReq req) {
+        req.setUserId(userDetails.getUser().getUserId());
+        req.setBookId(bookId);
+        req.setRecordId(recordId);
+        req.setCommentId(commentId);
+        return CommonResponse.success(recordService.modifyRecordComment(req));
     }
 }
