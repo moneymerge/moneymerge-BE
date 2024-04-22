@@ -4,6 +4,7 @@ import example.com.moneymergebe.domain.record.dto.request.RecordCommentModifyReq
 import example.com.moneymergebe.domain.record.dto.request.RecordCommentSaveReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
+import example.com.moneymergebe.domain.record.dto.response.RecordCommentDeleteRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordCommentModifyRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordCommentSaveRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordDeleteRes;
@@ -186,5 +187,18 @@ public class RecordController {
         req.setRecordId(recordId);
         req.setCommentId(commentId);
         return CommonResponse.success(recordService.modifyRecordComment(req));
+    }
+
+    /**
+     * 레코드 댓글 삭제
+     * @param userDetails 사용자 정보
+     * @param bookId 가계부 ID
+     * @param recordId 레코드 ID
+     * @param commentId 댓글 ID
+     */
+    @DeleteMapping("/{recordId}/comments/{commentId}")
+    public CommonResponse<RecordCommentDeleteRes> deleteRecordComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long bookId, @PathVariable Long recordId, @PathVariable Long commentId) {
+        return CommonResponse.success(recordService.deleteRecordComment(userDetails.getUser().getUserId(), bookId, recordId, commentId));
     }
 }

@@ -11,6 +11,7 @@ import example.com.moneymergebe.domain.record.dto.request.RecordCommentModifyReq
 import example.com.moneymergebe.domain.record.dto.request.RecordCommentSaveReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
+import example.com.moneymergebe.domain.record.dto.response.RecordCommentDeleteRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordCommentGetRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordCommentModifyRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordCommentSaveRes;
@@ -289,6 +290,25 @@ public class RecordService {
         recordComment.update(req.getContent());
 
         return new RecordCommentModifyRes();
+    }
+
+    /**
+     * 레코드 댓글 삭제
+     */
+    @Transactional
+    public RecordCommentDeleteRes deleteRecordComment(Long userId, Long bookId, Long recordId, Long commentId) {
+        User user = findUser(userId);
+        Book book = findBook(bookId);
+        Record record = findRecord(recordId);
+        RecordComment recordComment = findRecordComment(commentId);
+
+        checkBookRecord(book, record); // 가계부의 레코드인지 검사
+        RecordCommentValidator.checkRecordComment(record, recordComment.getRecord()); // 레코드의 댓글인지 검사
+        UserValidator.checkUser(user, recordComment.getUser()); // 작성자와 삭제자가 동일한지 검사
+
+        recordCommentRepository.delete(recordComment);
+
+        return new RecordCommentDeleteRes();
     }
 
 
