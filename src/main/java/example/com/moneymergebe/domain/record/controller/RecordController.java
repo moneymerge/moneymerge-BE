@@ -2,6 +2,7 @@ package example.com.moneymergebe.domain.record.controller;
 
 import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
+import example.com.moneymergebe.domain.record.dto.response.RecordDeleteRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordModifyRes;
@@ -12,6 +13,7 @@ import example.com.moneymergebe.global.security.UserDetailsImpl;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -79,5 +81,11 @@ public class RecordController {
         req.setBookId(bookId);
         req.setRecordId(recordId);
         return CommonResponse.success(recordService.modifyRecord(req));
+    }
+
+    @DeleteMapping("/{recordId}")
+    public CommonResponse<RecordDeleteRes> deleteRecord(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long bookId, @PathVariable Long recordId) {
+        return CommonResponse.success(recordService.deleteRecord(userDetails.getUser().getUserId(), bookId, recordId));
     }
 }

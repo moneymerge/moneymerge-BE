@@ -10,6 +10,7 @@ import example.com.moneymergebe.domain.book.repository.BookUserRepository;
 import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
 import example.com.moneymergebe.domain.record.dto.response.RecordCommentGetRes;
+import example.com.moneymergebe.domain.record.dto.response.RecordDeleteRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordModifyRes;
@@ -132,12 +133,41 @@ public class RecordService {
         Book book = findBook(req.getBookId());
         Record record = findRecord(req.getRecordId());
 
-        RecordValidator.checkUser(user, record.getUser()); // 작성자와 수정자가 동일한지 검사
         checkBookRecord(book, record); // 가계부의 레코드인지 검사
+        RecordValidator.checkUser(user, record.getUser()); // 작성자와 수정자가 동일한지 검사
 
-        record.update(req);
+        bookRecordRepository.deleteAllByRecord(record); // 레코드의 기존 가계부 삭제
+        record.update(req); // 레코드 수정
+
+        for(Long bookId : req.getBookList()) { // 레코드와 가계부 연관관계 설정
+            Book chosenBook = findBook(bookId);
+            checkBookMember(user, chosenBook); // 가계부 권한 검사
+            bookRecordRepository.save(BookRecord.builder().book(chosenBook).record(record).build());
+        }
 
         return new RecordModifyRes();
+    }
+
+    /**
+     * 레코드 삭제
+     */
+    @Transactional
+    public RecordDeleteRes deleteRecord(Long userId, Long bookId, Long recordId) {
+        User user = findUser(userId);
+        Book book = findBook(bookId);
+        Record record = findRecord(recordId);
+
+        checkBookRecord(book, record); // 가계부의 레코드인지 검사
+        RecordValidator.checkUser(user, record.getUser()); // 작성자와 삭제자가 동일한지 검사
+
+        // bookRecord, 기록 반응, 댓글 삭제
+        bookRecordRepository.deleteAllByRecord(record);
+        recordReactionRepository.deleteAllByRecord(record);
+        recordCommentRepository.deleteAllByRecord(record);
+        // 레코드 삭제
+        recordRepository.delete(record);
+
+        return new RecordDeleteRes();
     }
 
     /**
@@ -176,6 +206,9 @@ public class RecordService {
         return bookUser;
     }
 
+    /**
+     * @throws GlobalException record가 book의 기록이 아닌 경우 예외 발생
+     */
     private BookRecord checkBookRecord(Book book, Record record) {
         BookRecord bookRecord = bookRecordRepository.findByBookAndRecord(book, record);
         BookRecordValidator.checkRecord(bookRecord);
