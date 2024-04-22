@@ -1,8 +1,10 @@
 package example.com.moneymergebe.domain.record.controller;
 
+import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetRes;
+import example.com.moneymergebe.domain.record.dto.response.RecordModifyRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordSaveRes;
 import example.com.moneymergebe.domain.record.service.RecordService;
 import example.com.moneymergebe.global.response.CommonResponse;
@@ -13,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,11 +57,27 @@ public class RecordController {
     /**
      * 레코드 상세 조회
      * @param userDetails 사용자 정보
+     * @param bookId 가계부 ID
      * @param recordId 조회할 레코드 ID
      * @return 레코드 상세 내용 (댓글, 반응 포함)
      */
     @GetMapping("/{recordId}")
     public CommonResponse<RecordGetRes> getRecord(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long bookId, @PathVariable Long recordId) {
         return CommonResponse.success(recordService.getRecord(userDetails.getUser().getUserId(), bookId, recordId));
+    }
+
+    /**
+     * 레코드 수정
+     * @param userDetails 사용자 정보
+     * @param bookId 가계부 ID
+     * @param recordId 수정할 레코드 ID
+     */
+    @PutMapping("/{recordId}")
+    public CommonResponse<RecordModifyRes> modifyRecord(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long bookId, @PathVariable Long recordId, @RequestBody RecordModifyReq req) {
+        req.setUserId(userDetails.getUser().getUserId());
+        req.setBookId(bookId);
+        req.setRecordId(recordId);
+        return CommonResponse.success(recordService.modifyRecord(req));
     }
 }

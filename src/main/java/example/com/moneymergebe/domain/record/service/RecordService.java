@@ -7,10 +7,12 @@ import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.book.repository.BookRecordRepository;
 import example.com.moneymergebe.domain.book.repository.BookRepository;
 import example.com.moneymergebe.domain.book.repository.BookUserRepository;
+import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
 import example.com.moneymergebe.domain.record.dto.response.RecordCommentGetRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetRes;
+import example.com.moneymergebe.domain.record.dto.response.RecordModifyRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordSaveRes;
 import example.com.moneymergebe.domain.record.entity.Record;
 import example.com.moneymergebe.domain.record.repository.RecordCommentRepository;
@@ -119,6 +121,23 @@ public class RecordService {
         int dislikes = recordReactionRepository.countByRecordAndReaction(record, false);
 
         return new RecordGetRes(record, bookGetResList, commentGetResList, likes, dislikes);
+    }
+
+    /**
+     * 레코드 수정
+     */
+    @Transactional
+    public RecordModifyRes modifyRecord(RecordModifyReq req) {
+        User user = findUser(req.getUserId());
+        Book book = findBook(req.getBookId());
+        Record record = findRecord(req.getRecordId());
+
+        RecordValidator.checkUser(user, record.getUser()); // 작성자와 수정자가 동일한지 검사
+        checkBookRecord(book, record); // 가계부의 레코드인지 검사
+
+        record.update(req);
+
+        return new RecordModifyRes();
     }
 
     /**

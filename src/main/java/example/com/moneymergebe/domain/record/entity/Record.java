@@ -1,7 +1,7 @@
 package example.com.moneymergebe.domain.record.entity;
 
-import example.com.moneymergebe.domain.book.entity.Book;
 import example.com.moneymergebe.domain.common.BaseEntity;
+import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -70,5 +70,15 @@ public class Record extends BaseEntity {
         this.memo = memo;
         this.image = image;
         this.user = user;
+    }
+
+    public void update(RecordModifyReq req) {
+        this.date = req.getDate();
+        this.recordType = req.getRecordType();
+        this.amount = req.getAmount();
+        this.assetType = req.getAssetType();
+        this.content = req.getContent();
+        this.memo = req.getMemo();
+        this.image = req.getImage();
     }
 }
