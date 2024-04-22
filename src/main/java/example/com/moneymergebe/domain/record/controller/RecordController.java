@@ -5,6 +5,7 @@ import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
 import example.com.moneymergebe.domain.record.dto.response.RecordDeleteRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetRes;
+import example.com.moneymergebe.domain.record.dto.response.RecordLikeRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordModifyRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordSaveRes;
 import example.com.moneymergebe.domain.record.service.RecordService;
@@ -64,7 +65,8 @@ public class RecordController {
      * @return 레코드 상세 내용 (댓글, 반응 포함)
      */
     @GetMapping("/{recordId}")
-    public CommonResponse<RecordGetRes> getRecord(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long bookId, @PathVariable Long recordId) {
+    public CommonResponse<RecordGetRes> getRecord(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long bookId, @PathVariable Long recordId) {
         return CommonResponse.success(recordService.getRecord(userDetails.getUser().getUserId(), bookId, recordId));
     }
 
@@ -83,9 +85,28 @@ public class RecordController {
         return CommonResponse.success(recordService.modifyRecord(req));
     }
 
+    /**
+     * 레코드 삭제
+     * @param userDetails 사용자 정보
+     * @param bookId 가계부 ID
+     * @param recordId 삭제할 레코드 ID
+     */
     @DeleteMapping("/{recordId}")
     public CommonResponse<RecordDeleteRes> deleteRecord(@AuthenticationPrincipal UserDetailsImpl userDetails,
         @PathVariable Long bookId, @PathVariable Long recordId) {
         return CommonResponse.success(recordService.deleteRecord(userDetails.getUser().getUserId(), bookId, recordId));
+    }
+
+    /**
+     * 레코드 좋아요(토글)
+     * @param userDetails 사용자 정보
+     * @param bookId 가계부 ID
+     * @param recordId 레코드 ID
+     * @return 레코드의 좋아요 개수
+     */
+    @PostMapping("/{recordId}/likes")
+    public CommonResponse<RecordLikeRes> likeRecord(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long bookId, @PathVariable Long recordId) {
+        return CommonResponse.success(recordService.likeRecord(userDetails.getUser().getUserId(), bookId, recordId));
     }
 }
