@@ -12,6 +12,7 @@ import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
 import example.com.moneymergebe.domain.record.dto.response.RecordCommentGetRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordDeleteRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordDislikeRes;
+import example.com.moneymergebe.domain.record.dto.response.RecordGetDislikeRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetLikeRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetRes;
@@ -228,6 +229,20 @@ public class RecordService {
         checkBookMember(user, book); // 가계부 권한 검사
 
         return new RecordGetLikeRes(recordReactionRepository.countByRecordAndReaction(record, true));
+    }
+
+    /**
+     * 레코드 싫어요 수 조회
+     */
+    public RecordGetDislikeRes getRecordDislike(Long userId, Long bookId, Long recordId) {
+        User user = findUser(userId);
+        Book book = findBook(bookId);
+        Record record = findRecord(recordId);
+
+        checkBookRecord(book, record); // 가계부의 레코드인지 검사
+        checkBookMember(user, book); // 가계부 권한 검사
+
+        return new RecordGetDislikeRes(recordReactionRepository.countByRecordAndReaction(record, false));
     }
 
     /**

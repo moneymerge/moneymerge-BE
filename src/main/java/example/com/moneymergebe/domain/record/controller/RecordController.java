@@ -4,6 +4,7 @@ import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
 import example.com.moneymergebe.domain.record.dto.response.RecordDeleteRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordDislikeRes;
+import example.com.moneymergebe.domain.record.dto.response.RecordGetDislikeRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetLikeRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetRes;
@@ -134,5 +135,11 @@ public class RecordController {
     public CommonResponse<RecordGetLikeRes> getRecordLike(@AuthenticationPrincipal UserDetailsImpl userDetails,
         @PathVariable Long bookId, @PathVariable Long recordId) {
         return CommonResponse.success(recordService.getRecordLike(userDetails.getUser().getUserId(), bookId, recordId));
+    }
+
+    @GetMapping("/{recordId}/dislikes")
+    public CommonResponse<RecordGetDislikeRes> getRecordDislike(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long bookId, @PathVariable Long recordId) {
+        return CommonResponse.success(recordService.getRecordDislike(userDetails.getUser().getUserId(), bookId, recordId));
     }
 }
