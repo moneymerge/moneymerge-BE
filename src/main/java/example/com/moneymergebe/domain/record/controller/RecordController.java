@@ -4,6 +4,7 @@ import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
 import example.com.moneymergebe.domain.record.dto.response.RecordDeleteRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordDislikeRes;
+import example.com.moneymergebe.domain.record.dto.response.RecordGetLikeRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordLikeRes;
@@ -116,9 +117,22 @@ public class RecordController {
      * @param bookId 가계부 ID
      * @param recordId 레코드 ID
      */
-    @PostMapping("/{recordId}/likes")
+    @PostMapping("/{recordId}/dislikes")
     public CommonResponse<RecordDislikeRes> dislikeRecord(@AuthenticationPrincipal UserDetailsImpl userDetails,
         @PathVariable Long bookId, @PathVariable Long recordId) {
         return CommonResponse.success(recordService.dislikeRecord(userDetails.getUser().getUserId(), bookId, recordId));
+    }
+
+    /**
+     * 레코드 좋아요 수 조회
+     * @param userDetails 사용자 정보
+     * @param bookId 가계부 ID
+     * @param recordId 레코드 ID
+     * @return 레코드 좋아요 개수
+     */
+    @GetMapping("/{recordId}/likes")
+    public CommonResponse<RecordGetLikeRes> getRecordLike(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long bookId, @PathVariable Long recordId) {
+        return CommonResponse.success(recordService.getRecordLike(userDetails.getUser().getUserId(), bookId, recordId));
     }
 }
