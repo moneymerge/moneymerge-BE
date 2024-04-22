@@ -7,9 +7,11 @@ import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.book.repository.BookRecordRepository;
 import example.com.moneymergebe.domain.book.repository.BookRepository;
 import example.com.moneymergebe.domain.book.repository.BookUserRepository;
+import example.com.moneymergebe.domain.record.dto.request.RecordCommentSaveReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
 import example.com.moneymergebe.domain.record.dto.response.RecordCommentGetRes;
+import example.com.moneymergebe.domain.record.dto.response.RecordCommentSaveRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordDeleteRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordDislikeRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetDislikeRes;
@@ -20,6 +22,7 @@ import example.com.moneymergebe.domain.record.dto.response.RecordLikeRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordModifyRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordSaveRes;
 import example.com.moneymergebe.domain.record.entity.Record;
+import example.com.moneymergebe.domain.record.entity.RecordComment;
 import example.com.moneymergebe.domain.record.entity.RecordReaction;
 import example.com.moneymergebe.domain.record.repository.RecordCommentRepository;
 import example.com.moneymergebe.domain.record.repository.RecordReactionRepository;
@@ -178,6 +181,7 @@ public class RecordService {
     /**
      * 레코드 좋아요(토글)
      */
+    @Transactional
     public RecordLikeRes likeRecord(Long userId, Long bookId, Long recordId) {
         User user = findUser(userId);
         Book book = findBook(bookId);
@@ -199,6 +203,7 @@ public class RecordService {
     /**
      * 레코드 싫어요(토글)
      */
+    @Transactional
     public RecordDislikeRes dislikeRecord(Long userId, Long bookId, Long recordId) {
         User user = findUser(userId);
         Book book = findBook(bookId);
@@ -220,6 +225,7 @@ public class RecordService {
     /**
      * 레코드 좋아요 수 조회
      */
+    @Transactional(readOnly = true)
     public RecordGetLikeRes getRecordLike(Long userId, Long bookId, Long recordId) {
         User user = findUser(userId);
         Book book = findBook(bookId);
@@ -234,6 +240,7 @@ public class RecordService {
     /**
      * 레코드 싫어요 수 조회
      */
+    @Transactional(readOnly = true)
     public RecordGetDislikeRes getRecordDislike(Long userId, Long bookId, Long recordId) {
         User user = findUser(userId);
         Book book = findBook(bookId);
@@ -244,6 +251,24 @@ public class RecordService {
 
         return new RecordGetDislikeRes(recordReactionRepository.countByRecordAndReaction(record, false));
     }
+
+    /**
+     * 레코드 댓글 생성
+     */
+    @Transactional
+    public RecordCommentSaveRes saveRecordComment(RecordCommentSaveReq req) {
+        User user = findUser(req.getUserId());
+        Book book = findBook(req.getBookId());
+        Record record = findRecord(req.getRecordId());
+
+        checkBookRecord(book, record); // 가계부의 레코드인지 검사
+        checkBookMember(user, book); // 가계부 권한 검사
+
+        recordCommentRepository.save(RecordComment.builder().record(record).user(user).content(req.getContent()).build());
+
+        return new RecordCommentSaveRes();
+    }
+
 
     /**
      * @throws GlobalException userId에 해당하는 사용자가 존재하지 않는 경우 예외 발생

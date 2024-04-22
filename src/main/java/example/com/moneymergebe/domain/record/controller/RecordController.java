@@ -1,7 +1,9 @@
 package example.com.moneymergebe.domain.record.controller;
 
+import example.com.moneymergebe.domain.record.dto.request.RecordCommentSaveReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
+import example.com.moneymergebe.domain.record.dto.response.RecordCommentSaveRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordDeleteRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordDislikeRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetDislikeRes;
@@ -137,9 +139,32 @@ public class RecordController {
         return CommonResponse.success(recordService.getRecordLike(userDetails.getUser().getUserId(), bookId, recordId));
     }
 
+    /**
+     * 레코드 싫어요 수 조회
+     * @param userDetails 사용자 정보
+     * @param bookId 가계부 ID
+     * @param recordId 레코드 ID
+     * @return 레코드 싫어요 개수
+     */
     @GetMapping("/{recordId}/dislikes")
     public CommonResponse<RecordGetDislikeRes> getRecordDislike(@AuthenticationPrincipal UserDetailsImpl userDetails,
         @PathVariable Long bookId, @PathVariable Long recordId) {
         return CommonResponse.success(recordService.getRecordDislike(userDetails.getUser().getUserId(), bookId, recordId));
+    }
+
+    /**
+     * 레코드 댓글 생성
+     * @param userDetails 사용자 정보
+     * @param bookId 가계부 ID
+     * @param recordId 레코드 ID
+     * @param req 댓글 내용
+     */
+    @PostMapping("/{recordId}/comments")
+    public CommonResponse<RecordCommentSaveRes> saveRecordComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long bookId, @PathVariable Long recordId, @RequestBody RecordCommentSaveReq req) {
+        req.setUserId(userDetails.getUser().getUserId());
+        req.setBookId(bookId);
+        req.setRecordId(recordId);
+        return CommonResponse.success(recordService.saveRecordComment(req));
     }
 }
