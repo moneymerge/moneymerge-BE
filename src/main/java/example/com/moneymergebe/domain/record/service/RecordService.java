@@ -11,6 +11,7 @@ import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
 import example.com.moneymergebe.domain.record.dto.response.RecordCommentGetRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordDeleteRes;
+import example.com.moneymergebe.domain.record.dto.response.RecordDislikeRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordLikeRes;
@@ -191,6 +192,27 @@ public class RecordService {
         }
 
         return new RecordLikeRes();
+    }
+
+    /**
+     * 레코드 싫어요(토글)
+     */
+    public RecordDislikeRes dislikeRecord(Long userId, Long bookId, Long recordId) {
+        User user = findUser(userId);
+        Book book = findBook(bookId);
+        Record record = findRecord(recordId);
+
+        checkBookRecord(book, record); // 가계부의 레코드인지 검사
+        checkBookMember(user, book); // 가계부 권한 검사
+
+        RecordReaction recordReaction = recordReactionRepository.findByRecordAndUserAndReaction(record, user, false);
+        if(recordReaction == null) { // 기존에 싫어요를 하지 않았으면
+            recordReactionRepository.save(RecordReaction.builder().record(record).user(user).reaction(false).build()); // 싫어요 저장
+        } else { // 기존에 싫어요를 했으면
+            recordReactionRepository.delete(recordReaction); // 삭제
+        }
+
+        return new RecordDislikeRes();
     }
 
     /**
