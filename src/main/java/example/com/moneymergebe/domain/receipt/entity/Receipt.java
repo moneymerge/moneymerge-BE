@@ -32,7 +32,7 @@ public class Receipt extends BaseEntity {
     private String content;
 
     @Column(nullable = false)
-    private boolean isShared;
+    private boolean shared;
 
     @Column(nullable = false)
     private int positive;
@@ -45,10 +45,10 @@ public class Receipt extends BaseEntity {
     private User user;
 
     @Builder
-    private Receipt(LocalDate date, String content, boolean isShared, int positive, int negative, User user) {
+    private Receipt(LocalDate date, String content, boolean shared, int positive, int negative, User user) {
         this.date = date;
         this.content = content;
-        this.isShared = isShared;
+        this.shared = shared;
         this.positive = positive;
         this.negative = negative;
         this.user = user;
