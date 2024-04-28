@@ -3,6 +3,7 @@ package example.com.moneymergebe.domain.receipt.service;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptModifyReq;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptSaveReq;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptDeleteRes;
+import example.com.moneymergebe.domain.receipt.dto.response.ReceiptGetMonthRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptGetRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptLikeRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptModifyRes;
@@ -16,6 +17,9 @@ import example.com.moneymergebe.domain.user.repository.UserRepository;
 import example.com.moneymergebe.global.exception.GlobalException;
 import example.com.moneymergebe.global.validator.ReceiptValidator;
 import example.com.moneymergebe.global.validator.UserValidator;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +30,30 @@ public class ReceiptService {
     private final ReceiptRepository receiptRepository;
     private final ReceiptLikeRepository receiptLikeRepository;
     private final UserRepository userRepository;
+
+    /**
+     * 영수증 월별 조회
+     */
+    @Transactional(readOnly = true)
+    public ReceiptGetMonthRes getMonthReceipt(Long userId, int year, int month) {
+        User user = findUser(userId);
+        int totalPositive = 0;
+        int totalNegative = 0;
+
+        LocalDate startDate = LocalDate.of(year, month, 1); // 시작일
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth()); // 마지막일
+
+        List<Receipt> receiptList = receiptRepository.findAllByUserAndDateBetweenOrderByDate(user, startDate, endDate);
+        List<ReceiptGetRes> resList = new ArrayList<>();
+        for(Receipt receipt : receiptList) {
+            totalPositive += receipt.getPositive();
+            totalNegative += receipt.getNegative();
+            int likeCount = receiptLikeRepository.countByReceipt(receipt);
+            resList.add(new ReceiptGetRes(receipt, likeCount));
+        }
+
+        return new ReceiptGetMonthRes(totalPositive, totalNegative, user.getReceivedReceiptId(), resList);
+    }
 
     /**
      * 영수증 조회

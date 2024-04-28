@@ -3,6 +3,7 @@ package example.com.moneymergebe.domain.receipt.controller;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptModifyReq;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptSaveReq;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptDeleteRes;
+import example.com.moneymergebe.domain.receipt.dto.response.ReceiptGetMonthRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptGetRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptLikeRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptModifyRes;
@@ -26,6 +27,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/receipts")
 public class ReceiptController {
     private final ReceiptService receiptService;
+
+    /**
+     * 영수증 월별 조회
+     * @param userDetails 사용자 정보
+     * @param year 조회하는 연도
+     * @param month 조회하는 월
+     */
+    @GetMapping("/{year}/{month}")
+    public CommonResponse<ReceiptGetMonthRes> getMonthReceipt(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable int year, @PathVariable int month) {
+        return CommonResponse.success(receiptService.getMonthReceipt(userDetails.getUser().getUserId(), year, month));
+    }
 
     /**
      * 영수증 단일 조회
