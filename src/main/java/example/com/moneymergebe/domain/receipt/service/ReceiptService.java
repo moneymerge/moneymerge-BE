@@ -2,6 +2,7 @@ package example.com.moneymergebe.domain.receipt.service;
 
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptModifyReq;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptSaveReq;
+import example.com.moneymergebe.domain.receipt.dto.response.ReceiptDeleteRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptModifyRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptSaveRes;
 import example.com.moneymergebe.domain.receipt.entity.Receipt;
@@ -49,6 +50,22 @@ public class ReceiptService {
         receipt.update(req);
 
         return new ReceiptModifyRes();
+    }
+
+    /**
+     * 영수증 삭제
+     */
+    @Transactional
+    public ReceiptDeleteRes deleteReceipt(Long userId, Long receiptId) {
+        User user = findUser(userId);
+        Receipt receipt = findReceipt(receiptId);
+
+        ReceiptValidator.checkAuthor(user, receipt.getUser()); // 권한 검사
+
+        receiptLikeRepository.deleteAllByReceipt(receipt);
+        receiptRepository.delete(receipt);
+
+        return new ReceiptDeleteRes();
     }
 
     /**
