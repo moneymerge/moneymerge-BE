@@ -1,15 +1,20 @@
 package example.com.moneymergebe.domain.receipt.controller;
 
+import example.com.moneymergebe.domain.receipt.dto.request.ReceiptModifyReq;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptSaveReq;
+import example.com.moneymergebe.domain.receipt.dto.response.ReceiptModifyRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptSaveRes;
 import example.com.moneymergebe.domain.receipt.service.ReceiptService;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,5 +32,18 @@ public class ReceiptController {
     public CommonResponse<ReceiptSaveRes> saveReceipt(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody ReceiptSaveReq req) {
         req.setUserId(userDetails.getUser().getUserId());
         return CommonResponse.success(receiptService.saveReceipt(req));
+    }
+
+    /**
+     * 영수증 수정
+     * @param userDetails 사용자 정보
+     * @param receiptId 수정할 영수증 ID
+     * @param req 수정할 영수증 정보
+     */
+    @PutMapping("/{receiptId}")
+    public CommonResponse<ReceiptModifyRes> modifyReceipt(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long receiptId, @RequestBody ReceiptModifyReq req) {
+        req.setUserId(userDetails.getUser().getUserId());
+        req.setReceiptId(receiptId);
+        return CommonResponse.success(receiptService.modifyReceipt(req));
     }
 }

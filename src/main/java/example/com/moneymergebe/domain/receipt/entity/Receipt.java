@@ -1,6 +1,7 @@
 package example.com.moneymergebe.domain.receipt.entity;
 
 import example.com.moneymergebe.domain.common.BaseEntity;
+import example.com.moneymergebe.domain.receipt.dto.request.ReceiptModifyReq;
 import example.com.moneymergebe.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,5 +53,13 @@ public class Receipt extends BaseEntity {
         this.positive = positive;
         this.negative = negative;
         this.user = user;
+    }
+
+    public void update(ReceiptModifyReq req) {
+        this.date = req.getDate();
+        this.content = req.getContent();
+        this.shared = req.isShared();
+        this.positive = req.getPositive();
+        this.negative = req.getNegative();
     }
 }
