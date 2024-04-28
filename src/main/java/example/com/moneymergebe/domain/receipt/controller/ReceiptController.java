@@ -3,6 +3,7 @@ package example.com.moneymergebe.domain.receipt.controller;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptModifyReq;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptSaveReq;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptDeleteRes;
+import example.com.moneymergebe.domain.receipt.dto.response.ReceiptGetRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptLikeRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptModifyRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptSaveRes;
@@ -12,6 +13,7 @@ import example.com.moneymergebe.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,6 +26,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/receipts")
 public class ReceiptController {
     private final ReceiptService receiptService;
+
+    /**
+     * 영수증 단일 조회
+     * @param userDetails 사용자 정보
+     * @param receiptId 조회할 영수증 ID
+     */
+    @GetMapping("/{receiptId}")
+    public CommonResponse<ReceiptGetRes> getReceipt(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long receiptId) {
+        return CommonResponse.success(receiptService.getReceipt(userDetails.getUser().getUserId(), receiptId));
+    }
 
     /**
      * (공유받은) 영수증 좋아요

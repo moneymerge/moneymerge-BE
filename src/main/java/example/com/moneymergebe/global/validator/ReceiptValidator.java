@@ -16,7 +16,12 @@ public class ReceiptValidator {
         if(!accessor.getUserId().equals(author.getUserId())) throw new GlobalException(UNAUTHORIZED);
     }
 
-    public static void checkAuthority(User accessor, Receipt receipt) {
+    public static void checkAuthority(User accessor, Receipt receipt) { // 나의 영수증이거나 공유 받은 영수증인지 검사
+        Long receivedReceiptId = accessor.getReceivedReceiptId();
+        if(!(accessor.getUserId().equals(receipt.getUser().getUserId()) || (receivedReceiptId != null && receivedReceiptId.equals(receipt.getReceiptId())))) throw new GlobalException(UNAUTHORIZED);
+    }
+
+    public static void checkLikeAuthority(User accessor, Receipt receipt) { // 공유 받은 영수증인지 검사
         Long receivedReceiptId = accessor.getReceivedReceiptId();
         if(receivedReceiptId == null || !receivedReceiptId.equals(receipt.getReceiptId())) throw new GlobalException(UNAUTHORIZED);
     }

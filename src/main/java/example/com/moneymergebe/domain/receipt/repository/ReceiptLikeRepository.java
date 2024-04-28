@@ -10,4 +10,6 @@ public interface ReceiptLikeRepository extends JpaRepository<ReceiptLike, Long> 
     void deleteAllByReceipt(Receipt receipt);
 
     ReceiptLike findByUserAndReceipt(User user, Receipt receipt);
+
+    int countByReceipt(Receipt receipt);
 }
