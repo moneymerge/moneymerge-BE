@@ -3,6 +3,7 @@ package example.com.moneymergebe.domain.receipt.controller;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptModifyReq;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptSaveReq;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptDeleteRes;
+import example.com.moneymergebe.domain.receipt.dto.response.ReceiptLikeRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptModifyRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptSaveRes;
 import example.com.moneymergebe.domain.receipt.service.ReceiptService;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -24,6 +24,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/receipts")
 public class ReceiptController {
     private final ReceiptService receiptService;
+
+    /**
+     * (공유받은) 영수증 좋아요
+     * @param userDetails 사용자 정보
+     * @param receiptId 공유받은 영수증 ID
+     */
+    @PostMapping("/{receiptId}/likes")
+    public CommonResponse<ReceiptLikeRes> likeReceipt(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long receiptId) {
+        return CommonResponse.success(receiptService.likeReceipt(userDetails.getUser().getUserId(), receiptId));
+    }
 
     /**
      * 영수증 저장

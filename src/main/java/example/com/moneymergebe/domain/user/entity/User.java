@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -54,6 +55,9 @@ public class User extends BaseEntity {
 
     @Column(nullable = false)
     private boolean attendance;
+
+    @Setter
+    private Long receivedReceiptId = null;
 
     @OneToMany(mappedBy = "user")
     private List<BookUser> bookUserList = new ArrayList<>();
