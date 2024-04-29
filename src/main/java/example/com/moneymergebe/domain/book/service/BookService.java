@@ -10,6 +10,7 @@ import example.com.moneymergebe.domain.book.dto.request.BookUsernameReq;
 import example.com.moneymergebe.domain.book.dto.request.BookUsersReq;
 import example.com.moneymergebe.domain.book.dto.request.BookYearGoalReq;
 import example.com.moneymergebe.domain.book.dto.response.BookColorRes;
+import example.com.moneymergebe.domain.book.dto.response.BookDeleteAgreeRes;
 import example.com.moneymergebe.domain.book.dto.response.BookDeleteRes;
 import example.com.moneymergebe.domain.book.dto.response.BookGetRes;
 import example.com.moneymergebe.domain.book.dto.response.BookMonthGoalRes;
@@ -258,6 +259,16 @@ public class BookService {
     /**
      * 가계부 삭제 동의
      */
+    @Transactional
+    public BookDeleteAgreeRes deleteAgree(Long userId, Long bookId){
+        User user = findUser(userId);
+        Book book = findBook(bookId);
+        BookUser bookUser = checkBookMember(user, book);
+
+        bookUser.updateDeleteAgree();
+
+        return new BookDeleteAgreeRes(bookUser);
+    }
 
     /**
      * 가계부 삭제
@@ -267,12 +278,13 @@ public class BookService {
         User user = findUser(userId);
         Book book = findBook(bookId);
 
-        BookUser bookUser = checkBookMember(user, book);
+        checkBookMember(user, book);
 
-        // book, bookUser, bookRecord 모두 개별 삭제?
-        bookRepository.delete(book);
-        bookRecordRepository.deleteAllByBook(book); //RecordService.deleteRecord로?
+        // bookUser, bookRecord 모두 삭제 후 book 삭제해야함
         bookUserRepository.deleteAllByBook(book);
+        bookRecordRepository.deleteAllByBook(book); //RecordService.deleteRecord로?
+
+        bookRepository.delete(book);
 
         return new BookDeleteRes();
     }

@@ -11,7 +11,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+
 import lombok.Builder;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -55,5 +57,13 @@ public class BookUser extends BaseEntity {
     public void updateUserColor(String userColor){
         this.color=userColor;
     }
+    public void updateDeleteAgree(){
+        if(this.deleteAgree==false){
+            this.deleteAgree=true;
+        } else {
+            this.deleteAgree=false;
+        }
+    }
 
 }
+

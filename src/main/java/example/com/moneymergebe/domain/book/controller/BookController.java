@@ -10,6 +10,7 @@ import example.com.moneymergebe.domain.book.dto.request.BookUsernameReq;
 import example.com.moneymergebe.domain.book.dto.request.BookUsersReq;
 import example.com.moneymergebe.domain.book.dto.request.BookYearGoalReq;
 import example.com.moneymergebe.domain.book.dto.response.BookColorRes;
+import example.com.moneymergebe.domain.book.dto.response.BookDeleteAgreeRes;
 import example.com.moneymergebe.domain.book.dto.response.BookDeleteRes;
 import example.com.moneymergebe.domain.book.dto.response.BookGetRes;
 import example.com.moneymergebe.domain.book.dto.response.BookMonthGoalRes;
@@ -165,7 +166,11 @@ public class BookController {
     /**
      * 가계부 삭제 동의
      */
-    //@PatchMapping("/api/books/{bookId}/agree")
+    @PatchMapping("/api/books/{bookId}/agree")
+    public CommonResponse<BookDeleteAgreeRes> deleteAgree(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long bookId) {
+        return CommonResponse.success(bookService.deleteAgree(userDetails.getUser().getUserId(), bookId));
+    }
 
     /**
      * 가계부 삭제
@@ -175,5 +180,4 @@ public class BookController {
         @PathVariable Long bookId) {
         return CommonResponse.success(bookService.deleteBook(userDetails.getUser().getUserId(), bookId));
     }
-
 }

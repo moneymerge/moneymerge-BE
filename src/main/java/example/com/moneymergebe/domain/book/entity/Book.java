@@ -81,5 +81,4 @@ public class Book extends BaseEntity {
         this.monthGoal=monthGoal;
     }
 
-
 }
