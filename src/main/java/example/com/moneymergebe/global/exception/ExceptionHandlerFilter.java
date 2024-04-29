@@ -35,7 +35,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             response.getWriter().write(objectMapper.writeValueAsString(
                 new CommonResponse<>(resultCode)));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GlobalException(ResultCode.SYSTEM_ERROR);
         }
     }
 
