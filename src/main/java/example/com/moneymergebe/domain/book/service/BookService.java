@@ -36,13 +36,13 @@ import example.com.moneymergebe.global.exception.GlobalException;
 import example.com.moneymergebe.global.validator.BookUserValidator;
 import example.com.moneymergebe.global.validator.BookValidator;
 import example.com.moneymergebe.global.validator.UserValidator;
-import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -83,7 +83,7 @@ public class BookService {
     /**
      * 가계부 전체 조회
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public List<BookGetRes> getAllBooks(Long userId) {
         User user = findUser(userId);
         List<BookUser> bookUserList = bookUserRepository.findAllByUser(user);
@@ -97,7 +97,7 @@ public class BookService {
     /**
      * 가계부 상세 조회
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public BookGetRes getBook(Long userId, Long bookId) {
 
         User user = findUser(userId);
