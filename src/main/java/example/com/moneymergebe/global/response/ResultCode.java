@@ -21,9 +21,15 @@ public enum ResultCode {
     // 사용자 2000번대
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, 2000, "사용자를 찾을 수 없습니다."),
     DUPLICATED_USERNAME(HttpStatus.CONFLICT, 2001, "중복된 닉네임입니다."),
+    NOT_ENOUGH_POINT(HttpStatus.BAD_REQUEST, 2002, "포인트가 부족합니다."),
 
     // 가계부 3000번대
-    NOT_FOUND_BOOK(HttpStatus.NOT_FOUND, 3000, "가계부를 찾을 수 없습니다.");
+    NOT_FOUND_BOOK(HttpStatus.NOT_FOUND, 3000, "가계부를 찾을 수 없습니다."),
+
+    // 캐릭터 4000번대
+    NOT_FOUND_CHARACTER(HttpStatus.NOT_FOUND, 4000, "캐릭터를 찾을 수 없습니다."),
+    NOT_USER_CHARACTER(HttpStatus.BAD_REQUEST, 4001, "사용자가 소유하고 있는 캐릭터가 아닙니다."),
+    ALREADY_USER_CHARACTER(HttpStatus.BAD_REQUEST, 4002, "사용자가 이미 소유하고 있는 캐릭터입니다.");
 
     private final HttpStatus status;
     private final int code;

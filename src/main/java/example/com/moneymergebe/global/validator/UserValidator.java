@@ -14,6 +14,10 @@ public class UserValidator {
         if(!checkIsNull(user)) throw new GlobalException(DUPLICATED_USERNAME);
     }
 
+    public static void checkUserPoints(User user, int price) {
+        if(user.getPoints() < price) throw new GlobalException(NOT_ENOUGH_POINT);
+    }
+
     private static boolean checkIsNull(User user) {
         return user == null;
     }

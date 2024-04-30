@@ -92,4 +92,12 @@ public class User extends BaseEntity {
         this.profileUrl = profileUrl;
     }
 
+    public void updateCharacter(Long characterId) {
+        this.characterId = characterId;
+    }
+
+    public void updatePoints(int points) {
+        this.points = points;
+    }
+
 }
