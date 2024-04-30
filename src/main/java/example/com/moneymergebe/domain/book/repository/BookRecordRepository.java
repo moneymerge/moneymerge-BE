@@ -14,4 +14,5 @@ public interface BookRecordRepository extends JpaRepository<BookRecord, Long> {
     BookRecord findByBookAndRecord(Book book, Record record);
 
     void deleteAllByRecord(Record record);
+    void deleteAllByBook(Book book);
 }

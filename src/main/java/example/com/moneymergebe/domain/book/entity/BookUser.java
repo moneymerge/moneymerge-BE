@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -39,4 +40,28 @@ public class BookUser extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
+
+    @Builder
+    private BookUser(Book book, User user){
+        this.book=book;
+        this.user=user;
+        this.color="red"; //색상 랜덤 코드
+        this.deleteAgree=false;
+        this.name=user.getUsername();
+    }
+    public void updateUsername(String username){
+        this.name=username;
+    }
+    public void updateUserColor(String userColor){
+        this.color=userColor;
+    }
+    public void updateDeleteAgree(){
+        if(this.deleteAgree==false){
+            this.deleteAgree=true;
+        } else {
+            this.deleteAgree=false;
+        }
+    }
+
 }
+
