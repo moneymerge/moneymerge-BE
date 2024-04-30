@@ -8,6 +8,7 @@ import example.com.moneymergebe.domain.user.dto.response.UserAlarmResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserImageResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserNameResDto;
+import example.com.moneymergebe.domain.user.dto.response.UserPointResDto;
 import example.com.moneymergebe.domain.user.dto.response.UserProfileResDto;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
@@ -107,6 +108,15 @@ public class UserService {
         if(fileType == null || (!fileType.equals(IMAGE_JPG) && !fileType.equals(IMAGE_PNG))) {
             throw new GlobalException(ResultCode.INVALID_IMAGE_FILE);
         }
+    }
+
+    /**
+     * 사용자 포인트 조회
+     */
+    @Transactional(readOnly = true)
+    public UserPointResDto getUserPoint(Long userId) {
+        User user = findUser(userId);
+        return new UserPointResDto(user.getPoints());
     }
 
     /**
