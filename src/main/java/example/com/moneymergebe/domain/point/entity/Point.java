@@ -2,6 +2,7 @@ package example.com.moneymergebe.domain.point.entity;
 
 import example.com.moneymergebe.domain.common.BaseEntity;
 import example.com.moneymergebe.domain.user.entity.User;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,7 +24,10 @@ public class Point extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pointId;
 
+    @Column(nullable = false)
     private String detail;
+
+    @Column(nullable = false)
     private int points;
 
     @ManyToOne
