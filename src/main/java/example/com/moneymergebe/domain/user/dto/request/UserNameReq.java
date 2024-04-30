@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class UserNameReqDto {
+public class UserNameReq {
     private Long userId;
 
     @Size(min = 1, max = 10, message = "1 ~ 10 글자로 입력해주세요.")

@@ -8,13 +8,13 @@ import java.util.List;
 import lombok.Getter;
 
 @Getter
-public class UserBaseInfoResDto {
+public class UserBaseInfoRes {
     private Long userId;
     private String username;
     private String profileUrl;
     private List<BookGetRes> bookList = new ArrayList<>();
 
-    public UserBaseInfoResDto(User user, List<Book> bookList) {
+    public UserBaseInfoRes(User user, List<Book> bookList) {
         this.userId = user.getUserId();
         this.username = user.getUsername();
         this.profileUrl = user.getProfileUrl();

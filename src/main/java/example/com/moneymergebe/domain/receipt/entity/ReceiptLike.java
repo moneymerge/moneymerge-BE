@@ -1,8 +1,7 @@
-package example.com.moneymergebe.domain.category.entity;
+package example.com.moneymergebe.domain.receipt.entity;
 
-import example.com.moneymergebe.domain.book.entity.Book;
 import example.com.moneymergebe.domain.common.BaseEntity;
-import jakarta.persistence.Column;
+import example.com.moneymergebe.domain.user.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,23 +17,23 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "tb_category")
-public class Category extends BaseEntity {
-
+@Table(name = "tb_receipt_like")
+public class ReceiptLike extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long categoryId;
-
-    @Column(nullable = false)
-    private String category;
+    private Long receiptLikeId;
 
     @ManyToOne
-    @JoinColumn(name = "book_id")
-    private Book book;
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "receipt_id")
+    private Receipt receipt;
 
     @Builder
-    private Category(String category, Book book) {
-        this.category = category;
-        this.book=book;
+    private ReceiptLike(User user, Receipt receipt) {
+        this.user = user;
+        this.receipt = receipt;
     }
 }
