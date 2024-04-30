@@ -50,4 +50,35 @@ public class Book extends BaseEntity {
         this.color = color;
         this.startDate = startDate;
     }
+
+    public void updateStartDate(int startDate) {
+        this.startDate=startDate;
+    }
+    public void updateBookTitle(String bookTitle) {
+        this.title=bookTitle;
+    }
+    public void updateBookColor(String bookColor) {
+        this.color=bookColor;
+    }
+    public void updateUsername(Long userId, String username) {
+        for(BookUser bookUser : bookUserList){
+            if(bookUser.getUser().getUserId()==userId){
+                bookUser.updateUsername(username);
+            }
+        }
+    }
+    public void updateUserColor(Long userId, String userColor) {
+        for(BookUser bookUser : bookUserList){
+            if(bookUser.getUser().getUserId()==userId){
+                bookUser.updateUserColor(userColor);
+            }
+        }
+    }
+    public void updateYearGoal(Long yearGoal) {
+        this.yearGoal=yearGoal;
+    }
+    public void updateMonthGoal(Long monthGoal) {
+        this.monthGoal=monthGoal;
+    }
+
 }
