@@ -1,6 +1,5 @@
 package example.com.moneymergebe.domain.record.entity;
 
-import example.com.moneymergebe.domain.category.entity.Category;
 import example.com.moneymergebe.domain.common.BaseEntity;
 import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.user.entity.User;
@@ -55,9 +54,9 @@ public class Record extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+//    @ManyToOne
+//    @JoinColumn(name = "category_id")
+//    private Category category;
 
 
     @Builder
