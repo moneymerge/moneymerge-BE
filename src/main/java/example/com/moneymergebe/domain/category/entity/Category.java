@@ -1,6 +1,7 @@
 package example.com.moneymergebe.domain.category.entity;
 
 import example.com.moneymergebe.domain.book.entity.Book;
+import example.com.moneymergebe.domain.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "tb_category")
-public class Category {
+public class Category extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

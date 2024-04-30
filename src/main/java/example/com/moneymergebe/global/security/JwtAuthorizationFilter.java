@@ -27,7 +27,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 @Slf4j(topic = "JWT validation & authorization")
 @RequiredArgsConstructor
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;

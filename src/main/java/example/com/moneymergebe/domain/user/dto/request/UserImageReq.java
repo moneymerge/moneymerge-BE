@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @AllArgsConstructor
-public class UserImageReqDto {
+public class UserImageReq {
     private Long userId;
     private MultipartFile image;
 }

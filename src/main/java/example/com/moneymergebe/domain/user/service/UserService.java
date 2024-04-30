@@ -4,15 +4,15 @@ import example.com.moneymergebe.domain.book.entity.Book;
 import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.character.entity.Character;
 import example.com.moneymergebe.domain.character.repository.CharacterRepository;
-import example.com.moneymergebe.domain.user.dto.request.UserImageReqDto;
-import example.com.moneymergebe.domain.user.dto.request.UserNameReqDto;
-import example.com.moneymergebe.domain.user.dto.response.UserAlarmResDto;
-import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoResDto;
-import example.com.moneymergebe.domain.user.dto.response.UserCharacterResDto;
-import example.com.moneymergebe.domain.user.dto.response.UserImageResDto;
-import example.com.moneymergebe.domain.user.dto.response.UserNameResDto;
-import example.com.moneymergebe.domain.user.dto.response.UserPointResDto;
-import example.com.moneymergebe.domain.user.dto.response.UserProfileResDto;
+import example.com.moneymergebe.domain.user.dto.request.UserImageReq;
+import example.com.moneymergebe.domain.user.dto.request.UserNameReq;
+import example.com.moneymergebe.domain.user.dto.response.UserAlarmRes;
+import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoRes;
+import example.com.moneymergebe.domain.user.dto.response.UserCharacterRes;
+import example.com.moneymergebe.domain.user.dto.response.UserImageRes;
+import example.com.moneymergebe.domain.user.dto.response.UserNameRes;
+import example.com.moneymergebe.domain.user.dto.response.UserPointRes;
+import example.com.moneymergebe.domain.user.dto.response.UserProfileRes;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
 import example.com.moneymergebe.global.exception.GlobalException;
@@ -46,50 +46,50 @@ public class UserService {
      * 기본 정보 조회
      */
     @Transactional(readOnly = true)
-    public UserBaseInfoResDto getBaseInfo(Long userId) {
+    public UserBaseInfoRes getBaseInfo(Long userId) {
         User user = findUser(userId);
         List<Book> bookList = new ArrayList<>();
         for(BookUser bookUser : user.getBookUserList()) {
             bookList.add(bookUser.getBook());
         }
-        return new UserBaseInfoResDto(user, bookList);
+        return new UserBaseInfoRes(user, bookList);
     }
 
     /**
      * 프로필 조회
      */
     @Transactional(readOnly = true)
-    public UserProfileResDto getProfile(Long userId) {
+    public UserProfileRes getProfile(Long userId) {
         User user = findUser(userId);
-        return new UserProfileResDto(user);
+        return new UserProfileRes(user);
     }
 
     /**
      * 닉네임 수정
      */
     @Transactional
-    public UserNameResDto updateUsername(UserNameReqDto req) {
+    public UserNameRes updateUsername(UserNameReq req) {
         User user = findUser(req.getUserId());
         verifyUsername(req.getUsername()); // 닉네임 중복 확인
         user.updateUsername(req.getUsername()); // 닉네임 수정
-        return new UserNameResDto();
+        return new UserNameRes();
     }
 
     /**
      * 알람 설정(토글)
      */
     @Transactional
-    public UserAlarmResDto clickAlarm(Long userId) {
+    public UserAlarmRes clickAlarm(Long userId) {
         User user = findUser(userId);
         user.changeAlarm();
-        return new UserAlarmResDto();
+        return new UserAlarmRes();
     }
 
     /**
      * 프로필 사진 수정
      */
     @Transactional
-    public UserImageResDto updateProfileUrl(UserImageReqDto req) {
+    public UserImageRes updateProfileUrl(UserImageReq req) {
         User user = findUser(req.getUserId());
 
         String profileUrl = user.getProfileUrl(); // 기존 프로필 이미지
@@ -104,7 +104,7 @@ public class UserService {
 
         user.updateProfile(profileUrl); // 프로필 업데이트
 
-        return new UserImageResDto();
+        return new UserImageRes();
     }
 
     private void checkImage(MultipartFile multipartFile) {
@@ -119,19 +119,19 @@ public class UserService {
      * 사용자 포인트 조회
      */
     @Transactional(readOnly = true)
-    public UserPointResDto getUserPoint(Long userId) {
+    public UserPointRes getUserPoint(Long userId) {
         User user = findUser(userId);
-        return new UserPointResDto(user.getPoints());
+        return new UserPointRes(user.getPoints());
     }
 
     /**
      * 사용자 캐릭터 조회
      */
     @Transactional(readOnly = true)
-    public UserCharacterResDto getUserCharacter(Long userId) {
+    public UserCharacterRes getUserCharacter(Long userId) {
         User user = findUser(userId);
         Character character = findCharacter(user.getCharacterId());
-        return new UserCharacterResDto(character);
+        return new UserCharacterRes(character);
     }
 
     /**

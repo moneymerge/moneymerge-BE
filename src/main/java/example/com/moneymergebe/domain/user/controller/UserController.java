@@ -1,16 +1,15 @@
 package example.com.moneymergebe.domain.user.controller;
 
-import example.com.moneymergebe.domain.user.dto.request.UserImageReqDto;
-import example.com.moneymergebe.domain.user.dto.request.UserNameReqDto;
-import example.com.moneymergebe.domain.user.dto.response.UserAlarmResDto;
-import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoResDto;
-import example.com.moneymergebe.domain.user.dto.response.UserCharacterResDto;
-import example.com.moneymergebe.domain.user.dto.response.UserImageResDto;
-import example.com.moneymergebe.domain.user.dto.response.UserNameResDto;
-import example.com.moneymergebe.domain.user.dto.response.UserPointResDto;
-import example.com.moneymergebe.domain.user.dto.response.UserProfileResDto;
+import example.com.moneymergebe.domain.user.dto.request.UserImageReq;
+import example.com.moneymergebe.domain.user.dto.request.UserNameReq;
+import example.com.moneymergebe.domain.user.dto.response.UserAlarmRes;
+import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoRes;
+import example.com.moneymergebe.domain.user.dto.response.UserCharacterRes;
+import example.com.moneymergebe.domain.user.dto.response.UserImageRes;
+import example.com.moneymergebe.domain.user.dto.response.UserNameRes;
+import example.com.moneymergebe.domain.user.dto.response.UserPointRes;
+import example.com.moneymergebe.domain.user.dto.response.UserProfileRes;
 import example.com.moneymergebe.domain.user.service.UserService;
-import example.com.moneymergebe.global.jwt.JwtUtil;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
@@ -46,7 +44,7 @@ public class UserController {
      */
     @ResponseBody
     @GetMapping()
-    public CommonResponse<UserBaseInfoResDto> getBaseInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public CommonResponse<UserBaseInfoRes> getBaseInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return CommonResponse.success(userService.getBaseInfo(userDetails.getUser().getUserId()));
     }
 
@@ -57,7 +55,7 @@ public class UserController {
      */
     @ResponseBody
     @GetMapping("/profile")
-    public CommonResponse<UserProfileResDto> getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public CommonResponse<UserProfileRes> getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return CommonResponse.success(userService.getProfile(userDetails.getUser().getUserId()));
     }
 
@@ -69,9 +67,9 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/username")
-    public CommonResponse<UserNameResDto> updateUsername(
+    public CommonResponse<UserNameRes> updateUsername(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
-        @RequestBody @Valid UserNameReqDto req) {
+        @RequestBody @Valid UserNameReq req) {
         req.setUserId(userDetails.getUser().getUserId());
         return CommonResponse.success(userService.updateUsername(req));
     }
@@ -83,7 +81,7 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/alarm")
-    public CommonResponse<UserAlarmResDto> clickAlarm(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public CommonResponse<UserAlarmRes> clickAlarm(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return CommonResponse.success(userService.clickAlarm(userDetails.getUser().getUserId()));
     }
 
@@ -95,10 +93,10 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/profile-image")
-    public CommonResponse<UserImageResDto> updateProfileImage(
+    public CommonResponse<UserImageRes> updateProfileImage(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @RequestPart MultipartFile multipartFile) {
-        UserImageReqDto req = new UserImageReqDto(userDetails.getUser().getUserId(), multipartFile);
+        UserImageReq req = new UserImageReq(userDetails.getUser().getUserId(), multipartFile);
         return CommonResponse.success(userService.updateProfileUrl(req));
     }
 
@@ -109,7 +107,7 @@ public class UserController {
      */
     @ResponseBody
     @GetMapping("/point")
-    public CommonResponse<UserPointResDto> getUserPoint(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public CommonResponse<UserPointRes> getUserPoint(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return CommonResponse.success(userService.getUserPoint(userDetails.getUser().getUserId()));
     }
 
@@ -120,7 +118,7 @@ public class UserController {
      */
     @ResponseBody
     @GetMapping("/character")
-    public CommonResponse<UserCharacterResDto> getUserCharacter(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public CommonResponse<UserCharacterRes> getUserCharacter(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return CommonResponse.success(userService.getUserCharacter(userDetails.getUser().getUserId()));
     }
 }
