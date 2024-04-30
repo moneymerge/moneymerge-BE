@@ -18,6 +18,10 @@ public class UserValidator {
         if(user.getPoints() < price) throw new GlobalException(NOT_ENOUGH_POINT);
     }
 
+    public static void checkUser(User accessor, User author) {
+        if(!accessor.getUserId().equals(author.getUserId())) throw new GlobalException(UNAUTHORIZED);
+    }
+
     private static boolean checkIsNull(User user) {
         return user == null;
     }

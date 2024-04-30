@@ -25,11 +25,20 @@ public enum ResultCode {
 
     // 가계부 3000번대
     NOT_FOUND_BOOK(HttpStatus.NOT_FOUND, 3000, "가계부를 찾을 수 없습니다."),
+    NOT_BOOK_MEMBER(HttpStatus.BAD_REQUEST, 3001, "입력한 가계부의 멤버가 아닙니다."),
 
     // 캐릭터 4000번대
     NOT_FOUND_CHARACTER(HttpStatus.NOT_FOUND, 4000, "캐릭터를 찾을 수 없습니다."),
     NOT_USER_CHARACTER(HttpStatus.BAD_REQUEST, 4001, "사용자가 소유하고 있는 캐릭터가 아닙니다."),
-    ALREADY_USER_CHARACTER(HttpStatus.BAD_REQUEST, 4002, "사용자가 이미 소유하고 있는 캐릭터입니다.");
+    ALREADY_USER_CHARACTER(HttpStatus.BAD_REQUEST, 4002, "사용자가 이미 소유하고 있는 캐릭터입니다."),
+
+    // 레코드 5000번대
+    NOT_FOUND_RECORD(HttpStatus.NOT_FOUND, 5000, "레코드를 찾을 수 없습니다."),
+    NOT_BOOK_RECORD(HttpStatus.BAD_REQUEST, 5001, "가계부의 레코드가 아닙니다."),
+
+    // 댓글 6000번대
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, 6000, "댓글을 찾을 수 없습니다."),
+    UNMATCHED_RECORD_COMMENT(HttpStatus.BAD_REQUEST, 6001, "해당 레코드의 댓글이 아닙니다.");
 
     private final HttpStatus status;
     private final int code;
