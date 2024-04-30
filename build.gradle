@@ -50,6 +50,9 @@ dependencies {
     // mysql
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    // aws
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.623'
+
     // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'

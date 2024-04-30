@@ -66,6 +66,11 @@ spring:
         mode: always
         encoding: UTF-8
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 logging:
   level:
     org.hibernate.SQL: debug
@@ -73,3 +78,17 @@ logging:
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
+
+cloud:
+  aws:
+    s3:
+      bucket: ${BUCKET_NAME}
+    credentials:
+      access-key: ${BUCKET_ACCESS_KEY}
+      secret-key: ${BUCKET_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+
+default:
+  image:
+    url: s3://moneymerge/profile/default_profile_image.jpg

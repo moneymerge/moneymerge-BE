@@ -93,19 +93,24 @@ public class NaverService {
                 User.builder()
                     .username(username)
                     .email(email)
+                    .profileUrl(profileUrl)
                     .role(UserRole.USER)
                     .social(UserSocialEnum.NAVER)
-                    .profileUrl(profileUrl)
-                    .points(0)
                     .characterId(0)
+                    .points(0)
+                    .alarm(false)
+                    .attendance(false)
                     .build();
             user = userRepository.save(newUser);
         }
+
+        // TODO: attendance가 false라면 출석 포인트 적립 후 true로 변경
+
         // 반환할 토큰 생성
         HashMap<String, String> returnTokens = new HashMap<>();
         String accessToken =
-            jwtUtil.createAccessToken(String.valueOf(user.getId()), String.valueOf(user.getRole()));
-        String refreshToken = jwtUtil.createRefreshToken(String.valueOf(user.getId()), String.valueOf(user.getRole()));
+            jwtUtil.createAccessToken(String.valueOf(user.getUserId()), String.valueOf(user.getRole()));
+        String refreshToken = jwtUtil.createRefreshToken(String.valueOf(user.getUserId()), String.valueOf(user.getRole()));
         returnTokens.put(ACCESS_TOKEN_HEADER, accessToken);
         returnTokens.put(REFRESH_TOKEN_HEADER, refreshToken);
 
