@@ -104,4 +104,7 @@ public class User extends BaseEntity {
         this.points = points;
     }
 
+    public void updateAttendance() {
+        this.attendance = false;
+    }
 }
