@@ -1,9 +1,10 @@
 package example.com.moneymergebe.global.security;
 
 import static example.com.moneymergebe.global.jwt.JwtUtil.ACCESS_TOKEN_HEADER;
+import static example.com.moneymergebe.global.response.ResultCode.*;
 
 import example.com.moneymergebe.global.exception.GlobalException;
-import example.com.moneymergebe.global.response.ResultCode;
+import example.com.moneymergebe.global.redis.RedisUtil;
 import example.com.moneymergebe.global.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,6 +31,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final RedisUtil redisUtil;
     private final UserDetailsService userDetailsService;
 
     @Override
@@ -49,7 +51,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         // access token 검증
         switch(jwtUtil.validateToken(accessToken)) {
             case VALID -> setAuthentication(jwtUtil.getUserIdFromToken(accessToken));
-            case INVALID -> throw new GlobalException(ResultCode.UNAUTHORIZED);
+            case INVALID -> throw new GlobalException(UNAUTHORIZED);
             case EXPIRED -> authenticateRefreshToken(request, response);
         }
 
@@ -74,12 +76,18 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String refreshToken = jwtUtil.getRefreshTokenFromCookie(request);
         log.info("Refresh Token: {}", refreshToken);
 
-        if(refreshToken == null) throw new GlobalException(ResultCode.REFRESH_TOKEN_REQUIRED); // refresh token 요청
+        // 로그아웃된 refresh token 인지 확인
+        if(redisUtil.hasKey(refreshToken)) {
+            log.info("로그아웃 된 Refresh Token");
+            throw new GlobalException(LOG_IN_REQUIRED);
+        }
+
+        if(refreshToken == null) throw new GlobalException(REFRESH_TOKEN_REQUIRED); // refresh token 요청
 
         switch(jwtUtil.validateToken(refreshToken)) {
             case VALID -> renewAccessToken(response, refreshToken);
-            case INVALID ->  throw new GlobalException(ResultCode.UNAUTHORIZED); // Unauthorized
-            case EXPIRED -> throw new GlobalException(ResultCode.LOG_IN_REQUIRED); // 재로그인 요청
+            case INVALID ->  throw new GlobalException(UNAUTHORIZED); // Unauthorized
+            case EXPIRED -> throw new GlobalException(LOG_IN_REQUIRED); // 재로그인 요청
         }
     }
 
