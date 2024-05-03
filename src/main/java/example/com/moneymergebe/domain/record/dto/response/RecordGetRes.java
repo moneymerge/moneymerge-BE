@@ -16,7 +16,8 @@ public class RecordGetRes {
     private RecordType recordType;
     private int amount;
     private AssetType assetType;
-    // TODO: 카테고리 추가
+    private Long categoryId;
+    private String categoryName;
     private String content;
     private String memo;
     @Nullable
@@ -34,6 +35,8 @@ public class RecordGetRes {
         this.recordType = record.getRecordType();
         this.amount = record.getAmount();
         this.assetType = record.getAssetType();
+        this.categoryId = record.getCategory().getCategoryId();
+        this.categoryName = record.getCategory().getCategory();
         this.content = record.getContent();
         this.memo = record.getMemo();
         this.image = record.getImage();

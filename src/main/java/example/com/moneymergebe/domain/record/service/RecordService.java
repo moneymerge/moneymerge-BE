@@ -7,6 +7,8 @@ import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.book.repository.BookRecordRepository;
 import example.com.moneymergebe.domain.book.repository.BookRepository;
 import example.com.moneymergebe.domain.book.repository.BookUserRepository;
+import example.com.moneymergebe.domain.category.entity.Category;
+import example.com.moneymergebe.domain.category.repository.CategoryRepository;
 import example.com.moneymergebe.domain.record.dto.request.RecordCommentModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordCommentSaveReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
@@ -36,6 +38,7 @@ import example.com.moneymergebe.global.exception.GlobalException;
 import example.com.moneymergebe.global.validator.BookRecordValidator;
 import example.com.moneymergebe.global.validator.BookUserValidator;
 import example.com.moneymergebe.global.validator.BookValidator;
+import example.com.moneymergebe.global.validator.CategoryValidator;
 import example.com.moneymergebe.global.validator.RecordCommentValidator;
 import example.com.moneymergebe.global.validator.RecordValidator;
 import example.com.moneymergebe.global.validator.UserValidator;
@@ -57,6 +60,7 @@ public class RecordService {
     private final BookRecordRepository bookRecordRepository;
     private final RecordCommentRepository recordCommentRepository;
     private final RecordReactionRepository recordReactionRepository;
+    private final CategoryRepository categoryRepository;
 
     /**
      * 레코드 생성
@@ -64,8 +68,9 @@ public class RecordService {
     @Transactional
     public RecordSaveRes saveRecord(RecordSaveReq req) {
         User user = findUser(req.getUserId());
+        Category category = findCategory(req.getCategoryId());
         Record record = recordRepository.save(Record.builder().date(req.getDate()).recordType(req.getRecordType()).amount(req.getAmount()).assetType(req.getAssetType())
-            .content(req.getContent()).memo(req.getMemo()).image(req.getImage()).user(user).build());
+            .content(req.getContent()).memo(req.getMemo()).image(req.getImage()).user(user).category(category).build());
 
         for(Long bookId : req.getBookList()) {
             Book book = findBook(bookId);
@@ -149,7 +154,8 @@ public class RecordService {
         UserValidator.checkUser(user, record.getUser()); // 작성자와 수정자가 동일한지 검사
 
         bookRecordRepository.deleteAllByRecord(record); // 레코드의 기존 가계부 삭제
-        record.update(req); // 레코드 수정
+        Category category = findCategory(req.getCategoryId());
+        record.update(req, category); // 레코드 수정
 
         for(Long bookId : req.getBookList()) { // 레코드와 가계부 연관관계 설정
             Book chosenBook = findBook(bookId);
@@ -338,6 +344,15 @@ public class RecordService {
         Record record = recordRepository.findByRecordId(recordId);
         RecordValidator.validate(record);
         return record;
+    }
+
+    /**
+     * @throws GlobalException categoryId 해당하는 카테고리가 존재하지 않는 경우 예외 발생
+     */
+    private Category findCategory(Long categoryId) {
+        Category category = categoryRepository.findByCategoryId(categoryId);
+        CategoryValidator.validate(category);
+        return category;
     }
 
     /**

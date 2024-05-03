@@ -164,7 +164,7 @@ public class BookService {
 
         for(Long userId : req.getUserList()){
             User findUser = findUser(userId);
-            bookUserRepository.save(BookUser.builder().book(book).user(user).build());
+            bookUserRepository.save(BookUser.builder().book(book).user(findUser).build());
         }
 
         return new BookUsersRes();

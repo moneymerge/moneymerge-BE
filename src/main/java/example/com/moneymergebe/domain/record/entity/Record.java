@@ -66,7 +66,7 @@ public class Record extends BaseEntity {
 
     @Builder
     private Record(LocalDate date, RecordType recordType, int amount, AssetType assetType,
-        String content, String memo, String image, User user) {
+        String content, String memo, String image, User user, Category category) {
         this.date = date;
         this.recordType = recordType;
         this.amount = amount;
@@ -75,9 +75,10 @@ public class Record extends BaseEntity {
         this.memo = memo;
         this.image = image;
         this.user = user;
+        this.category = category;
     }
 
-    public void update(RecordModifyReq req) {
+    public void update(RecordModifyReq req, Category category) {
         this.date = req.getDate();
         this.recordType = req.getRecordType();
         this.amount = req.getAmount();
@@ -85,5 +86,6 @@ public class Record extends BaseEntity {
         this.content = req.getContent();
         this.memo = req.getMemo();
         this.image = req.getImage();
+        this.category = category;
     }
 }
