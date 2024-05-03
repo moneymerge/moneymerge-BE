@@ -7,6 +7,7 @@ import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoRes;
 import example.com.moneymergebe.domain.user.dto.response.UserCharacterRes;
 import example.com.moneymergebe.domain.user.dto.response.UserDeleteRes;
 import example.com.moneymergebe.domain.user.dto.response.UserImageRes;
+import example.com.moneymergebe.domain.user.dto.response.UserInfoRes;
 import example.com.moneymergebe.domain.user.dto.response.UserLogoutRes;
 import example.com.moneymergebe.domain.user.dto.response.UserNameRes;
 import example.com.moneymergebe.domain.user.dto.response.UserPointRes;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,6 +61,17 @@ public class UserController {
     @GetMapping()
     public CommonResponse<UserBaseInfoRes> getBaseInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return CommonResponse.success(userService.getBaseInfo(userDetails.getUser().getUserId()));
+    }
+
+    /**
+     * 게시판 프로필 조회
+     * @param userId 조회할 사용자의 ID
+     * @return 사용자 정보(닉네임, 프로필사진, 캐릭터)
+     */
+    @ResponseBody
+    @GetMapping("/{userId}")
+    public CommonResponse<UserInfoRes> getUserInfo(@PathVariable Long userId) {
+        return CommonResponse.success(userService.getUserInfo(userId));
     }
 
     /**
