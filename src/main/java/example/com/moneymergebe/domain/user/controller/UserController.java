@@ -5,6 +5,7 @@ import example.com.moneymergebe.domain.user.dto.request.UserNameReq;
 import example.com.moneymergebe.domain.user.dto.response.UserAlarmRes;
 import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoRes;
 import example.com.moneymergebe.domain.user.dto.response.UserCharacterRes;
+import example.com.moneymergebe.domain.user.dto.response.UserDeleteRes;
 import example.com.moneymergebe.domain.user.dto.response.UserImageRes;
 import example.com.moneymergebe.domain.user.dto.response.UserLogoutRes;
 import example.com.moneymergebe.domain.user.dto.response.UserNameRes;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -150,6 +152,16 @@ public class UserController {
         deleteCookie(response, JwtUtil.REFRESH_TOKEN_HEADER);
 
         return CommonResponse.success(new UserLogoutRes());
+    }
+
+    /**
+     * 회원탈퇴
+     * @param userDetails 사용자 정보
+     */
+    @ResponseBody
+    @DeleteMapping
+    public CommonResponse<UserDeleteRes> deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return CommonResponse.success(userService.deleteUser(userDetails.getUser().getUserId()));
     }
 
     // 쿠키 삭제(임시)
