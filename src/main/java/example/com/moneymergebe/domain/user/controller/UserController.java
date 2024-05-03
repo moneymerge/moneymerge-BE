@@ -6,12 +6,18 @@ import example.com.moneymergebe.domain.user.dto.response.UserAlarmRes;
 import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoRes;
 import example.com.moneymergebe.domain.user.dto.response.UserCharacterRes;
 import example.com.moneymergebe.domain.user.dto.response.UserImageRes;
+import example.com.moneymergebe.domain.user.dto.response.UserLogoutRes;
 import example.com.moneymergebe.domain.user.dto.response.UserNameRes;
 import example.com.moneymergebe.domain.user.dto.response.UserPointRes;
 import example.com.moneymergebe.domain.user.dto.response.UserProfileRes;
 import example.com.moneymergebe.domain.user.service.UserService;
+import example.com.moneymergebe.global.jwt.JwtUtil;
+import example.com.moneymergebe.global.redis.RedisUtil;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +25,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -31,6 +38,10 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
+    private final JwtUtil jwtUtil;
+    private final RedisUtil redisUtil;
+
+    private static final String LOGOUT_VALUE = "logout";
 
     @GetMapping("/login-page")
     public String loginPage() {
@@ -120,5 +131,32 @@ public class UserController {
     @GetMapping("/character")
     public CommonResponse<UserCharacterRes> getUserCharacter(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return CommonResponse.success(userService.getUserCharacter(userDetails.getUser().getUserId()));
+    }
+
+    /**
+     * 로그아웃
+     */
+    @ResponseBody
+    @PostMapping("/logout")
+    public CommonResponse<UserLogoutRes> logout(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = jwtUtil.getRefreshTokenFromCookie(request);
+        log.info("refreshToken: {}", refreshToken);
+
+        // 블랙리스트 처리: Redis에 저장
+        redisUtil.set(refreshToken, LOGOUT_VALUE, jwtUtil.getExpiration(refreshToken));
+
+        // TODO: 쿠키 삭제(FE)
+        deleteCookie(response, JwtUtil.ACCESS_TOKEN_HEADER);
+        deleteCookie(response, JwtUtil.REFRESH_TOKEN_HEADER);
+
+        return CommonResponse.success(new UserLogoutRes());
+    }
+
+    // 쿠키 삭제(임시)
+    private void deleteCookie(HttpServletResponse response, String header) {
+        Cookie cookie = new Cookie(header, null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
 }
