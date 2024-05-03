@@ -1,5 +1,7 @@
 package example.com.moneymergebe.domain.record.entity;
 
+import example.com.moneymergebe.domain.book.entity.Book;
+import example.com.moneymergebe.domain.category.entity.Category;
 import example.com.moneymergebe.domain.common.BaseEntity;
 import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.user.entity.User;
@@ -18,6 +20,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -52,11 +56,12 @@ public class Record extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-//    @ManyToOne
-//    @JoinColumn(name = "category_id")
-//    private Category category;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
 
     @Builder
