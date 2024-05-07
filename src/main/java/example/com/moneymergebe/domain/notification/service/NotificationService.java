@@ -1,7 +1,11 @@
 package example.com.moneymergebe.domain.notification.service;
 
+import example.com.moneymergebe.domain.notification.dto.request.NotificationReq;
+import example.com.moneymergebe.domain.notification.dto.response.NotificationRes;
+import example.com.moneymergebe.domain.notification.entity.Notification;
 import example.com.moneymergebe.domain.notification.repository.EmitterRepository;
 import example.com.moneymergebe.domain.notification.repository.EmitterRepositoryImpl;
+import example.com.moneymergebe.domain.notification.repository.NotificationRepository;
 import java.io.IOException;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +18,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RequiredArgsConstructor
 public class NotificationService {
     private final EmitterRepository emitterRepository = new EmitterRepositoryImpl();
+    private final NotificationRepository notificationRepository;
     private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60; // 1시간
     private static final String SUBSCRIBE_MESSAGE = "EventStream Created.";
     private static final String SSE_EVENT_NAME = "sse";
@@ -43,14 +48,17 @@ public class NotificationService {
     /**
      * 알림 생성
      * @param userId 알림을 받을 사용자
-     * @param event 알림 내용
+     * @param req 알림 종류
      */
-    public void notify(Long userId, Object event) {
+    public void notify(Long userId, NotificationReq req) {
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllEmitterStartWithByUserId(String.valueOf(userId));
+
         sseEmitters.forEach(
             (key, emitter) -> {
-                emitterRepository.saveEventCache(key, event);
-                sendToClient(key, event);
+                Notification notification = notificationRepository.save(new Notification(req));
+                NotificationRes res = new NotificationRes(notification);
+                emitterRepository.saveEventCache(key, res);
+                sendToClient(key, res);
             }
         );
     }

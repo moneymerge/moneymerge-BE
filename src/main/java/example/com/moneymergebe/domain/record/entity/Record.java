@@ -1,6 +1,5 @@
 package example.com.moneymergebe.domain.record.entity;
 
-import example.com.moneymergebe.domain.book.entity.Book;
 import example.com.moneymergebe.domain.category.entity.Category;
 import example.com.moneymergebe.domain.common.BaseEntity;
 import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;

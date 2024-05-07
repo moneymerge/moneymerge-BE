@@ -7,6 +7,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 public class EmitterRepositoryImpl implements EmitterRepository{
 
+    // TODO: 서버 확장 시 Redis 등을 이용해서 저장해야 함
+
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
     private final Map<String, Object> eventCache = new ConcurrentHashMap<>();
 
