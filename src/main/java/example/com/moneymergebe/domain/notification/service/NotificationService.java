@@ -40,6 +40,21 @@ public class NotificationService {
         return sseEmitter;
     }
 
+    /**
+     * 알림 생성
+     * @param userId 알림을 받을 사용자
+     * @param event 알림 내용
+     */
+    public void notify(Long userId, Object event) {
+        Map<String, SseEmitter> sseEmitters = emitterRepository.findAllEmitterStartWithByUserId(String.valueOf(userId));
+        sseEmitters.forEach(
+            (key, emitter) -> {
+                emitterRepository.saveEventCache(key, event);
+                sendToClient(key, event);
+            }
+        );
+    }
+
     private SseEmitter createEmitter(String emitterId) {
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
         emitterRepository.save(emitterId, emitter);
