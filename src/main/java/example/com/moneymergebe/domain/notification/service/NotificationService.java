@@ -3,6 +3,7 @@ package example.com.moneymergebe.domain.notification.service;
 import example.com.moneymergebe.domain.notification.repository.EmitterRepository;
 import example.com.moneymergebe.domain.notification.repository.EmitterRepositoryImpl;
 import java.io.IOException;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,25 @@ public class NotificationService {
     private static final String SUBSCRIBE_MESSAGE = "EventStream Created.";
     private static final String SSE_EVENT_NAME = "sse";
 
-    public SseEmitter subscribe(Long userId) {
+    /**
+     * SSE 연결
+     * @param userId 사용자 ID
+     * @param lastEventId 클라이언트가 마지막으로 수신한 데이터의 ID
+     * @return 연결한 후 더미데이터, 유실된 데이터가 있으면 재전송
+     */
+    public SseEmitter subscribe(Long userId, String lastEventId) {
         String emitterId = userId + "_" + System.currentTimeMillis();
         log.info("emitterId = {}", emitterId);
         SseEmitter sseEmitter = createEmitter(emitterId);
         sendToClient(emitterId, SUBSCRIBE_MESSAGE);
+
+        if(!lastEventId.isEmpty()) {
+            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithByUserId(String.valueOf(userId));
+            events.entrySet().stream()
+                .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
+                .forEach(entry -> sendToClient(entry.getKey(), entry.getValue()));
+        }
+
         return sseEmitter;
     }
 
@@ -37,7 +52,7 @@ public class NotificationService {
         return emitter;
     }
 
-    private void sendToClient(String emitterId, String data) {
+    private void sendToClient(String emitterId, Object data) {
         SseEmitter sseEmitter = emitterRepository.findById(emitterId);
         if(sseEmitter != null) {
             try {
