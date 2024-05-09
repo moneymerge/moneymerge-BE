@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 
 @Getter
-public class NotificationRes {
+public class GetNotificationRes {
     private Long notificationId;
     @Nullable
     private String content;
@@ -16,7 +16,7 @@ public class NotificationRes {
     private NotificationType type;
     private String message;
 
-    public NotificationRes(Notification notification) {
+    public GetNotificationRes(Notification notification) {
         this.notificationId = notification.getNotificationId();
         this.content = notification.getContent();
         this.isRead = notification.isRead();

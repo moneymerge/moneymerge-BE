@@ -4,6 +4,8 @@ import example.com.moneymergebe.domain.book.entity.Book;
 import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.character.entity.Character;
 import example.com.moneymergebe.domain.character.repository.CharacterRepository;
+import example.com.moneymergebe.domain.notification.entity.Notification;
+import example.com.moneymergebe.domain.notification.repository.NotificationRepository;
 import example.com.moneymergebe.domain.user.dto.request.UserImageReq;
 import example.com.moneymergebe.domain.user.dto.request.UserNameReq;
 import example.com.moneymergebe.domain.user.dto.response.UserAlarmRes;
@@ -36,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService {
     private final UserRepository userRepository;
     private final CharacterRepository characterRepository;
+    private final NotificationRepository notificationRepository;
     private final S3Util s3Util;
 
     @Value("${default.image.url}")
@@ -54,7 +57,8 @@ public class UserService {
         for(BookUser bookUser : user.getBookUserList()) {
             bookList.add(bookUser.getBook());
         }
-        return new UserBaseInfoRes(user, bookList);
+        int count = notificationRepository.countAllByUserAndIsReadIsFalse(user);
+        return new UserBaseInfoRes(user, count > 0, bookList);
     }
 
     /**
