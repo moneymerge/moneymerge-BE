@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:777595834234:task-definition/run_container:1",
+    "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:777595834234:task-definition/run_container_2:1",
     "containerDefinitions": [
         {
             "name": "moneymerge",
@@ -16,14 +16,30 @@
             ],
             "essential": true,
             "environment": [],
-            "environmentFiles": [],
+            "environmentFiles": [
+                {
+                    "value": "arn:aws:s3:::moneymerge/moneymerge.env",
+                    "type": "s3"
+                }
+            ],
             "mountPoints": [],
             "volumesFrom": [],
             "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/run_container_2",
+                    "awslogs-region": "ap-northeast-2",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
             "systemControls": []
         }
     ],
-    "family": "run_container",
+    "family": "run_container_2",
+    "taskRoleArn": "arn:aws:iam::777595834234:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::777595834234:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
     "revision": 1,
@@ -31,7 +47,22 @@
     "status": "ACTIVE",
     "requiresAttributes": [
         {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
             "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "ecs.capability.env-files.s3"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
         },
         {
             "name": "ecs.capability.execution-role-ecr-pull"
@@ -41,6 +72,9 @@
         },
         {
             "name": "ecs.capability.task-eni"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
         }
     ],
     "placementConstraints": [],
@@ -57,7 +91,7 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-05-10T05:04:48.773Z",
+    "registeredAt": "2024-05-10T06:32:09.957Z",
     "registeredBy": "arn:aws:iam::777595834234:root",
     "tags": []
 }
