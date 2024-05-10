@@ -9,7 +9,7 @@ env:
   ECR_REPOSITORY: moneymerge
   ECS_SERVICE: test
   ECS_CLUSTER: DevCluster
-  ECS_TASK_DEFINITION: run_container-revision1.json
+  ECS_TASK_DEFINITION: run_container_2-revision1.json
 
   CONTAINER_NAME: moneymerge 
 
