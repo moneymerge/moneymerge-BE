@@ -1,26 +1,7 @@
 package example.com.moneymergebe.domain.book.service;
 
-import example.com.moneymergebe.domain.book.dto.request.BookColorReq;
-import example.com.moneymergebe.domain.book.dto.request.BookMonthGoalReq;
-import example.com.moneymergebe.domain.book.dto.request.BookSaveReq;
-import example.com.moneymergebe.domain.book.dto.request.BookStartDateReq;
-import example.com.moneymergebe.domain.book.dto.request.BookTitleReq;
-import example.com.moneymergebe.domain.book.dto.request.BookUserColorReq;
-import example.com.moneymergebe.domain.book.dto.request.BookUsernameReq;
-import example.com.moneymergebe.domain.book.dto.request.BookUsersReq;
-import example.com.moneymergebe.domain.book.dto.request.BookYearGoalReq;
-import example.com.moneymergebe.domain.book.dto.response.BookColorRes;
-import example.com.moneymergebe.domain.book.dto.response.BookDeleteAgreeRes;
-import example.com.moneymergebe.domain.book.dto.response.BookDeleteRes;
-import example.com.moneymergebe.domain.book.dto.response.BookGetRes;
-import example.com.moneymergebe.domain.book.dto.response.BookMonthGoalRes;
-import example.com.moneymergebe.domain.book.dto.response.BookSaveRes;
-import example.com.moneymergebe.domain.book.dto.response.BookStartDateRes;
-import example.com.moneymergebe.domain.book.dto.response.BookTitleRes;
-import example.com.moneymergebe.domain.book.dto.response.BookUserColorRes;
-import example.com.moneymergebe.domain.book.dto.response.BookUsernameRes;
-import example.com.moneymergebe.domain.book.dto.response.BookUsersRes;
-import example.com.moneymergebe.domain.book.dto.response.BookYearGoalRes;
+import example.com.moneymergebe.domain.book.dto.request.*;
+import example.com.moneymergebe.domain.book.dto.response.*;
 import example.com.moneymergebe.domain.book.entity.Book;
 import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.book.repository.BookRecordRepository;
@@ -36,13 +17,14 @@ import example.com.moneymergebe.global.exception.GlobalException;
 import example.com.moneymergebe.global.validator.BookUserValidator;
 import example.com.moneymergebe.global.validator.BookValidator;
 import example.com.moneymergebe.global.validator.UserValidator;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -159,13 +141,14 @@ public class BookService {
     @Transactional
     public BookUsersRes updateUsers(BookUsersReq req){
         Book book = findBook(req.getBookId());
-        User user = findUser(req.getUserId());
+        User user = findUser(req.getUserId()); // 초대 요청 멤버
         checkBookMember(user, book);
 
-        for(Long userId : req.getUserList()){
-            User findUser = findUser(userId);
-            bookUserRepository.save(BookUser.builder().book(book).user(user).build());
-        }
+        // 초대 받는 멤버가 기존 멤버인지 확인
+        User newUser = userRepository.findByEmail(req.getEmail());
+        newBookMember(newUser, book);
+
+        bookUserRepository.save(BookUser.builder().book(book).user(newUser).build());
 
         return new BookUsersRes();
     }
@@ -314,6 +297,15 @@ public class BookService {
     private BookUser checkBookMember (User user, Book book){
         BookUser bookUser = bookUserRepository.findByUserAndBook(user, book);
         BookUserValidator.checkMember(bookUser);
+        return bookUser;
+    }
+
+    /**
+     * @throws GlobalException 초대 받는 user가 book의 기존 멤버일 경우 예외 발생
+     */
+    private BookUser newBookMember (User user, Book book){
+        BookUser bookUser = bookUserRepository.findByUserAndBook(user, book);
+        BookUserValidator.newMember(bookUser);
         return bookUser;
     }
 }

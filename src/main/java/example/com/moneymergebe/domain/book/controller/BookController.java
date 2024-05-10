@@ -1,41 +1,16 @@
 package example.com.moneymergebe.domain.book.controller;
 
-import example.com.moneymergebe.domain.book.dto.request.BookColorReq;
-import example.com.moneymergebe.domain.book.dto.request.BookMonthGoalReq;
-import example.com.moneymergebe.domain.book.dto.request.BookSaveReq;
-import example.com.moneymergebe.domain.book.dto.request.BookStartDateReq;
-import example.com.moneymergebe.domain.book.dto.request.BookTitleReq;
-import example.com.moneymergebe.domain.book.dto.request.BookUserColorReq;
-import example.com.moneymergebe.domain.book.dto.request.BookUsernameReq;
-import example.com.moneymergebe.domain.book.dto.request.BookUsersReq;
-import example.com.moneymergebe.domain.book.dto.request.BookYearGoalReq;
-import example.com.moneymergebe.domain.book.dto.response.BookColorRes;
-import example.com.moneymergebe.domain.book.dto.response.BookDeleteAgreeRes;
-import example.com.moneymergebe.domain.book.dto.response.BookDeleteRes;
-import example.com.moneymergebe.domain.book.dto.response.BookGetRes;
-import example.com.moneymergebe.domain.book.dto.response.BookMonthGoalRes;
-import example.com.moneymergebe.domain.book.dto.response.BookSaveRes;
-import example.com.moneymergebe.domain.book.dto.response.BookStartDateRes;
-import example.com.moneymergebe.domain.book.dto.response.BookTitleRes;
-import example.com.moneymergebe.domain.book.dto.response.BookUserColorRes;
-import example.com.moneymergebe.domain.book.dto.response.BookUsernameRes;
-import example.com.moneymergebe.domain.book.dto.response.BookUsersRes;
-import example.com.moneymergebe.domain.book.dto.response.BookYearGoalRes;
+import example.com.moneymergebe.domain.book.dto.request.*;
+import example.com.moneymergebe.domain.book.dto.response.*;
 import example.com.moneymergebe.domain.book.service.BookService;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -86,7 +61,7 @@ public class BookController {
     /**
      * 가계부 멤버 초대
      */
-    @PatchMapping("/{bookId}/users")
+    @PostMapping("/{bookId}/users")
     public CommonResponse<BookUsersRes> updateUsers(@AuthenticationPrincipal UserDetailsImpl userDetails,
         @RequestBody BookUsersReq req, @PathVariable Long bookId) {
         req.setBookId(bookId);
