@@ -39,7 +39,7 @@ public class BookUser extends BaseEntity {
     private boolean deleteAgree;
 
     @Column(nullable = false)
-    private String name;
+    private String name; // 가계부 별 닉네임
 
     @Builder
     private BookUser(Book book, User user){

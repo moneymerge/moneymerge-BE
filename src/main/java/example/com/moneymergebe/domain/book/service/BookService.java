@@ -73,7 +73,7 @@ public class BookService {
         List<BookGetAllRes> bookGetAllResList = new ArrayList<>();
 
         for (BookUser bookUser : bookUserList) {
-            userGetResList.add(new UserGetRes(bookUser.getUser()));
+            userGetResList.add(new UserGetRes(bookUser.getUser().getUserId(), bookUser.getName(), bookUser.getColor()));
             bookGetAllResList.add(new BookGetAllRes(bookUser.getBook(), userGetResList));
         }
 
@@ -90,13 +90,13 @@ public class BookService {
         User user = findUser(userId);
         Book book = findBook(bookId);
 
-        BookUser bookUser = checkBookMember(user, book); // 가계부 권한 검사
+        BookUser bookUsers = checkBookMember(user, book); // 가계부 권한 검사
 
         //가계부 사용자 목록
         List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
         List<UserGetRes> userGetResList = new ArrayList<>();
-        for (BookUser bookUsers : bookUserList) {
-            userGetResList.add(new UserGetRes(bookUsers.getUser()));
+        for (BookUser bookUser : bookUserList) {
+            userGetResList.add(new UserGetRes(bookUser.getUser().getUserId(), bookUser.getName(), bookUser.getColor()));
         }
 
         //income
