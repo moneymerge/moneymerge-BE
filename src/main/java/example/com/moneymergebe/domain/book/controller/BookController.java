@@ -34,7 +34,7 @@ public class BookController {
      * 가계부 전체 조회
      */
     @GetMapping
-    public CommonResponse<List<BookGetRes>> getAllBooks(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public CommonResponse<List<BookGetAllRes>> getAllBooks(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return CommonResponse.success(bookService.getAllBooks(userDetails.getUser().getUserId()));
     }
 

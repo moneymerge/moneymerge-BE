@@ -66,14 +66,19 @@ public class BookService {
      * 가계부 전체 조회
      */
     @Transactional(readOnly = true)
-    public List<BookGetRes> getAllBooks(Long userId) {
+    public List<BookGetAllRes> getAllBooks(Long userId) {
         User user = findUser(userId);
         List<BookUser> bookUserList = bookUserRepository.findAllByUser(user);
-        List<BookGetRes> bookGetResList = new ArrayList<>();
+        List<UserGetRes> userGetResList = new ArrayList<>();
+        List<BookGetAllRes> bookGetAllResList = new ArrayList<>();
+
         for (BookUser bookUser : bookUserList) {
-            bookGetResList.add(new BookGetRes(bookUser.getBook()));
+            userGetResList.add(new UserGetRes(bookUser.getUser()));
+            bookGetAllResList.add(new BookGetAllRes(bookUser.getBook(), userGetResList));
         }
-        return bookGetResList;
+
+
+        return bookGetAllResList;
     }
 
     /**
