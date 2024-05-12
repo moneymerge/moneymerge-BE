@@ -5,6 +5,7 @@ import example.com.moneymergebe.domain.board.dto.request.BoardCommentSaveReq;
 import example.com.moneymergebe.domain.board.dto.request.BoardModifyReq;
 import example.com.moneymergebe.domain.board.dto.request.BoardSaveReq;
 import example.com.moneymergebe.domain.board.dto.response.*;
+import example.com.moneymergebe.domain.board.entity.BoardType;
 import example.com.moneymergebe.domain.board.service.BoardService;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
@@ -41,10 +42,15 @@ public class BoardController {
 
     /**
      * 게시글 전체 조회
+     * @param boardType 게시판 종류
      */
     @GetMapping
-    public CommonResponse<List<BoardGetRes>> getAllBoards() {
-        return CommonResponse.success(boardService.getAllBoards());
+    public CommonResponse<List<BoardGetRes>> getAllBoards(@RequestParam(required = false) BoardType boardType) {
+        if (boardType != null) {
+            return CommonResponse.success(boardService.getAllBoardsByBoardType(boardType)); // 특정 게시판 게시글 전체 조회
+        } else {
+            return CommonResponse.success(boardService.getAllBoards()); // 게시글 전체 조회
+        }
     }
 
 

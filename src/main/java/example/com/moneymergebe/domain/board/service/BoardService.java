@@ -5,10 +5,7 @@ import example.com.moneymergebe.domain.board.dto.request.BoardCommentSaveReq;
 import example.com.moneymergebe.domain.board.dto.request.BoardModifyReq;
 import example.com.moneymergebe.domain.board.dto.request.BoardSaveReq;
 import example.com.moneymergebe.domain.board.dto.response.*;
-import example.com.moneymergebe.domain.board.entity.Board;
-import example.com.moneymergebe.domain.board.entity.BoardComment;
-import example.com.moneymergebe.domain.board.entity.BoardCommentLike;
-import example.com.moneymergebe.domain.board.entity.BoardLike;
+import example.com.moneymergebe.domain.board.entity.*;
 import example.com.moneymergebe.domain.board.repository.BoardCommentLikeRepository;
 import example.com.moneymergebe.domain.board.repository.BoardCommentRepository;
 import example.com.moneymergebe.domain.board.repository.BoardLikeRepository;
@@ -81,6 +78,27 @@ public class BoardService {
                     .stream().map(
                             boardComment -> new BoardCommentGetRes(boardComment, boardCommentLikeRepository.countByBoardComment(boardComment))
             ).toList();
+
+            int likes = boardLikeRepository.countByBoard(board);
+
+            boardGetResList.add(new BoardGetRes(board, commentGetResList, likes));
+        }
+        return boardGetResList;
+    }
+
+    /**
+     * 특정 게시판 게시글 전체 조회
+     */
+    @Transactional(readOnly = true)
+    public List<BoardGetRes> getAllBoardsByBoardType(BoardType boardType) {
+        List<Board> boardList = boardRepository.findAllByBoardType(boardType);
+        List<BoardGetRes> boardGetResList = new ArrayList<>();
+        for (Board board : boardList) {
+
+            List<BoardCommentGetRes> commentGetResList = boardCommentRepository.findAllByBoard(board)
+                    .stream().map(
+                            boardComment -> new BoardCommentGetRes(boardComment, boardCommentLikeRepository.countByBoardComment(boardComment))
+                    ).toList();
 
             int likes = boardLikeRepository.countByBoard(board);
 
