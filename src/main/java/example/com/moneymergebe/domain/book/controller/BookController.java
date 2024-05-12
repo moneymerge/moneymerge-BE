@@ -5,6 +5,7 @@ import example.com.moneymergebe.domain.book.dto.response.*;
 import example.com.moneymergebe.domain.book.service.BookService;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,7 +26,7 @@ public class BookController {
      */
     @PostMapping
     public CommonResponse<BookSaveRes> saveBook(@AuthenticationPrincipal UserDetailsImpl userDetails,
-        @RequestBody BookSaveReq req){
+        @RequestBody @Valid BookSaveReq req){
         req.setUserId(userDetails.getUser().getUserId());
         return CommonResponse.success(bookService.saveBook(req));
     }
@@ -53,7 +54,7 @@ public class BookController {
      */
     @PatchMapping("/{bookId}/start-date")
     public CommonResponse<BookStartDateRes> updateStartDate(@AuthenticationPrincipal UserDetailsImpl userDetails,
-        @RequestBody BookStartDateReq req, @PathVariable Long bookId) {
+        @RequestBody @Valid BookStartDateReq req, @PathVariable Long bookId) {
         req.setBookId(bookId);
         req.setUserId(userDetails.getUser().getUserId());
         return CommonResponse.success(bookService.updateStartDate(req));

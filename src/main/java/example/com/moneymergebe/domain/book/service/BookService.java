@@ -194,9 +194,9 @@ public class BookService {
     public BookUsernameRes updateUsername(BookUsernameReq req) {
         Book book = findBook(req.getBookId());
         User user = findUser(req.getUserId());
-        checkBookMember(user, book);
+        BookUser bookUser = checkBookMember(user, book);
 
-        book.updateUsername(req.getUserId(), req.getUsername());
+        bookUser.updateUsername(req.getUsername());
 
         return new BookUsernameRes();
     }
@@ -208,9 +208,9 @@ public class BookService {
     public BookUserColorRes updateUserColor(BookUserColorReq req) {
         Book book = findBook(req.getBookId());
         User user = findUser(req.getUserId());
-        checkBookMember(user, book);
+        BookUser bookUser = checkBookMember(user, book);
 
-        book.updateUserColor(req.getUserId(), req.getUserColor());
+        bookUser.updateUserColor(req.getUserColor());
 
         return new BookUserColorRes();
     }
