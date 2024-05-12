@@ -268,6 +268,9 @@ public class BookService {
 
         checkBookMember(user, book);
 
+        // 가계부 멤버가 전원 삭제 동의했는지 확인
+        deleteAgreeAll(bookId);
+
         // bookUser, bookRecord 모두 삭제 후 book 삭제해야함
         bookUserRepository.deleteAllByBook(book);
         bookRecordRepository.deleteAllByBook(book); //RecordService.deleteRecord로?
@@ -312,5 +315,17 @@ public class BookService {
         BookUser bookUser = bookUserRepository.findByUserAndBook(user, book);
         BookUserValidator.newMember(bookUser);
         return bookUser;
+    }
+
+    /**
+     * @throws GlobalException 가계부 멤버 전원의 삭제 동의를 얻지 못한 경우 예외 발생
+     */
+    private List<BookUser> deleteAgreeAll (Long bookId){
+        Book book = bookRepository.findByBookId(bookId);
+        List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
+        for (BookUser bookUser : bookUserList) {
+            BookUserValidator.deleteAgreeAll(bookUser);
+        }
+        return bookUserList;
     }
 }
