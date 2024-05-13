@@ -9,6 +9,4 @@ public interface BoardCommentLikeRepository extends JpaRepository<BoardCommentLi
     void deleteAllByBoardComment(BoardComment boardComment);
 
     BoardCommentLike findByUserAndBoardComment(User user, BoardComment boardComment);
-
-    int countByBoardComment(BoardComment boardComment);
 }

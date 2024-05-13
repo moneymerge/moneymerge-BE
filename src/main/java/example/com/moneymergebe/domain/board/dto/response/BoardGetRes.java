@@ -22,7 +22,7 @@ public class BoardGetRes {
 
     private List<BoardCommentGetRes> commentGetResList;
 
-    public BoardGetRes(Board board, List<BoardCommentGetRes> commentGetResList, int likes) {
+    public BoardGetRes(Board board, List<BoardCommentGetRes> commentGetResList) {
         this.boardId = board.getBoardId();
         this.boardType = board.getBoardType();
         this.title = board.getTitle();
@@ -32,8 +32,7 @@ public class BoardGetRes {
         this.username = board.getUser().getUsername();
         this.createdAt = board.getCreatedAt();
         this.modifiedAt = board.getModifiedAt();
-        this.likes = likes;
+        this.likes = board.getLikes();
         this.commentGetResList = commentGetResList;
-
     }
 }

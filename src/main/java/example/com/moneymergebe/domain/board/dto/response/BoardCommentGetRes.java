@@ -15,13 +15,13 @@ public class BoardCommentGetRes {
     private LocalDateTime modifiedAt;
     private int likes;
 
-    public BoardCommentGetRes(BoardComment boardComment, int likes) {
+    public BoardCommentGetRes(BoardComment boardComment) {
         this.boardCommentId = boardComment.getBoardCommentId();
         this.userId = boardComment.getUser().getUserId();
         this.username = boardComment.getUser().getUsername();
         this.content = boardComment.getContent();
         this.createdAt = boardComment.getCreatedAt();
         this.modifiedAt = boardComment.getModifiedAt();
-        this.likes = likes;
+        this.likes = boardComment.getLikes();
     }
 }

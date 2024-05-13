@@ -88,15 +88,6 @@ public class BoardController {
     }
 
     /**
-     * 게시글 좋아요 수 조회
-     */
-    @GetMapping("/{boardId}/likes")
-    public CommonResponse<BoardGetLikeRes> getBoardLike(@PathVariable Long boardId) {
-        return CommonResponse.success(boardService.getBoardLike(boardId));
-    }
-
-
-    /**
      * 게시글 댓글 생성
      */
     @PostMapping("/{boardId}/comments")
@@ -137,18 +128,4 @@ public class BoardController {
                                                   @PathVariable Long boardId, @PathVariable Long commentId) {
         return CommonResponse.success(boardService.likeBoardComment(userDetails.getUser().getUserId(), boardId, commentId));
     }
-
-    /**
-     * 게시글 댓글 좋아요 개수
-     */
-    @GetMapping("/{boardId}/comments/{commentId}/likes")
-    public CommonResponse<BoardCommentGetLikeRes> getBoardCommentLike(@PathVariable Long boardId, @PathVariable Long commentId) {
-        return CommonResponse.success(boardService.getBoardCommentLike(commentId));
-    }
-
-
-
-
-
-
 }

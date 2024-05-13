@@ -58,13 +58,10 @@ public class BoardService {
         // 게시글 댓글 목록
         List<BoardCommentGetRes> commentGetResList = boardCommentRepository.findAllByBoard(board)
                 .stream().map(
-                        boardComment -> new BoardCommentGetRes(boardComment, boardCommentLikeRepository.countByBoardComment(boardComment))
+                        boardComment -> new BoardCommentGetRes(boardComment)
                 ).toList();
 
-        // 게시글 좋아요 개수
-        int likes = boardLikeRepository.countByBoard(board);
-
-        return new BoardGetRes(board, commentGetResList, likes);
+        return new BoardGetRes(board, commentGetResList);
     }
 
     /**
@@ -78,16 +75,17 @@ public class BoardService {
 
             List<BoardCommentGetRes> commentGetResList = boardCommentRepository.findAllByBoard(board)
                     .stream().map(
-                            boardComment -> new BoardCommentGetRes(boardComment, boardCommentLikeRepository.countByBoardComment(boardComment))
+                            boardComment -> new BoardCommentGetRes(boardComment)
                     ).toList();
 
-            int likes = boardLikeRepository.countByBoard(board);
-
-            boardGetResList.add(new BoardGetRes(board, commentGetResList, likes));
+            boardGetResList.add(new BoardGetRes(board, commentGetResList));
         }
         return boardGetResList;
     }
 
+    /**
+     * 특정 게시판 게시글 전체 조회
+     */
     @Transactional(readOnly = true)
     public List<BoardGetRes> getAllBoardsByBoardType(Pageable pageable, BoardType boardType) {
         List<Board> boardList = boardRepository.findAllByBoardType(pageable, boardType);
@@ -96,12 +94,10 @@ public class BoardService {
 
             List<BoardCommentGetRes> commentGetResList = boardCommentRepository.findAllByBoard(board)
                     .stream().map(
-                            boardComment -> new BoardCommentGetRes(boardComment, boardCommentLikeRepository.countByBoardComment(boardComment))
+                            boardComment -> new BoardCommentGetRes(boardComment)
                     ).toList();
 
-            int likes = boardLikeRepository.countByBoard(board);
-
-            boardGetResList.add(new BoardGetRes(board, commentGetResList, likes));
+            boardGetResList.add(new BoardGetRes(board, commentGetResList));
         }
         return boardGetResList;
     }
@@ -158,23 +154,16 @@ public class BoardService {
 
         BoardLike boardLike = boardLikeRepository.findByUserAndBoard(user, board);
         if(boardLike == null) {
+            board.addLike();
             boardLikeRepository.save(BoardLike.builder().user(user).board(board).build());
+
         }
         else {
+            board.removeLike();
             boardLikeRepository.delete(boardLike);
         }
 
         return new BoardLikeRes();
-    }
-
-    /**
-     * 게시글 좋아요 수 조회
-     */
-    @Transactional(readOnly = true)
-    public BoardGetLikeRes getBoardLike(Long boardId) {
-        Board board = findBoard(boardId);
-
-        return new BoardGetLikeRes(boardLikeRepository.countByBoard(board));
     }
 
     /**
@@ -238,25 +227,16 @@ public class BoardService {
 
         BoardCommentLike boardCommentLike = boardCommentLikeRepository.findByUserAndBoardComment(user, boardComment);
         if(boardCommentLike == null) {
+            boardComment.addLike();
             boardCommentLikeRepository.save(BoardCommentLike.builder().user(user).boardComment(boardComment).build());
         }
         else {
+            boardComment.removeLike();
             boardCommentLikeRepository.delete(boardCommentLike);
         }
 
         return new BoardCommentLikeRes();
     }
-
-    /**
-     * 게시글 댓글 좋아요 개수
-     */
-    @Transactional(readOnly = true)
-    public BoardCommentGetLikeRes getBoardCommentLike(Long boardCommentId) {
-        BoardComment boardComment = findBoardComment(boardCommentId);
-
-        return new BoardCommentGetLikeRes(boardCommentLikeRepository.countByBoardComment(boardComment));
-    }
-    
 
     /**
      * @throws GlobalException userId에 해당하는 사용자가 존재하지 않는 경우 예외 발생
@@ -283,7 +263,4 @@ public class BoardService {
         BoardCommentValidator.validate(boardComment);
         return boardComment;
     }
-
-
-
 }

@@ -42,4 +42,11 @@ public class BoardComment extends BaseEntity {
     public void update(String content) {
         this.content = content;
     }
+
+    public void addLike(){
+        this.likes=likes+1;
+    }
+    public void removeLike(){
+        this.likes=likes-1;
+    }
 }

@@ -57,4 +57,11 @@ public class Board extends BaseEntity {
         this.image = req.getImage();
     }
 
+    public void addLike(){
+        this.likes=likes+1;
+    }
+    public void removeLike(){
+        this.likes=likes-1;
+    }
+
 }
