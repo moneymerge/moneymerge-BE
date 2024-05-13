@@ -67,6 +67,9 @@ public class BoardService {
         return new BoardGetRes(board, commentGetResList, likes);
     }
 
+    /**
+     * 게시글 전체 조회
+     */
     @Transactional(readOnly = true)
     public List<BoardGetRes> getAllBoards(Pageable pageable) {
         Page<Board> boardList = boardRepository.findAll(pageable);

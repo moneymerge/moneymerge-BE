@@ -43,7 +43,9 @@ public class BoardController {
         return CommonResponse.success(boardService.getBoard(boardId));
     }
 
-
+    /**
+     * 게시글 전체 조회
+     */
     @GetMapping
     public CommonResponse<List<BoardGetRes>> getAllBoards(@PageableDefault(size = 10, sort = "boardId", direction = Sort.Direction.DESC) Pageable pageable,
                                                           @RequestParam(required = false) BoardType boardType) {
