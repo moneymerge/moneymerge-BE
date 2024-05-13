@@ -128,4 +128,14 @@ public class BoardController {
                                                   @PathVariable Long boardId, @PathVariable Long commentId) {
         return CommonResponse.success(boardService.likeBoardComment(userDetails.getUser().getUserId(), boardId, commentId));
     }
+
+    /**
+     * 게시글 검색 기능
+     */
+    @GetMapping("/search")
+    public CommonResponse<List<BoardGetRes>> searchBoard(@PageableDefault(size = 10, sort = "boardId", direction = Sort.Direction.DESC) Pageable pageable,
+                         @RequestParam(required = false) String searchKeyword){
+        return CommonResponse.success(boardService.searchBoard(pageable, searchKeyword));
+    }
+
 }

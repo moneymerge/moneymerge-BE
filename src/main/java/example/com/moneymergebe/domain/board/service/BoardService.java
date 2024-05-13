@@ -88,7 +88,7 @@ public class BoardService {
      */
     @Transactional(readOnly = true)
     public List<BoardGetRes> getAllBoardsByBoardType(Pageable pageable, BoardType boardType) {
-        List<Board> boardList = boardRepository.findAllByBoardType(pageable, boardType);
+        Page<Board> boardList = boardRepository.findAllByBoardType(pageable, boardType);
         List<BoardGetRes> boardGetResList = new ArrayList<>();
         for (Board board : boardList) {
 
@@ -236,6 +236,25 @@ public class BoardService {
         }
 
         return new BoardCommentLikeRes();
+    }
+
+    /**
+     * 게시글 검색 기능
+     */
+    @Transactional
+    public List<BoardGetRes> searchBoard(Pageable pageable, String searchKeyword) {
+        Page<Board> boardList = boardRepository.findByTitleContaining(pageable, searchKeyword);
+        List<BoardGetRes> boardGetResList = new ArrayList<>();
+        for (Board board : boardList) {
+
+            List<BoardCommentGetRes> commentGetResList = boardCommentRepository.findAllByBoard(board)
+                    .stream().map(
+                            boardComment -> new BoardCommentGetRes(boardComment)
+                    ).toList();
+
+            boardGetResList.add(new BoardGetRes(board, commentGetResList));
+        }
+        return boardGetResList;
     }
 
     /**
