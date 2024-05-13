@@ -86,7 +86,7 @@ public class BookController {
      */
     @PatchMapping("/{bookId}/book-color")
     public CommonResponse<BookColorRes> updateBookColor(@AuthenticationPrincipal UserDetailsImpl userDetails,
-        @RequestBody BookColorReq req, @PathVariable Long bookId) {
+        @RequestBody @Valid BookColorReq req, @PathVariable Long bookId) {
         req.setBookId(bookId);
         req.setUserId(userDetails.getUser().getUserId());
         return CommonResponse.success(bookService.updateBookColor(req));
@@ -108,7 +108,7 @@ public class BookController {
      */
     @PatchMapping("/{bookId}/user-color")
     public CommonResponse<BookUserColorRes> updateUserColor(@AuthenticationPrincipal UserDetailsImpl userDetails,
-        @RequestBody BookUserColorReq req, @PathVariable Long bookId) {
+        @RequestBody @Valid BookUserColorReq req, @PathVariable Long bookId) {
         req.setBookId(bookId);
         req.setUserId(userDetails.getUser().getUserId());
         return CommonResponse.success(bookService.updateUserColor(req));

@@ -45,7 +45,7 @@ public class BookUser extends BaseEntity {
     private BookUser(Book book, User user){
         this.book=book;
         this.user=user;
-        this.color="red"; //색상 랜덤 코드
+        this.color="#ff0000";
         this.deleteAgree=false;
         this.name=user.getUsername();
     }
