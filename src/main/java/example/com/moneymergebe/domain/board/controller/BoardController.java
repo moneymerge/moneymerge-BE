@@ -10,6 +10,9 @@ import example.com.moneymergebe.domain.board.service.BoardService;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,16 +43,14 @@ public class BoardController {
         return CommonResponse.success(boardService.getBoard(boardId));
     }
 
-    /**
-     * 게시글 전체 조회
-     * @param boardType 게시판 종류
-     */
+
     @GetMapping
-    public CommonResponse<List<BoardGetRes>> getAllBoards(@RequestParam(required = false) BoardType boardType) {
+    public CommonResponse<List<BoardGetRes>> getAllBoards(@PageableDefault(size = 10, sort = "boardId", direction = Sort.Direction.DESC) Pageable pageable,
+                                                          @RequestParam(required = false) BoardType boardType) {
         if (boardType != null) {
-            return CommonResponse.success(boardService.getAllBoardsByBoardType(boardType)); // 특정 게시판 게시글 전체 조회
+            return CommonResponse.success(boardService.getAllBoardsByBoardType(pageable, boardType)); // 특정 게시판 게시글 전체 조회
         } else {
-            return CommonResponse.success(boardService.getAllBoards()); // 게시글 전체 조회
+            return CommonResponse.success(boardService.getAllBoards(pageable)); // 게시글 전체 조회
         }
     }
 

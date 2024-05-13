@@ -18,6 +18,8 @@ import example.com.moneymergebe.global.validator.BoardValidator;
 import example.com.moneymergebe.global.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,33 +67,9 @@ public class BoardService {
         return new BoardGetRes(board, commentGetResList, likes);
     }
 
-    /**
-     * 게시글 전체 조회
-     */
     @Transactional(readOnly = true)
-    public List<BoardGetRes> getAllBoards() {
-        List<Board> boardList = boardRepository.findAll();
-        List<BoardGetRes> boardGetResList = new ArrayList<>();
-        for (Board board : boardList) {
-
-            List<BoardCommentGetRes> commentGetResList = boardCommentRepository.findAllByBoard(board)
-                    .stream().map(
-                            boardComment -> new BoardCommentGetRes(boardComment, boardCommentLikeRepository.countByBoardComment(boardComment))
-            ).toList();
-
-            int likes = boardLikeRepository.countByBoard(board);
-
-            boardGetResList.add(new BoardGetRes(board, commentGetResList, likes));
-        }
-        return boardGetResList;
-    }
-
-    /**
-     * 특정 게시판 게시글 전체 조회
-     */
-    @Transactional(readOnly = true)
-    public List<BoardGetRes> getAllBoardsByBoardType(BoardType boardType) {
-        List<Board> boardList = boardRepository.findAllByBoardType(boardType);
+    public List<BoardGetRes> getAllBoards(Pageable pageable) {
+        Page<Board> boardList = boardRepository.findAll(pageable);
         List<BoardGetRes> boardGetResList = new ArrayList<>();
         for (Board board : boardList) {
 
@@ -106,6 +84,26 @@ public class BoardService {
         }
         return boardGetResList;
     }
+
+    @Transactional(readOnly = true)
+    public List<BoardGetRes> getAllBoardsByBoardType(Pageable pageable, BoardType boardType) {
+        List<Board> boardList = boardRepository.findAllByBoardType(pageable, boardType);
+        List<BoardGetRes> boardGetResList = new ArrayList<>();
+        for (Board board : boardList) {
+
+            List<BoardCommentGetRes> commentGetResList = boardCommentRepository.findAllByBoard(board)
+                    .stream().map(
+                            boardComment -> new BoardCommentGetRes(boardComment, boardCommentLikeRepository.countByBoardComment(boardComment))
+                    ).toList();
+
+            int likes = boardLikeRepository.countByBoard(board);
+
+            boardGetResList.add(new BoardGetRes(board, commentGetResList, likes));
+        }
+        return boardGetResList;
+    }
+
+
 
     /**
      * 게시글 수정
