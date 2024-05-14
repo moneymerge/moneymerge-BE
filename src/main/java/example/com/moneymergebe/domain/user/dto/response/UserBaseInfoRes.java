@@ -12,12 +12,14 @@ public class UserBaseInfoRes {
     private Long userId;
     private String username;
     private String profileUrl;
+    private boolean hasNewNotification;
     private List<BookGetRes> bookList = new ArrayList<>();
 
-    public UserBaseInfoRes(User user, List<Book> bookList) {
+    public UserBaseInfoRes(User user, boolean hasNewNotification, List<Book> bookList) {
         this.userId = user.getUserId();
         this.username = user.getUsername();
         this.profileUrl = user.getProfileUrl();
+        this.hasNewNotification = hasNewNotification;
         for(Book book : bookList) {
             this.bookList.add(new BookGetRes(book));
         }
