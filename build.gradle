@@ -53,6 +53,9 @@ dependencies {
     // aws
     implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.623'
 
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'

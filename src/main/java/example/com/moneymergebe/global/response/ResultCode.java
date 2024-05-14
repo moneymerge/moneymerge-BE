@@ -41,7 +41,10 @@ public enum ResultCode {
     UNMATCHED_RECORD_COMMENT(HttpStatus.BAD_REQUEST, 6001, "해당 레코드의 댓글이 아닙니다."),
 
     // 영수증 7000번대
-    NOT_FOUND_RECEIPT(HttpStatus.NOT_FOUND, 7000, "영수증을 찾을 수 없습니다.");
+    NOT_FOUND_RECEIPT(HttpStatus.NOT_FOUND, 7000, "영수증을 찾을 수 없습니다."),
+
+    // 카테고리 8000번대
+    NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, 8000, "카테고리를 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final int code;

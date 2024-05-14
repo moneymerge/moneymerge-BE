@@ -9,7 +9,9 @@ import example.com.moneymergebe.domain.user.dto.request.UserNameReq;
 import example.com.moneymergebe.domain.user.dto.response.UserAlarmRes;
 import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoRes;
 import example.com.moneymergebe.domain.user.dto.response.UserCharacterRes;
+import example.com.moneymergebe.domain.user.dto.response.UserDeleteRes;
 import example.com.moneymergebe.domain.user.dto.response.UserImageRes;
+import example.com.moneymergebe.domain.user.dto.response.UserInfoRes;
 import example.com.moneymergebe.domain.user.dto.response.UserNameRes;
 import example.com.moneymergebe.domain.user.dto.response.UserPointRes;
 import example.com.moneymergebe.domain.user.dto.response.UserProfileRes;
@@ -53,6 +55,17 @@ public class UserService {
             bookList.add(bookUser.getBook());
         }
         return new UserBaseInfoRes(user, bookList);
+    }
+
+    /**
+     * 게시판 사용자 정보 조회
+     */
+    @Transactional(readOnly = true)
+    public UserInfoRes getUserInfo(Long userId) {
+        User user = findUser(userId);
+        Character character = findCharacter(user.getCharacterId());
+
+        return new UserInfoRes(user ,character);
     }
 
     /**
@@ -132,6 +145,17 @@ public class UserService {
         User user = findUser(userId);
         Character character = findCharacter(user.getCharacterId());
         return new UserCharacterRes(character);
+    }
+
+    /**
+     * 회원탈퇴
+     */
+    @Transactional
+    public UserDeleteRes deleteUser(Long userId) {
+        User user = findUser(userId);
+        userRepository.delete(user);
+
+        return new UserDeleteRes();
     }
 
     /**

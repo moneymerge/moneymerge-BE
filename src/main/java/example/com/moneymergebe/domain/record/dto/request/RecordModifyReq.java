@@ -22,5 +22,5 @@ public class RecordModifyReq {
     private String image;
     private Long userId;
     private Long[] bookList; // 현재 가계부 ID 포함
-    // TODO: 카테고리 입력 받기
+    private Long categoryId;
 }

@@ -164,7 +164,7 @@ public class BookService {
 
         for(Long userId : req.getUserList()){
             User findUser = findUser(userId);
-            bookUserRepository.save(BookUser.builder().book(book).user(user).build());
+            bookUserRepository.save(BookUser.builder().book(book).user(findUser).build());
         }
 
         return new BookUsersRes();
@@ -281,8 +281,8 @@ public class BookService {
         checkBookMember(user, book);
 
         // bookUser, bookRecord 모두 삭제 후 book 삭제해야함
-        bookUserRepository.deleteAllByBook(book);
-        bookRecordRepository.deleteAllByBook(book); //RecordService.deleteRecord로?
+//        bookUserRepository.deleteAllByBook(book);
+//        bookRecordRepository.deleteAllByBook(book); //RecordService.deleteRecord로?
 
         bookRepository.delete(book);
 
