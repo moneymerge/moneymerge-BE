@@ -1,0 +1,74 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:777595834234:task-definition/run_container_3:1",
+    "containerDefinitions": [
+        {
+            "name": "moneymerge",
+            "image": "777595834234.dkr.ecr.ap-northeast-2.amazonaws.com/moneymerge:latest",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "moneymerge-8080-tcp",
+                    "containerPort": 8080,
+                    "hostPort": 8080,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "command": [
+                "docker run -v /path/on/host:/data -d --name my-redis -p 6379:6379 redis redis-server --appendonly yes --requirepass 2804"
+            ],
+            "environment": [],
+            "environmentFiles": [
+                {
+                    "value": "arn:aws:s3:::moneymerge/moneymerge.env",
+                    "type": "s3"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "ulimits": [],
+            "systemControls": []
+        }
+    ],
+    "family": "run_container_3",
+    "executionRoleArn": "arn:aws:iam::777595834234:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "revision": 1,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "ecs.capability.env-files.s3"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "3072",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2024-05-10T07:10:44.510Z",
+    "registeredBy": "arn:aws:iam::777595834234:root",
+    "tags": []
+}
