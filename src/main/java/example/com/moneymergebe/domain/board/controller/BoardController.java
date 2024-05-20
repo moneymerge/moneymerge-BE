@@ -10,9 +10,6 @@ import example.com.moneymergebe.domain.board.service.BoardService;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +20,12 @@ import java.util.List;
 @RequestMapping("/api/boards")
 public class BoardController {
     private final BoardService boardService;
+
+    private static final String DEFAULT_PAGE = "1";
+    private static final String DEFAULT_SIZE = "10";
+    private static final String DEFAULT_SORT_BY = "createdAt";
+    private static final String DEFAULT_IS_ASC = "false";
+    private static final String DEFAULT_RANGE = "titleAndContent";
 
     /**
      * 게시글 생성
@@ -47,12 +50,16 @@ public class BoardController {
      * 게시글 전체 조회
      */
     @GetMapping
-    public CommonResponse<List<BoardGetRes>> getAllBoards(@PageableDefault(size = 10, sort = "boardId", direction = Sort.Direction.DESC) Pageable pageable,
-                                                          @RequestParam(required = false) BoardType boardType) {
+    public CommonResponse<List<BoardGetRes>> getAllBoards(
+            @RequestParam(value = "page", defaultValue = DEFAULT_PAGE) int page,
+            @RequestParam(value = "size", defaultValue = DEFAULT_SIZE) int size,
+            @RequestParam(value = "sortBy", defaultValue = DEFAULT_SORT_BY) String sortBy,
+            @RequestParam(value = "isAsc", defaultValue = DEFAULT_IS_ASC) boolean isAsc,
+            @RequestParam(required = false) BoardType boardType) {
         if (boardType != null) {
-            return CommonResponse.success(boardService.getAllBoardsByBoardType(pageable, boardType)); // 특정 게시판 게시글 전체 조회
+            return CommonResponse.success(boardService.getAllBoardsByBoardType(page -1, size, sortBy, isAsc, boardType)); // 특정 게시판 게시글 전체 조회
         } else {
-            return CommonResponse.success(boardService.getAllBoards(pageable)); // 게시글 전체 조회
+            return CommonResponse.success(boardService.getAllBoards(page -1, size, sortBy, isAsc)); // 게시글 전체 조회
         }
     }
 
@@ -133,9 +140,13 @@ public class BoardController {
      * 게시글 검색 기능
      */
     @GetMapping("/search")
-    public CommonResponse<List<BoardGetRes>> searchBoard(@PageableDefault(size = 10, sort = "boardId", direction = Sort.Direction.DESC) Pageable pageable,
-                         @RequestParam(required = false) String searchKeyword){
-        return CommonResponse.success(boardService.searchBoard(pageable, searchKeyword));
+    public CommonResponse<List<BoardGetRes>> searchBoard(
+            @RequestParam(value = "page", defaultValue = DEFAULT_PAGE) int page,
+            @RequestParam(value = "size", defaultValue = DEFAULT_SIZE) int size,
+            @RequestParam(value = "sortBy", defaultValue = DEFAULT_SORT_BY) String sortBy,
+            @RequestParam(value = "isAsc", defaultValue = DEFAULT_IS_ASC) boolean isAsc,
+            @RequestParam(value = "range", defaultValue = DEFAULT_RANGE) String range,
+            @RequestParam(required = false) String searchKeyword){
+        return CommonResponse.success(boardService.searchBoard(page - 1, size, sortBy, isAsc, range, searchKeyword));
     }
-
 }

@@ -320,12 +320,11 @@ public class BookService {
     /**
      * @throws GlobalException 가계부 멤버 전원의 삭제 동의를 얻지 못한 경우 예외 발생
      */
-    private List<BookUser> deleteAgreeAll (Long bookId){
+    private void deleteAgreeAll (Long bookId){
         Book book = bookRepository.findByBookId(bookId);
         List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
         for (BookUser bookUser : bookUserList) {
             BookUserValidator.deleteAgreeAll(bookUser);
         }
-        return bookUserList;
     }
 }

@@ -19,7 +19,9 @@ import example.com.moneymergebe.global.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,7 +70,11 @@ public class BoardService {
      * 게시글 전체 조회
      */
     @Transactional(readOnly = true)
-    public List<BoardGetRes> getAllBoards(Pageable pageable) {
+    public List<BoardGetRes> getAllBoards(int page, int size, String sortBy, boolean isAsc) {
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
         Page<Board> boardList = boardRepository.findAll(pageable);
         List<BoardGetRes> boardGetResList = new ArrayList<>();
         for (Board board : boardList) {
@@ -87,7 +93,11 @@ public class BoardService {
      * 특정 게시판 게시글 전체 조회
      */
     @Transactional(readOnly = true)
-    public List<BoardGetRes> getAllBoardsByBoardType(Pageable pageable, BoardType boardType) {
+    public List<BoardGetRes> getAllBoardsByBoardType(int page, int size, String sortBy, boolean isAsc, BoardType boardType) {
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
         Page<Board> boardList = boardRepository.findAllByBoardType(pageable, boardType);
         List<BoardGetRes> boardGetResList = new ArrayList<>();
         for (Board board : boardList) {
@@ -242,8 +252,30 @@ public class BoardService {
      * 게시글 검색 기능
      */
     @Transactional
-    public List<BoardGetRes> searchBoard(Pageable pageable, String searchKeyword) {
-        Page<Board> boardList = boardRepository.findByTitleContaining(pageable, searchKeyword);
+    public List<BoardGetRes> searchBoard(int page, int size, String sortBy, boolean isAsc, String range, String searchKeyword) {
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Board> boardList = null;
+        switch (range) {
+            case "titleAndContent":
+                boardList = boardRepository.findByTitleContainingOrContentContaining(pageable, searchKeyword, searchKeyword);
+                log.info(range);
+                break;
+            case "title":
+                boardList = boardRepository.findByTitleContaining(pageable, searchKeyword);
+                break;
+            case "content":
+                boardList = boardRepository.findByContentContaining(pageable, searchKeyword);
+                break;
+            case "user":
+                User user = userRepository.findByUsername(searchKeyword);
+                boardList = boardRepository.findByUser(pageable, user);
+                break;
+            default:
+                throw new IllegalArgumentException("유효한 range값이 아닙니다.");
+        }
         List<BoardGetRes> boardGetResList = new ArrayList<>();
         for (Board board : boardList) {
 
