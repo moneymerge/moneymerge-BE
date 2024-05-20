@@ -309,21 +309,19 @@ public class BookService {
     /**
      * @throws GlobalException 초대 받는 user가 book의 기존 멤버일 경우 예외 발생
      */
-    private BookUser newBookMember (User user, Book book){
+    private void newBookMember (User user, Book book){
         BookUser bookUser = bookUserRepository.findByUserAndBook(user, book);
         BookUserValidator.newMember(bookUser);
-        return bookUser;
     }
 
     /**
      * @throws GlobalException 가계부 멤버 전원의 삭제 동의를 얻지 못한 경우 예외 발생
      */
-    private List<BookUser> deleteAgreeAll (Long bookId){
+    private void deleteAgreeAll (Long bookId){
         Book book = bookRepository.findByBookId(bookId);
         List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
         for (BookUser bookUser : bookUserList) {
             BookUserValidator.deleteAgreeAll(bookUser);
         }
-        return bookUserList;
     }
 }

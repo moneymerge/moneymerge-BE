@@ -13,6 +13,7 @@ import example.com.moneymergebe.domain.record.repository.RecordRepository;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,13 +49,19 @@ public class Scheduler {
 
         List<Book> bookList = bookRepository.findAll(); // 모든 가계부를 가져옴
 
+        int year = LocalDate.now().getYear();
         int month = LocalDate.now().getMonth().getValue(); // 현재 월
         int day = LocalDate.now().getDayOfMonth(); // 현재 일
 
-        LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), month-1, day); // 시작일(현재 일)
-        LocalDate endDate;
-        if(day == 1) endDate = startDate.withDayOfMonth(startDate.lengthOfMonth()); // 마지막일
-        else endDate = LocalDate.of(LocalDate.now().getYear(), month, day - 1);
+        // 지난 월의 마지막 날을 구함
+        YearMonth yearMonth = YearMonth.of(year, month-1);
+        int lastDay = yearMonth.lengthOfMonth();
+
+        LocalDate startDate = LocalDate.of(year, month-1, Math.min(day, lastDay)); // 목표 계산 시작일(지난 달 현재 일)
+
+        LocalDate endDate; // 어제 날짜
+        if(day == 1) endDate = LocalDate.of(year, month-1, lastDay);
+        else endDate = LocalDate.of(year, month, day - 1);
 
         for(Book book : bookList) {
             // 시작일에 해당하면 월의 총 소비 계산
