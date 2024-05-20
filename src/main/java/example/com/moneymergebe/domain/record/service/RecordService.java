@@ -178,11 +178,6 @@ public class RecordService {
         checkBookRecord(book, record); // 가계부의 레코드인지 검사
         UserValidator.checkUser(user, record.getUser()); // 작성자와 삭제자가 동일한지 검사
 
-        // bookRecord, 기록 반응, 댓글 삭제
-//        bookRecordRepository.deleteAllByRecord(record);
-//        recordReactionRepository.deleteAllByRecord(record);
-//        recordCommentRepository.deleteAllByRecord(record);
-
         // 레코드 삭제
         recordRepository.delete(record);
 

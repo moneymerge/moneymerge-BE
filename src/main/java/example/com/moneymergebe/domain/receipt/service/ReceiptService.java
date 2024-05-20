@@ -128,7 +128,6 @@ public class ReceiptService {
 
         ReceiptValidator.checkAuthority(user, receipt.getUser()); // 권한 검사
 
-//        receiptLikeRepository.deleteAllByReceipt(receipt);
         receiptRepository.delete(receipt);
 
         return new ReceiptDeleteRes();

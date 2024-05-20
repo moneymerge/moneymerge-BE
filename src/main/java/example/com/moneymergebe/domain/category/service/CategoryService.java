@@ -40,7 +40,7 @@ public class CategoryService {
         Book book = findBook(bookId);
         checkBookMember(user, book); // 가계부 권한 검사
 
-        Category category = categoryRepository.save(
+        categoryRepository.save(
             Category.builder()
                 .category(req.getCategory())
                 .book(book)
