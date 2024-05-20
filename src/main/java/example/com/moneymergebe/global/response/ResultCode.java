@@ -26,6 +26,8 @@ public enum ResultCode {
     // 가계부 3000번대
     NOT_FOUND_BOOK(HttpStatus.NOT_FOUND, 3000, "가계부를 찾을 수 없습니다."),
     NOT_BOOK_MEMBER(HttpStatus.BAD_REQUEST, 3001, "입력한 가계부의 멤버가 아닙니다."),
+    EXISTING_BOOK_MEMBER(HttpStatus.BAD_REQUEST, 3002, "이미 가계부에 참여중인 멤버입니다."),
+    DELETE_NOT_AGREED(HttpStatus.BAD_REQUEST, 3003, "가계부 삭제 동의가 필요합니다."),
 
     // 캐릭터 4000번대
     NOT_FOUND_CHARACTER(HttpStatus.NOT_FOUND, 4000, "캐릭터를 찾을 수 없습니다."),
@@ -47,7 +49,15 @@ public enum ResultCode {
     NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, 8000, "카테고리를 찾을 수 없습니다."),
 
     // 알림 9000번대
-    NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND, 9000, "알림을 찾을 수 없습니다.");
+    NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND, 9000, "알림을 찾을 수 없습니다."),
+
+    // 게시글 10000번대
+    NOT_FOUND_BOARD(HttpStatus.NOT_FOUND, 10000, "게시글을 찾을 수 없습니다."),
+
+    // 게시글 댓글 11000번대
+    NOT_FOUND_BOARD_COMMENT(HttpStatus.NOT_FOUND, 11000, "게시글 댓글을 찾을 수 없습니다."),
+    UNMATCHED_BOARD_COMMENT(HttpStatus.BAD_REQUEST, 11001, "해당 게시글의 댓글이 아닙니다.");
+
 
     private final HttpStatus status;
     private final int code;

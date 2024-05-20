@@ -1,41 +1,17 @@
 package example.com.moneymergebe.domain.book.controller;
 
-import example.com.moneymergebe.domain.book.dto.request.BookColorReq;
-import example.com.moneymergebe.domain.book.dto.request.BookMonthGoalReq;
-import example.com.moneymergebe.domain.book.dto.request.BookSaveReq;
-import example.com.moneymergebe.domain.book.dto.request.BookStartDateReq;
-import example.com.moneymergebe.domain.book.dto.request.BookTitleReq;
-import example.com.moneymergebe.domain.book.dto.request.BookUserColorReq;
-import example.com.moneymergebe.domain.book.dto.request.BookUsernameReq;
-import example.com.moneymergebe.domain.book.dto.request.BookUsersReq;
-import example.com.moneymergebe.domain.book.dto.request.BookYearGoalReq;
-import example.com.moneymergebe.domain.book.dto.response.BookColorRes;
-import example.com.moneymergebe.domain.book.dto.response.BookDeleteAgreeRes;
-import example.com.moneymergebe.domain.book.dto.response.BookDeleteRes;
-import example.com.moneymergebe.domain.book.dto.response.BookGetRes;
-import example.com.moneymergebe.domain.book.dto.response.BookMonthGoalRes;
-import example.com.moneymergebe.domain.book.dto.response.BookSaveRes;
-import example.com.moneymergebe.domain.book.dto.response.BookStartDateRes;
-import example.com.moneymergebe.domain.book.dto.response.BookTitleRes;
-import example.com.moneymergebe.domain.book.dto.response.BookUserColorRes;
-import example.com.moneymergebe.domain.book.dto.response.BookUsernameRes;
-import example.com.moneymergebe.domain.book.dto.response.BookUsersRes;
-import example.com.moneymergebe.domain.book.dto.response.BookYearGoalRes;
+import example.com.moneymergebe.domain.book.dto.request.*;
+import example.com.moneymergebe.domain.book.dto.response.*;
 import example.com.moneymergebe.domain.book.service.BookService;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
-import java.util.List;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -50,7 +26,7 @@ public class BookController {
      */
     @PostMapping
     public CommonResponse<BookSaveRes> saveBook(@AuthenticationPrincipal UserDetailsImpl userDetails,
-        @RequestBody BookSaveReq req){
+        @RequestBody @Valid BookSaveReq req){
         req.setUserId(userDetails.getUser().getUserId());
         return CommonResponse.success(bookService.saveBook(req));
     }
@@ -59,7 +35,7 @@ public class BookController {
      * 가계부 전체 조회
      */
     @GetMapping
-    public CommonResponse<List<BookGetRes>> getAllBooks(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public CommonResponse<List<BookGetAllRes>> getAllBooks(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return CommonResponse.success(bookService.getAllBooks(userDetails.getUser().getUserId()));
     }
 
@@ -78,7 +54,7 @@ public class BookController {
      */
     @PatchMapping("/{bookId}/start-date")
     public CommonResponse<BookStartDateRes> updateStartDate(@AuthenticationPrincipal UserDetailsImpl userDetails,
-        @RequestBody BookStartDateReq req, @PathVariable Long bookId) {
+        @RequestBody @Valid BookStartDateReq req, @PathVariable Long bookId) {
         req.setBookId(bookId);
         req.setUserId(userDetails.getUser().getUserId());
         return CommonResponse.success(bookService.updateStartDate(req));
@@ -86,7 +62,7 @@ public class BookController {
     /**
      * 가계부 멤버 초대
      */
-    @PatchMapping("/{bookId}/users")
+    @PostMapping("/{bookId}/users")
     public CommonResponse<BookUsersRes> updateUsers(@AuthenticationPrincipal UserDetailsImpl userDetails,
         @RequestBody BookUsersReq req, @PathVariable Long bookId) {
         req.setBookId(bookId);
@@ -110,7 +86,7 @@ public class BookController {
      */
     @PatchMapping("/{bookId}/book-color")
     public CommonResponse<BookColorRes> updateBookColor(@AuthenticationPrincipal UserDetailsImpl userDetails,
-        @RequestBody BookColorReq req, @PathVariable Long bookId) {
+        @RequestBody @Valid BookColorReq req, @PathVariable Long bookId) {
         req.setBookId(bookId);
         req.setUserId(userDetails.getUser().getUserId());
         return CommonResponse.success(bookService.updateBookColor(req));
@@ -132,7 +108,7 @@ public class BookController {
      */
     @PatchMapping("/{bookId}/user-color")
     public CommonResponse<BookUserColorRes> updateUserColor(@AuthenticationPrincipal UserDetailsImpl userDetails,
-        @RequestBody BookUserColorReq req, @PathVariable Long bookId) {
+        @RequestBody @Valid BookUserColorReq req, @PathVariable Long bookId) {
         req.setBookId(bookId);
         req.setUserId(userDetails.getUser().getUserId());
         return CommonResponse.success(bookService.updateUserColor(req));

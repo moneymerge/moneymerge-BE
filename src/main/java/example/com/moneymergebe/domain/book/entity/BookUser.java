@@ -43,13 +43,13 @@ public class BookUser extends BaseEntity {
     private boolean deleteAgree;
 
     @Column(nullable = false)
-    private String name;
+    private String name; // 가계부 별 닉네임
 
     @Builder
     private BookUser(Book book, User user){
         this.book=book;
         this.user=user;
-        this.color="red"; //색상 랜덤 코드
+        this.color="#ff0000";
         this.deleteAgree=false;
         this.name=user.getUsername();
     }
