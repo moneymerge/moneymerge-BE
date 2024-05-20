@@ -1,5 +1,6 @@
 package example.com.moneymergebe.domain.board.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import example.com.moneymergebe.domain.board.entity.Board;
 import example.com.moneymergebe.domain.board.entity.BoardType;
 import lombok.Getter;
@@ -13,7 +14,7 @@ public class BoardGetRes {
     private BoardType boardType;
     private String title;
     private String content;
-    //private Boolean isImage; 수정
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String image;
     private Long userId;
     private String username;

@@ -13,9 +13,11 @@ import example.com.moneymergebe.domain.board.repository.BoardRepository;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
 import example.com.moneymergebe.global.exception.GlobalException;
+import example.com.moneymergebe.global.response.ResultCode;
 import example.com.moneymergebe.global.validator.BoardCommentValidator;
 import example.com.moneymergebe.global.validator.BoardValidator;
 import example.com.moneymergebe.global.validator.UserValidator;
+import example.com.moneymergebe.infra.s3.S3Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +41,10 @@ public class BoardService {
     private final BoardLikeRepository boardLikeRepository;
     private final BoardCommentRepository boardCommentRepository;
     private final BoardCommentLikeRepository boardCommentLikeRepository;
+    private final S3Util s3Util;
+
+    private static final String IMAGE_JPG = "image/jpeg";
+    private static final String IMAGE_PNG = "image/png";
 
     /**
      * 게시글 생성
@@ -45,7 +52,14 @@ public class BoardService {
     @Transactional
     public BoardSaveRes saveBoard(BoardSaveReq req) {
         User user = findUser(req.getUserId());
-        Board board = boardRepository.save(Board.builder().boardType(req.getBoardType()).title(req.getTitle()).content(req.getContent()).image(req.getImage()).user(user).likes(0).build());
+
+        String imageUrl = null;
+        if (req.getImage() != null && !req.getImage().isEmpty()) { // 새로 입력한 이미지 파일이 있는 경우
+            checkImage(req.getImage()); // 이미지 파일인지 확인
+            imageUrl = s3Util.uploadFile(req.getImage(), S3Util.FilePath.BOARD); // 업로드 후 게시글 사진으로 설정
+        }
+
+        Board board = boardRepository.save(Board.builder().boardType(req.getBoardType()).title(req.getTitle()).content(req.getContent()).image(imageUrl).user(user).likes(0).build());
 
         return new BoardSaveRes();
     }
@@ -124,7 +138,16 @@ public class BoardService {
 
         UserValidator.checkUser(user, board.getUser()); // 작성자와 수정자가 동일한지 검사
 
-        board.update(req); // 게시글 수정
+        String imageUrl = board.getImage(); // 기존 프로필 이미지
+        if (req.getImage() != null && !req.getImage().isEmpty()) { // 새로 입력한 이미지 파일이 있는 경우
+            if (s3Util.exists(imageUrl, S3Util.FilePath.BOARD)) { // 기존 이미지가 존재하는 경우
+                s3Util.deleteFile(imageUrl, S3Util.FilePath.BOARD); // 기존 이미지 삭제
+            }
+            checkImage(req.getImage()); // 이미지 파일인지 확인
+            imageUrl = s3Util.uploadFile(req.getImage(), S3Util.FilePath.BOARD); // 업로드 후 게시글 사진으로 설정
+        }
+
+        board.update(req, imageUrl); // 게시글 수정
 
         return new BoardModifyRes();
     }
@@ -313,5 +336,13 @@ public class BoardService {
         BoardComment boardComment = boardCommentRepository.findByBoardCommentId(boardCommentId);
         BoardCommentValidator.validate(boardComment);
         return boardComment;
+    }
+
+    private void checkImage(MultipartFile multipartFile) {
+        String fileType = multipartFile.getContentType();
+
+        if(fileType == null || (!fileType.equals(IMAGE_JPG) && !fileType.equals(IMAGE_PNG))) {
+            throw new GlobalException(ResultCode.INVALID_IMAGE_FILE);
+        }
     }
 }

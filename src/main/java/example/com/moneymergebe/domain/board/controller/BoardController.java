@@ -12,6 +12,7 @@ import example.com.moneymergebe.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -31,9 +32,12 @@ public class BoardController {
      * 게시글 생성
      */
     @PostMapping
-    public CommonResponse<BoardSaveRes> saveBoard(@AuthenticationPrincipal UserDetailsImpl userDetails,
-        @RequestBody BoardSaveReq req) {
+    public CommonResponse<BoardSaveRes> saveBoard(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody BoardSaveReq req,
+            @RequestPart MultipartFile multipartFile) {
         req.setUserId(userDetails.getUser().getUserId());
+        req.setImage(multipartFile);
         return CommonResponse.success(boardService.saveBoard(req));
     }
 
@@ -68,10 +72,14 @@ public class BoardController {
      * 게시글 수정
      */
     @PutMapping("/{boardId}")
-    public CommonResponse<BoardModifyRes> modifyBoard(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                      @PathVariable Long boardId, @RequestBody BoardModifyReq req) {
+    public CommonResponse<BoardModifyRes> modifyBoard(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long boardId,
+            @RequestBody BoardModifyReq req,
+            @RequestPart MultipartFile multipartFile) {
         req.setUserId(userDetails.getUser().getUserId());
         req.setBoardId(boardId);
+        req.setImage(multipartFile);
         return CommonResponse.success(boardService.modifyBoard(req));
     }
 
