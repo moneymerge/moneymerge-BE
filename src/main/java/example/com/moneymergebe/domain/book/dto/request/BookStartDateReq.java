@@ -12,6 +12,6 @@ public class BookStartDateReq {
     private Long userId;
 
     @Min(value = 1, message = "유효한 숫자가 아닙니다.")
-    @Max(value = 30, message = "유효한 숫자가 아닙니다.")
+    @Max(value = 31, message = "유효한 숫자가 아닙니다.")
     private int startDate;
 }
