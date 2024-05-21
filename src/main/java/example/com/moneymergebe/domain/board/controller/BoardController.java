@@ -34,11 +34,10 @@ public class BoardController {
     @PostMapping
     public CommonResponse<BoardSaveRes> saveBoard(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody BoardSaveReq req,
+            @RequestPart BoardSaveReq req,
             @RequestPart MultipartFile multipartFile) {
         req.setUserId(userDetails.getUser().getUserId());
-        req.setImage(multipartFile);
-        return CommonResponse.success(boardService.saveBoard(req));
+        return CommonResponse.success(boardService.saveBoard(req, multipartFile));
     }
 
     /**

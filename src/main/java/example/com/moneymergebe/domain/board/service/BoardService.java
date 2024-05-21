@@ -50,13 +50,13 @@ public class BoardService {
      * 게시글 생성
      */
     @Transactional
-    public BoardSaveRes saveBoard(BoardSaveReq req) {
+    public BoardSaveRes saveBoard(BoardSaveReq req, MultipartFile multipartFile) {
         User user = findUser(req.getUserId());
 
         String imageUrl = null;
-        if (req.getImage() != null && !req.getImage().isEmpty()) { // 새로 입력한 이미지 파일이 있는 경우
-            checkImage(req.getImage()); // 이미지 파일인지 확인
-            imageUrl = s3Util.uploadFile(req.getImage(), S3Util.FilePath.BOARD); // 업로드 후 게시글 사진으로 설정
+        if (multipartFile != null && !multipartFile.isEmpty()) { // 새로 입력한 이미지 파일이 있는 경우
+            checkImage(multipartFile); // 이미지 파일인지 확인
+            imageUrl = s3Util.uploadFile(multipartFile, S3Util.FilePath.BOARD); // 업로드 후 게시글 사진으로 설정
         }
 
         Board board = boardRepository.save(Board.builder().boardType(req.getBoardType()).title(req.getTitle()).content(req.getContent()).image(imageUrl).user(user).likes(0).build());
