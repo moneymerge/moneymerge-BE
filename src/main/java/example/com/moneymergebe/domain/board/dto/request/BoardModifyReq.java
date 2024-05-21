@@ -4,6 +4,7 @@ import example.com.moneymergebe.domain.board.entity.BoardType;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -14,5 +15,5 @@ public class BoardModifyReq {
     private String title;
     private String content;
     @Nullable
-    private String image;
+    private MultipartFile image;
 }

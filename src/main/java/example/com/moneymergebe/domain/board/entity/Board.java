@@ -50,11 +50,11 @@ public class Board extends BaseEntity {
         this.likes=likes;
     }
 
-    public void update(BoardModifyReq req) {
+    public void update(BoardModifyReq req, String imageUrl) {
         this.boardType = req.getBoardType();
         this.title = req.getTitle();
         this.content = req.getContent();
-        this.image = req.getImage();
+        this.image = imageUrl;
     }
 
     public void addLike(){
