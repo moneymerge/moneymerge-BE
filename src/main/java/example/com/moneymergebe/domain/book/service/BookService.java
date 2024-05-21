@@ -1,26 +1,7 @@
 package example.com.moneymergebe.domain.book.service;
 
-import example.com.moneymergebe.domain.book.dto.request.BookColorReq;
-import example.com.moneymergebe.domain.book.dto.request.BookMonthGoalReq;
-import example.com.moneymergebe.domain.book.dto.request.BookSaveReq;
-import example.com.moneymergebe.domain.book.dto.request.BookStartDateReq;
-import example.com.moneymergebe.domain.book.dto.request.BookTitleReq;
-import example.com.moneymergebe.domain.book.dto.request.BookUserColorReq;
-import example.com.moneymergebe.domain.book.dto.request.BookUsernameReq;
-import example.com.moneymergebe.domain.book.dto.request.BookUsersReq;
-import example.com.moneymergebe.domain.book.dto.request.BookYearGoalReq;
-import example.com.moneymergebe.domain.book.dto.response.BookColorRes;
-import example.com.moneymergebe.domain.book.dto.response.BookDeleteAgreeRes;
-import example.com.moneymergebe.domain.book.dto.response.BookDeleteRes;
-import example.com.moneymergebe.domain.book.dto.response.BookGetRes;
-import example.com.moneymergebe.domain.book.dto.response.BookMonthGoalRes;
-import example.com.moneymergebe.domain.book.dto.response.BookSaveRes;
-import example.com.moneymergebe.domain.book.dto.response.BookStartDateRes;
-import example.com.moneymergebe.domain.book.dto.response.BookTitleRes;
-import example.com.moneymergebe.domain.book.dto.response.BookUserColorRes;
-import example.com.moneymergebe.domain.book.dto.response.BookUsernameRes;
-import example.com.moneymergebe.domain.book.dto.response.BookUsersRes;
-import example.com.moneymergebe.domain.book.dto.response.BookYearGoalRes;
+import example.com.moneymergebe.domain.book.dto.request.*;
+import example.com.moneymergebe.domain.book.dto.response.*;
 import example.com.moneymergebe.domain.book.entity.Book;
 import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.book.repository.BookRecordRepository;
@@ -36,13 +17,14 @@ import example.com.moneymergebe.global.exception.GlobalException;
 import example.com.moneymergebe.global.validator.BookUserValidator;
 import example.com.moneymergebe.global.validator.BookValidator;
 import example.com.moneymergebe.global.validator.UserValidator;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -84,14 +66,19 @@ public class BookService {
      * 가계부 전체 조회
      */
     @Transactional(readOnly = true)
-    public List<BookGetRes> getAllBooks(Long userId) {
+    public List<BookGetAllRes> getAllBooks(Long userId) {
         User user = findUser(userId);
         List<BookUser> bookUserList = bookUserRepository.findAllByUser(user);
-        List<BookGetRes> bookGetResList = new ArrayList<>();
+        List<UserGetRes> userGetResList = new ArrayList<>();
+        List<BookGetAllRes> bookGetAllResList = new ArrayList<>();
+
         for (BookUser bookUser : bookUserList) {
-            bookGetResList.add(new BookGetRes(bookUser.getBook()));
+            userGetResList.add(new UserGetRes(bookUser.getUser().getUserId(), bookUser.getName(), bookUser.getColor()));
+            bookGetAllResList.add(new BookGetAllRes(bookUser.getBook(), userGetResList));
         }
-        return bookGetResList;
+
+
+        return bookGetAllResList;
     }
 
     /**
@@ -103,13 +90,13 @@ public class BookService {
         User user = findUser(userId);
         Book book = findBook(bookId);
 
-        BookUser bookUser = checkBookMember(user, book); // 가계부 권한 검사
+        BookUser bookUsers = checkBookMember(user, book); // 가계부 권한 검사
 
         //가계부 사용자 목록
         List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
         List<UserGetRes> userGetResList = new ArrayList<>();
-        for (BookUser bookUsers : bookUserList) {
-            userGetResList.add(new UserGetRes(bookUsers.getUser()));
+        for (BookUser bookUser : bookUserList) {
+            userGetResList.add(new UserGetRes(bookUser.getUser().getUserId(), bookUser.getName(), bookUser.getColor()));
         }
 
         //income
@@ -159,13 +146,14 @@ public class BookService {
     @Transactional
     public BookUsersRes updateUsers(BookUsersReq req){
         Book book = findBook(req.getBookId());
-        User user = findUser(req.getUserId());
+        User user = findUser(req.getUserId()); // 초대 요청 멤버
         checkBookMember(user, book);
 
-        for(Long userId : req.getUserList()){
-            User findUser = findUser(userId);
-            bookUserRepository.save(BookUser.builder().book(book).user(findUser).build());
-        }
+        // 초대 받는 멤버가 기존 멤버인지 확인
+        User newUser = userRepository.findByEmail(req.getEmail());
+        newBookMember(newUser, book);
+
+        bookUserRepository.save(BookUser.builder().book(book).user(newUser).build());
 
         return new BookUsersRes();
     }
@@ -206,9 +194,9 @@ public class BookService {
     public BookUsernameRes updateUsername(BookUsernameReq req) {
         Book book = findBook(req.getBookId());
         User user = findUser(req.getUserId());
-        checkBookMember(user, book);
+        BookUser bookUser = checkBookMember(user, book);
 
-        book.updateUsername(req.getUserId(), req.getUsername());
+        bookUser.updateUsername(req.getUsername());
 
         return new BookUsernameRes();
     }
@@ -220,9 +208,9 @@ public class BookService {
     public BookUserColorRes updateUserColor(BookUserColorReq req) {
         Book book = findBook(req.getBookId());
         User user = findUser(req.getUserId());
-        checkBookMember(user, book);
+        BookUser bookUser = checkBookMember(user, book);
 
-        book.updateUserColor(req.getUserId(), req.getUserColor());
+        bookUser.updateUserColor(req.getUserColor());
 
         return new BookUserColorRes();
     }
@@ -280,6 +268,9 @@ public class BookService {
 
         checkBookMember(user, book);
 
+        // 가계부 멤버가 전원 삭제 동의했는지 확인
+        deleteAgreeAll(bookId);
+
         // bookUser, bookRecord 모두 삭제 후 book 삭제해야함
 //        bookUserRepository.deleteAllByBook(book);
 //        bookRecordRepository.deleteAllByBook(book); //RecordService.deleteRecord로?
@@ -315,5 +306,25 @@ public class BookService {
         BookUser bookUser = bookUserRepository.findByUserAndBook(user, book);
         BookUserValidator.checkMember(bookUser);
         return bookUser;
+    }
+
+    /**
+     * @throws GlobalException 초대 받는 user가 book의 기존 멤버일 경우 예외 발생
+     */
+    private BookUser newBookMember (User user, Book book){
+        BookUser bookUser = bookUserRepository.findByUserAndBook(user, book);
+        BookUserValidator.newMember(bookUser);
+        return bookUser;
+    }
+
+    /**
+     * @throws GlobalException 가계부 멤버 전원의 삭제 동의를 얻지 못한 경우 예외 발생
+     */
+    private void deleteAgreeAll (Long bookId){
+        Book book = bookRepository.findByBookId(bookId);
+        List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
+        for (BookUser bookUser : bookUserList) {
+            BookUserValidator.deleteAgreeAll(bookUser);
+        }
     }
 }

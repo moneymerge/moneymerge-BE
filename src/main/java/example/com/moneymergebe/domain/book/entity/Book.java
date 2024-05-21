@@ -1,19 +1,14 @@
 package example.com.moneymergebe.domain.book.entity;
 
 import example.com.moneymergebe.domain.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -60,20 +55,7 @@ public class Book extends BaseEntity {
     public void updateBookColor(String bookColor) {
         this.color=bookColor;
     }
-    public void updateUsername(Long userId, String username) {
-        for(BookUser bookUser : bookUserList){
-            if(bookUser.getUser().getUserId()==userId){
-                bookUser.updateUsername(username);
-            }
-        }
-    }
-    public void updateUserColor(Long userId, String userColor) {
-        for(BookUser bookUser : bookUserList){
-            if(bookUser.getUser().getUserId()==userId){
-                bookUser.updateUserColor(userColor);
-            }
-        }
-    }
+
     public void updateYearGoal(Long yearGoal) {
         this.yearGoal=yearGoal;
     }
