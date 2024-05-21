@@ -58,7 +58,7 @@ public class ReceiptService {
     /**
      * 영수증 조회
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public ReceiptGetRes getReceipt(Long userId, Long receiptId) {
         User user = findUser(userId);
         Receipt receipt = findReceipt(receiptId);

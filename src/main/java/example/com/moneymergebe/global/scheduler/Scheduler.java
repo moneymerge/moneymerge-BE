@@ -40,6 +40,7 @@ public class Scheduler {
     private final BookRecordRepository bookRecordRepository;
     private final ReceiptLikeRepository receiptLikeRepository;
     private final ReceiptLogRepository receiptLogRepository;
+    private final ReceiptRepository receiptRepository;
     private final Random random = new Random();
 
     private static final int MONTH_GOAL_POINT = 200;
@@ -158,13 +159,16 @@ public class Scheduler {
             List<ReceiptLike> receiptLikeList = receiptLikeRepository.findAllByUser(randomUser); // 임의의 사용자가 좋아요를 누른 영수증 목록
             availableReceipts = receiptLikeList.stream()
                 .map(ReceiptLike::getReceipt)
-                .filter(receipt -> !receiptLogRepository.existsByUserAndReceipt(user, receipt))
+                .filter(receipt -> !receiptLogRepository.existsByUserAndReceipt(user, receipt) && receipt.isShared())
                 .toList();
             num++;
             if(num > 5) break;
         } while(availableReceipts.isEmpty()); // 좋아요를 누른 영수증이 없으면 다시 임의의 사용자를 고름
 
-        if(availableReceipts.isEmpty()) return null;
+        if(availableReceipts.isEmpty()) {
+            List<Receipt> sharedReceipts = receiptRepository.findBySharedTrueAndUserNot(user);
+            return sharedReceipts.get(random.nextInt(sharedReceipts.size()));
+        }
         return availableReceipts.get(random.nextInt(availableReceipts.size())); // 임의의 영수증
     }
 
