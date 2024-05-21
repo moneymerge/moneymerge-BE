@@ -74,7 +74,7 @@ public class BoardController {
     public CommonResponse<BoardModifyRes> modifyBoard(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long boardId,
-            @RequestBody BoardModifyReq req,
+            @RequestPart BoardModifyReq req,
             @RequestPart MultipartFile multipartFile) {
         req.setUserId(userDetails.getUser().getUserId());
         req.setBoardId(boardId);
