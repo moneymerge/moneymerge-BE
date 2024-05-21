@@ -1,5 +1,6 @@
 package example.com.moneymergebe.domain.record.entity;
 
+import example.com.moneymergebe.domain.category.entity.Category;
 import example.com.moneymergebe.domain.common.BaseEntity;
 import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.user.entity.User;
@@ -18,6 +19,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -52,16 +55,17 @@ public class Record extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-//    @ManyToOne
-//    @JoinColumn(name = "category_id")
-//    private Category category;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
 
     @Builder
     private Record(LocalDate date, RecordType recordType, int amount, AssetType assetType,
-        String content, String memo, String image, User user) {
+        String content, String memo, String image, User user, Category category) {
         this.date = date;
         this.recordType = recordType;
         this.amount = amount;
@@ -70,9 +74,10 @@ public class Record extends BaseEntity {
         this.memo = memo;
         this.image = image;
         this.user = user;
+        this.category = category;
     }
 
-    public void update(RecordModifyReq req) {
+    public void update(RecordModifyReq req, Category category) {
         this.date = req.getDate();
         this.recordType = req.getRecordType();
         this.amount = req.getAmount();
@@ -80,5 +85,6 @@ public class Record extends BaseEntity {
         this.content = req.getContent();
         this.memo = req.getMemo();
         this.image = req.getImage();
+        this.category = category;
     }
 }

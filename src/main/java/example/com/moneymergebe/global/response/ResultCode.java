@@ -12,11 +12,11 @@ public enum ResultCode {
     INVALID_INPUT(HttpStatus.BAD_REQUEST, 1000, "잘못된 입력값입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, 1001, "권한이 없는 사용자입니다."),
     REFRESH_TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, 1002, "Refresh Token이 필요합니다."),
-    LOG_IN_REQUIRED(HttpStatus.UNAUTHORIZED, 1004, "다시 로그인 해주세요."),
-    SYSTEM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 1005, "서버 시스템 문제가 발생했습니다."),
-    NOT_FOUND_FILE(HttpStatus.NOT_FOUND, 1006, "파일을 찾을 수 없습니다."),
-    MAXIMUM_UPLOAD_FILE_SIZE(HttpStatus.BAD_REQUEST, 1007, "10MB를 초과할 수 없습니다."),
-    INVALID_IMAGE_FILE(HttpStatus.BAD_REQUEST, 1008, "지원하지 않는 이미지 파일 형식입니다."),
+    LOG_IN_REQUIRED(HttpStatus.UNAUTHORIZED, 1003, "다시 로그인 해주세요."),
+    SYSTEM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 1004, "서버 시스템 문제가 발생했습니다."),
+    NOT_FOUND_FILE(HttpStatus.NOT_FOUND, 1005, "파일을 찾을 수 없습니다."),
+    MAXIMUM_UPLOAD_FILE_SIZE(HttpStatus.BAD_REQUEST, 1006, "10MB를 초과할 수 없습니다."),
+    INVALID_IMAGE_FILE(HttpStatus.BAD_REQUEST, 1007, "지원하지 않는 이미지 파일 형식입니다."),
 
     // 사용자 2000번대
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, 2000, "사용자를 찾을 수 없습니다."),
@@ -52,6 +52,11 @@ public enum ResultCode {
     NOT_FOUND_BOARD_COMMENT(HttpStatus.NOT_FOUND, 9000, "게시글 댓글을 찾을 수 없습니다."),
     UNMATCHED_BOARD_COMMENT(HttpStatus.BAD_REQUEST, 9001, "해당 게시글의 댓글이 아닙니다.");
 
+    // 카테고리 10000번대
+    NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, 10000, "카테고리를 찾을 수 없습니다."),
+
+    // 알림 11000번대
+    NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND, 11000, "알림을 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final int code;

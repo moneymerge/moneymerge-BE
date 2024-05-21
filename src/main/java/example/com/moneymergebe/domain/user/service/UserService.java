@@ -4,12 +4,16 @@ import example.com.moneymergebe.domain.book.entity.Book;
 import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.character.entity.Character;
 import example.com.moneymergebe.domain.character.repository.CharacterRepository;
+import example.com.moneymergebe.domain.notification.entity.Notification;
+import example.com.moneymergebe.domain.notification.repository.NotificationRepository;
 import example.com.moneymergebe.domain.user.dto.request.UserImageReq;
 import example.com.moneymergebe.domain.user.dto.request.UserNameReq;
 import example.com.moneymergebe.domain.user.dto.response.UserAlarmRes;
 import example.com.moneymergebe.domain.user.dto.response.UserBaseInfoRes;
 import example.com.moneymergebe.domain.user.dto.response.UserCharacterRes;
+import example.com.moneymergebe.domain.user.dto.response.UserDeleteRes;
 import example.com.moneymergebe.domain.user.dto.response.UserImageRes;
+import example.com.moneymergebe.domain.user.dto.response.UserInfoRes;
 import example.com.moneymergebe.domain.user.dto.response.UserNameRes;
 import example.com.moneymergebe.domain.user.dto.response.UserPointRes;
 import example.com.moneymergebe.domain.user.dto.response.UserProfileRes;
@@ -34,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService {
     private final UserRepository userRepository;
     private final CharacterRepository characterRepository;
+    private final NotificationRepository notificationRepository;
     private final S3Util s3Util;
 
     @Value("${default.image.url}")
@@ -52,7 +57,19 @@ public class UserService {
         for(BookUser bookUser : user.getBookUserList()) {
             bookList.add(bookUser.getBook());
         }
-        return new UserBaseInfoRes(user, bookList);
+        int count = notificationRepository.countAllByUserAndIsReadIsFalse(user);
+        return new UserBaseInfoRes(user, count > 0, bookList);
+    }
+
+    /**
+     * 게시판 사용자 정보 조회
+     */
+    @Transactional(readOnly = true)
+    public UserInfoRes getUserInfo(Long userId) {
+        User user = findUser(userId);
+        Character character = findCharacter(user.getCharacterId());
+
+        return new UserInfoRes(user ,character);
     }
 
     /**
@@ -132,6 +149,17 @@ public class UserService {
         User user = findUser(userId);
         Character character = findCharacter(user.getCharacterId());
         return new UserCharacterRes(character);
+    }
+
+    /**
+     * 회원탈퇴
+     */
+    @Transactional
+    public UserDeleteRes deleteUser(Long userId) {
+        User user = findUser(userId);
+        userRepository.delete(user);
+
+        return new UserDeleteRes();
     }
 
     /**

@@ -1,8 +1,12 @@
-package example.com.moneymergebe.domain.receipt.entity;
+package example.com.moneymergebe.domain.notification.entity;
 
 import example.com.moneymergebe.domain.common.BaseEntity;
+import example.com.moneymergebe.domain.notification.dto.request.NotificationReq;
 import example.com.moneymergebe.domain.user.entity.User;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,7 +14,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -19,25 +22,34 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "tb_receipt_like")
-public class ReceiptLike extends BaseEntity {
+@Table(name = "tb_notification")
+public class Notification extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long receiptLikeId;
+    private Long notificationId;
+
+    private String content;
+
+    @Column(nullable = false)
+    private boolean isRead;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private NotificationType type;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "receipt_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Receipt receipt;
-
-    @Builder
-    private ReceiptLike(User user, Receipt receipt) {
+    public Notification(NotificationReq req, boolean isRead, User user) {
+        this.content = req.getContent();
+        this.isRead = isRead;
+        this.type = req.getType();
         this.user = user;
-        this.receipt = receipt;
+    }
+
+    public void read() {
+        this.isRead = true;
     }
 }

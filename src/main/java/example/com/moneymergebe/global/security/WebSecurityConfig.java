@@ -2,6 +2,7 @@ package example.com.moneymergebe.global.security;
 
 import example.com.moneymergebe.global.exception.ExceptionHandlerFilter;
 import example.com.moneymergebe.global.jwt.JwtUtil;
+import example.com.moneymergebe.global.redis.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     private final JwtUtil jwtUtil;
+    private final RedisUtil redisUtil;
     private final UserDetailsService userDetailsService;
 
     @Bean
@@ -31,7 +33,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthorizationFilter jwtAuthenticationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
+        return new JwtAuthorizationFilter(jwtUtil, redisUtil, userDetailsService);
     }
 
     @Bean
