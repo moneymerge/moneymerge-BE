@@ -1,5 +1,6 @@
 package example.com.moneymergebe.domain.board.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import example.com.moneymergebe.domain.board.entity.Board;
 import example.com.moneymergebe.domain.board.entity.BoardType;
 import lombok.Getter;
@@ -13,7 +14,8 @@ public class BoardGetRes {
     private BoardType boardType;
     private String title;
     private String content;
-    private Boolean isImage;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String image;
     private Long userId;
     private String username;
     private LocalDateTime createdAt;
@@ -27,7 +29,7 @@ public class BoardGetRes {
         this.boardType = board.getBoardType();
         this.title = board.getTitle();
         this.content = board.getContent();
-        this.isImage =  board.getImage() == null ? false : true;
+        this.image =  board.getImage();
         this.userId = board.getUser().getUserId();
         this.username = board.getUser().getUsername();
         this.createdAt = board.getCreatedAt();

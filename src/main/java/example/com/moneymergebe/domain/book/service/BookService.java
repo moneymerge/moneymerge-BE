@@ -269,10 +269,6 @@ public class BookService {
         // 가계부 멤버가 전원 삭제 동의했는지 확인
         deleteAgreeAll(bookId);
 
-        // bookUser, bookRecord 모두 삭제 후 book 삭제해야함
-        bookUserRepository.deleteAllByBook(book);
-        bookRecordRepository.deleteAllByBook(book); //RecordService.deleteRecord로?
-
         bookRepository.delete(book);
 
         return new BookDeleteRes();
