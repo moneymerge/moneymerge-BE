@@ -50,7 +50,7 @@ public enum ResultCode {
 
     // 게시글 댓글 9000번대
     NOT_FOUND_BOARD_COMMENT(HttpStatus.NOT_FOUND, 9000, "게시글 댓글을 찾을 수 없습니다."),
-    UNMATCHED_BOARD_COMMENT(HttpStatus.BAD_REQUEST, 9001, "해당 게시글의 댓글이 아닙니다.");
+    UNMATCHED_BOARD_COMMENT(HttpStatus.BAD_REQUEST, 9001, "해당 게시글의 댓글이 아닙니다."),
 
     // 카테고리 10000번대
     NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, 10000, "카테고리를 찾을 수 없습니다."),
