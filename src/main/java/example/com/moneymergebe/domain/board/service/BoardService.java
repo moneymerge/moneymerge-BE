@@ -162,15 +162,6 @@ public class BoardService {
 
         UserValidator.checkUser(user, board.getUser()); // 작성자와 삭제자가 동일한지 검사
 
-        // 게시글 댓글 좋아요 삭제
-        List<BoardComment> boardCommentList = boardCommentRepository.findAllByBoard(board);
-        for(BoardComment boardComment : boardCommentList){
-            boardCommentLikeRepository.deleteAllByBoardComment(boardComment);
-        }
-        // 게시글 댓글 삭제
-        boardCommentRepository.deleteAllByBoard(board);
-        // 게시글 좋아요 삭제
-        boardLikeRepository.deleteAllByBoard(board);
         // 게시글 삭제
         boardRepository.delete(board);
 
@@ -241,8 +232,6 @@ public class BoardService {
         BoardCommentValidator.checkBoardComment(board, boardComment.getBoard());
         UserValidator.checkUser(user, boardComment.getUser());
 
-        // 게시글 댓글 좋아요 삭제
-        boardCommentLikeRepository.deleteAllByBoardComment(boardComment);
         // 게시글 댓글 삭제
         boardCommentRepository.delete(boardComment);
 

@@ -18,7 +18,7 @@ public class BookSaveReq {
     private Long monthGoal;
 
     @Min(value = 1, message = "유효한 숫자가 아닙니다.")
-    @Max(value = 30, message = "유효한 숫자가 아닙니다.")
+    @Max(value = 31, message = "유효한 숫자가 아닙니다.")
     private int startDate;
     private Long[] userList; // 가계부 공유하는 사용자들 ID (가계부 생성한 사용자 포함)
 }
