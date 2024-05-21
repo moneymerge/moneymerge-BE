@@ -43,6 +43,24 @@ public class Scheduler {
         }
     }
 
+    // 매일 자정 영수증 배정
+    @Scheduled(cron = "0 0 0 * * *")
+    @Transactional
+    public void deliverReceipt() {
+        List<User> userList = userRepository.findAll();
+        for(User user : userList) {
+            if(user.getReceivedReceiptId() == null) {
+                if(user.getClusterId() == null) {
+                    Long recommendedUser = randomUser(userList, user);
+
+                }
+                else {
+                    List<User> cluster = userRepository.findAllByClusterId(user.getClusterId());
+                }
+            }
+        }
+    }
+
     // 매달 기준일에 월 목표 달성 여부 확인
     @Scheduled(cron = "0 0 0 * * *")
     public void checkMonthGoal() {
@@ -116,5 +134,9 @@ public class Scheduler {
         }
 
         return expensesSum;
+    }
+
+    private Long randomUser(List<User> cluster, User user) {
+        Long recommendedUser
     }
 }

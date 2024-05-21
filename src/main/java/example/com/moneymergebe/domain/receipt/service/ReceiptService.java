@@ -64,6 +64,9 @@ public class ReceiptService {
         Receipt receipt = findReceipt(receiptId);
 
         ReceiptValidator.checkAuthority(user, receipt); // 권한 검사(나의 영수증이거나 공유받은 영수증인지 검사)
+        if(user.getReceivedReceiptId().equals(receiptId)) {
+            user.setReceivedReceiptId(null);
+        }
         int likeCount = receiptLikeRepository.countByReceipt(receipt);
 
         return new ReceiptGetRes(receipt, likeCount);
