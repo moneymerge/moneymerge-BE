@@ -59,6 +59,8 @@ public class User extends BaseEntity {
     @Setter
     private Long receivedReceiptId = null;
 
+    private Integer clusterId = null;
+
     @OneToMany(mappedBy = "user")
     private List<BookUser> bookUserList = new ArrayList<>();
 

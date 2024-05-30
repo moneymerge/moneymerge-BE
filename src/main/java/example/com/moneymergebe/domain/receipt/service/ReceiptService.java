@@ -58,12 +58,15 @@ public class ReceiptService {
     /**
      * 영수증 조회
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public ReceiptGetRes getReceipt(Long userId, Long receiptId) {
         User user = findUser(userId);
         Receipt receipt = findReceipt(receiptId);
 
         ReceiptValidator.checkAuthority(user, receipt); // 권한 검사(나의 영수증이거나 공유받은 영수증인지 검사)
+        if(user.getReceivedReceiptId().equals(receiptId)) {
+            user.setReceivedReceiptId(null);
+        }
         int likeCount = receiptLikeRepository.countByReceipt(receipt);
 
         return new ReceiptGetRes(receipt, likeCount);
@@ -128,7 +131,6 @@ public class ReceiptService {
 
         ReceiptValidator.checkAuthority(user, receipt.getUser()); // 권한 검사
 
-//        receiptLikeRepository.deleteAllByReceipt(receipt);
         receiptRepository.delete(receipt);
 
         return new ReceiptDeleteRes();

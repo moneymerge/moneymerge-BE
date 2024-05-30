@@ -1,7 +1,13 @@
-package example.com.moneymergebe.domain.board.entity;
+package example.com.moneymergebe.domain.receipt.entity;
 
 import example.com.moneymergebe.domain.user.entity.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,11 +18,11 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "tb_board_like")
-public class BoardLike {
+@Table(name = "tb_receipt_log")
+public class ReceiptLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long boardLikeId;
+    private Long receiptLogId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -24,14 +30,13 @@ public class BoardLike {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "board_id")
+    @JoinColumn(name = "receipt_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Board board;
+    private Receipt receipt;
 
     @Builder
-    private BoardLike(User user, Board board) {
+    private ReceiptLog(User user, Receipt receipt) {
         this.user = user;
-        this.board = board;
+        this.receipt = receipt;
     }
 }
-

@@ -55,8 +55,7 @@ public class BookService {
 
         for (Long userId : req.getUserList()) {
             User user = findUser(userId);
-            BookUser bookUser = bookUserRepository.save(
-                BookUser.builder().book(book).user(user).build());
+            bookUserRepository.save(BookUser.builder().book(book).user(user).build());
         }
 
         return new BookSaveRes();
@@ -77,7 +76,6 @@ public class BookService {
             bookGetAllResList.add(new BookGetAllRes(bookUser.getBook(), userGetResList));
         }
 
-
         return bookGetAllResList;
     }
 
@@ -90,7 +88,7 @@ public class BookService {
         User user = findUser(userId);
         Book book = findBook(bookId);
 
-        BookUser bookUsers = checkBookMember(user, book); // 가계부 권한 검사
+        checkBookMember(user, book); // 가계부 권한 검사
 
         //가계부 사용자 목록
         List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
@@ -112,11 +110,11 @@ public class BookService {
         Long outcome = 0L;
         Long total;
         for(RecordGetMonthRes res : resList){
-            RecordType recordType = res.getRecordType();
-            if(recordType.equals(RecordType.INCOME)){
+            String recordType = res.getRecordType();
+            if(recordType.equals(RecordType.INCOME.getValue())){
                 income += res.getAmount();
             }
-            else if(recordType.equals(RecordType.EXPENSE)){
+            else if(recordType.equals(RecordType.EXPENSE.getValue())){
                 outcome += res.getAmount();
             }
         }
@@ -271,10 +269,6 @@ public class BookService {
         // 가계부 멤버가 전원 삭제 동의했는지 확인
         deleteAgreeAll(bookId);
 
-        // bookUser, bookRecord 모두 삭제 후 book 삭제해야함
-//        bookUserRepository.deleteAllByBook(book);
-//        bookRecordRepository.deleteAllByBook(book); //RecordService.deleteRecord로?
-
         bookRepository.delete(book);
 
         return new BookDeleteRes();
@@ -311,10 +305,9 @@ public class BookService {
     /**
      * @throws GlobalException 초대 받는 user가 book의 기존 멤버일 경우 예외 발생
      */
-    private BookUser newBookMember (User user, Book book){
+    private void newBookMember (User user, Book book){
         BookUser bookUser = bookUserRepository.findByUserAndBook(user, book);
         BookUserValidator.newMember(bookUser);
-        return bookUser;
     }
 
     /**
