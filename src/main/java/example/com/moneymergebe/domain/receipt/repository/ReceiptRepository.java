@@ -12,4 +12,6 @@ public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
     List<Receipt> findAllByUserAndDateBetweenOrderByDate(User user, LocalDate startDate, LocalDate endDate);
 
     List<Receipt> findBySharedTrueAndUserNot(User user);
+
+    List<Receipt> findAllBySharedTrueAndUserNot(User user);
 }

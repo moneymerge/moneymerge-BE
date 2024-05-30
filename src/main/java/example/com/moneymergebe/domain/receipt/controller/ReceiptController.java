@@ -2,12 +2,15 @@ package example.com.moneymergebe.domain.receipt.controller;
 
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptModifyReq;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptSaveReq;
+import example.com.moneymergebe.domain.receipt.dto.request.SaveRandomReceiptReq;
+import example.com.moneymergebe.domain.receipt.dto.response.RandomReceiptRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptDeleteRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptGetMonthRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptGetRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptLikeRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptModifyRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptSaveRes;
+import example.com.moneymergebe.domain.receipt.dto.response.SaveRandomReceiptRes;
 import example.com.moneymergebe.domain.receipt.service.ReceiptService;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
@@ -15,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -92,5 +96,25 @@ public class ReceiptController {
     @DeleteMapping("/{receiptId}")
     public CommonResponse<ReceiptDeleteRes> deleteReceipt(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long receiptId) {
         return CommonResponse.success(receiptService.deleteReceipt(userDetails.getUser().getUserId(), receiptId));
+    }
+
+    /**
+     * 랜덤 영수증 뽑기
+     * @param userDetails 사용자 정보
+     * @return 랜덤 영수증 번호 6개
+     */
+    @GetMapping("/random")
+    public CommonResponse<RandomReceiptRes> getRandomReceipts(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return CommonResponse.success(receiptService.getRandomReceipts(userDetails.getUser().getUserId()));
+    }
+
+    /**
+     * 랜덤 영수증 배정
+     * @param userDetails 사용자 정보
+     * @param req 고른 영수증 번호
+     */
+    @PatchMapping("/random")
+    public CommonResponse<SaveRandomReceiptRes> saveRandomReceipt(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody SaveRandomReceiptReq req) {
+        return CommonResponse.success((receiptService.saveRandomReceipt(userDetails.getUser().getUserId(), req)));
     }
 }

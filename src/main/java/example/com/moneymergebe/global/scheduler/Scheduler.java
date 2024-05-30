@@ -46,35 +46,36 @@ public class Scheduler {
     private static final int MONTH_GOAL_POINT = 200;
     private static final int YEAR_GOAL_POINT = 1000;
 
-    // 매일 자정 출석여부를 false로
+    // 매일 자정 출석여부를 false로 & 공유 받은 영수증 null로
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void resetAttendance() {
         List<User> userList = userRepository.findAll();
         for(User user : userList) {
             user.updateAttendance();
+            user.updateReceivedReceiptId();
         }
     }
 
-    // 매일 자정 영수증 배정
-    @Scheduled(cron = "0 0 0 * * *")
-    @Transactional
-    public void deliverReceipt() {
-        List<User> userList = userRepository.findAll();
-        if(userList.isEmpty() || userList.size() == 1) return;
-        for(User user : userList) {
-            if(user.getReceivedReceiptId() == null) {
-                Receipt receipt;
-                if(user.getClusterId() != null) receipt = randomReceipt(userRepository.findAllByClusterId(user.getClusterId()), user);
-                else receipt = randomReceipt(userList, user);
-
-                if(receipt != null) {
-                    user.setReceivedReceiptId(receipt.getReceiptId());
-                    receiptLogRepository.save(ReceiptLog.builder().receipt(receipt).user(user).build());
-                }
-            }
-        }
-    }
+//    // 매일 자정 영수증 배정
+//    @Scheduled(cron = "0 0 0 * * *")
+//    @Transactional
+//    public void deliverReceipt() {
+//        List<User> userList = userRepository.findAll();
+//        if(userList.isEmpty() || userList.size() == 1) return;
+//        for(User user : userList) {
+//            if(user.getReceivedReceiptId() == null) {
+//                Receipt receipt;
+//                if(user.getClusterId() != null) receipt = randomReceipt(userRepository.findAllByClusterId(user.getClusterId()), user);
+//                else receipt = randomReceipt(userList, user);
+//
+//                if(receipt != null) {
+//                    user.setReceivedReceiptId(receipt.getReceiptId());
+//                    receiptLogRepository.save(ReceiptLog.builder().receipt(receipt).user(user).build());
+//                }
+//            }
+//        }
+//    }
 
     // 매달 기준일에 월 목표 달성 여부 확인
     @Scheduled(cron = "0 0 0 * * *")

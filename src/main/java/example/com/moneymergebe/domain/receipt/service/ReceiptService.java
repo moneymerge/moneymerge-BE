@@ -2,12 +2,15 @@ package example.com.moneymergebe.domain.receipt.service;
 
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptModifyReq;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptSaveReq;
+import example.com.moneymergebe.domain.receipt.dto.request.SaveRandomReceiptReq;
+import example.com.moneymergebe.domain.receipt.dto.response.RandomReceiptRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptDeleteRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptGetMonthRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptGetRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptLikeRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptModifyRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptSaveRes;
+import example.com.moneymergebe.domain.receipt.dto.response.SaveRandomReceiptRes;
 import example.com.moneymergebe.domain.receipt.entity.Receipt;
 import example.com.moneymergebe.domain.receipt.entity.ReceiptLike;
 import example.com.moneymergebe.domain.receipt.repository.ReceiptLikeRepository;
@@ -19,7 +22,9 @@ import example.com.moneymergebe.global.validator.ReceiptValidator;
 import example.com.moneymergebe.global.validator.UserValidator;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -134,6 +139,34 @@ public class ReceiptService {
         receiptRepository.delete(receipt);
 
         return new ReceiptDeleteRes();
+    }
+
+    /**
+     * 랜덤 영수증 목록 (최대 6개)
+     */
+    @Transactional(readOnly = true)
+    public RandomReceiptRes getRandomReceipts(Long userId) {
+        User user = findUser(userId);
+        List<Receipt> receiptList = receiptRepository.findAllBySharedTrueAndUserNot(user);
+
+        // 무작위로 섞기
+        Collections.shuffle(receiptList);
+
+        // 첫 6개의 엔티티 ID를 선택하고 리스트로 저장
+        return new RandomReceiptRes(receiptList.stream()
+            .limit(6)
+            .map(Receipt::getReceiptId).toArray(Long[]::new));
+    }
+
+    /**
+     * 뽑은 영수증 배정
+     */
+    @Transactional
+    public SaveRandomReceiptRes saveRandomReceipt(Long userId, SaveRandomReceiptReq req) {
+        User user = findUser(userId);
+        user.updateReceivedReceiptId(req.getPickReceiptId());
+
+        return new SaveRandomReceiptRes();
     }
 
     /**
