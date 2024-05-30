@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public class ReceiptGetRes {
     private Long receiptId;
-    private LocalDate date;
+    private String date;
     private String content;
     private boolean shared;
     private int positive;
@@ -16,7 +16,7 @@ public class ReceiptGetRes {
 
     public ReceiptGetRes(Receipt receipt, int likeCount) {
         this.receiptId = receipt.getReceiptId();
-        this.date = receipt.getDate();
+        this.date = receipt.getDate().toString();
         this.content = receipt.getContent();
         this.shared = receipt.isShared();
         this.positive = receipt.getPositive();

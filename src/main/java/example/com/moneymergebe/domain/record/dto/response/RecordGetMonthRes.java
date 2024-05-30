@@ -9,16 +9,16 @@ import lombok.Getter;
 @Getter
 public class RecordGetMonthRes {
     private Long recordId;
-    private LocalDate date;
-    private RecordType recordType;
+    private String date;
+    private String recordType;
     private int amount;
     private Long userId;
     private String userColor;
 
     public RecordGetMonthRes(Record record, BookUser bookUser) {
         this.recordId = record.getRecordId();
-        this.date = record.getDate();
-        this.recordType = record.getRecordType();
+        this.date = record.getDate().toString();
+        this.recordType = record.getRecordType().getValue();
         this.amount = record.getAmount();
         this.userId = bookUser.getUser().getUserId();
         this.userColor = bookUser.getColor();
