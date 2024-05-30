@@ -152,32 +152,32 @@ public class Scheduler {
         return expensesSum;
     }
 
-    private Receipt randomReceipt(List<User> cluster, User user) {
-        List<Receipt> availableReceipts;
-        int num = 0;
-        do {
-            User randomUser = randomUser(cluster, user); // 사용자와 같은 그룹에 속하는 임의의 사용자
-            List<ReceiptLike> receiptLikeList = receiptLikeRepository.findAllByUser(randomUser); // 임의의 사용자가 좋아요를 누른 영수증 목록
-            availableReceipts = receiptLikeList.stream()
-                .map(ReceiptLike::getReceipt)
-                .filter(receipt -> !receiptLogRepository.existsByUserAndReceipt(user, receipt) && receipt.isShared())
-                .toList();
-            num++;
-            if(num > 5) break;
-        } while(availableReceipts.isEmpty()); // 좋아요를 누른 영수증이 없으면 다시 임의의 사용자를 고름
+//    private Receipt randomReceipt(List<User> cluster, User user) {
+//        List<Receipt> availableReceipts;
+//        int num = 0;
+//        do {
+//            User randomUser = randomUser(cluster, user); // 사용자와 같은 그룹에 속하는 임의의 사용자
+//            List<ReceiptLike> receiptLikeList = receiptLikeRepository.findAllByUser(randomUser); // 임의의 사용자가 좋아요를 누른 영수증 목록
+//            availableReceipts = receiptLikeList.stream()
+//                .map(ReceiptLike::getReceipt)
+//                .filter(receipt -> !receiptLogRepository.existsByUserAndReceipt(user, receipt) && receipt.isShared())
+//                .toList();
+//            num++;
+//            if(num > 5) break;
+//        } while(availableReceipts.isEmpty()); // 좋아요를 누른 영수증이 없으면 다시 임의의 사용자를 고름
+//
+//        if(availableReceipts.isEmpty()) {
+//            List<Receipt> sharedReceipts = receiptRepository.findBySharedTrueAndUserNot(user);
+//            return sharedReceipts.get(random.nextInt(sharedReceipts.size()));
+//        }
+//        return availableReceipts.get(random.nextInt(availableReceipts.size())); // 임의의 영수증
+//    }
 
-        if(availableReceipts.isEmpty()) {
-            List<Receipt> sharedReceipts = receiptRepository.findBySharedTrueAndUserNot(user);
-            return sharedReceipts.get(random.nextInt(sharedReceipts.size()));
-        }
-        return availableReceipts.get(random.nextInt(availableReceipts.size())); // 임의의 영수증
-    }
-
-    private User randomUser(List<User> cluster, User user) {
-        User randomUser;
-        do{
-            randomUser = cluster.get(random.nextInt(cluster.size()));
-        } while(Objects.equals(randomUser.getUserId(), user.getUserId()));
-        return randomUser;
-    }
+//    private User randomUser(List<User> cluster, User user) {
+//        User randomUser;
+//        do{
+//            randomUser = cluster.get(random.nextInt(cluster.size()));
+//        } while(Objects.equals(randomUser.getUserId(), user.getUserId()));
+//        return randomUser;
+//    }
 }

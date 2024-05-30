@@ -55,7 +55,7 @@ public class CategoryService {
     @Transactional
     public List<CategoryGetRes> getCategories(Long bookId){
         Book book = findBook(bookId);
-        List<Category> categoryList = categoryRepository.findByBook(book);
+        List<Category> categoryList = categoryRepository.findAllByBook(book);
         List<CategoryGetRes> categoryGetResList = new ArrayList<>();
         for(Category category : categoryList){
             categoryGetResList.add(new CategoryGetRes(category));
