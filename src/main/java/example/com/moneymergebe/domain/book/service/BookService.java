@@ -110,11 +110,11 @@ public class BookService {
         Long outcome = 0L;
         Long total;
         for(RecordGetMonthRes res : resList){
-            RecordType recordType = res.getRecordType();
-            if(recordType.equals(RecordType.INCOME)){
+            String recordType = res.getRecordType();
+            if(recordType.equals(RecordType.INCOME.getValue())){
                 income += res.getAmount();
             }
-            else if(recordType.equals(RecordType.EXPENSE)){
+            else if(recordType.equals(RecordType.EXPENSE.getValue())){
                 outcome += res.getAmount();
             }
         }

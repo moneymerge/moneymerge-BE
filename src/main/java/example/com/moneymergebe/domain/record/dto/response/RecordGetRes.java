@@ -12,10 +12,10 @@ import lombok.Getter;
 @Getter
 public class RecordGetRes {
     private Long recordId;
-    private LocalDate date;
-    private RecordType recordType;
+    private String date;
+    private String recordType;
     private int amount;
-    private AssetType assetType;
+    private String assetType;
     private Long categoryId;
     private String categoryName;
     private String content;
@@ -31,10 +31,10 @@ public class RecordGetRes {
 
     public RecordGetRes(Record record, List<BookGetRes> bookGetResList, List<RecordCommentGetRes> commentGetResList, int likes, int dislikes) {
         this.recordId = record.getRecordId();
-        this.date = record.getDate();
-        this.recordType = record.getRecordType();
+        this.date = record.getDate().toString();
+        this.recordType = record.getRecordType().getValue();
         this.amount = record.getAmount();
-        this.assetType = record.getAssetType();
+        this.assetType = record.getAssetType().getValue();
         this.categoryId = record.getCategory().getCategoryId();
         this.categoryName = record.getCategory().getCategory();
         this.content = record.getContent();

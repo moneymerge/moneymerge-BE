@@ -3,6 +3,7 @@ package example.com.moneymergebe.domain.record.dto.response;
 import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.record.entity.RecordComment;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import lombok.Getter;
 
 @Getter
@@ -12,8 +13,8 @@ public class RecordCommentGetRes {
     private String username;
     private String profileUrl;
     private String comment;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+    private String createdAt;
+    private String modifiedAt;
 
     public RecordCommentGetRes(RecordComment recordComment, BookUser bookUser) {
         this.commentId = recordComment.getRecordCommentId();
@@ -21,7 +22,7 @@ public class RecordCommentGetRes {
         this.username = bookUser.getName(); // 가계부 내 이름
         this.profileUrl = recordComment.getUser().getProfileUrl();
         this.comment = recordComment.getContent();
-        this.createdAt = recordComment.getCreatedAt();
-        this.modifiedAt = recordComment.getModifiedAt();
+        this.createdAt = recordComment.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        this.modifiedAt = recordComment.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 }
