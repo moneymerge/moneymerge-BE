@@ -6,6 +6,12 @@ import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.book.repository.BookRecordRepository;
 import example.com.moneymergebe.domain.book.repository.BookRepository;
 import example.com.moneymergebe.domain.book.repository.BookUserRepository;
+import example.com.moneymergebe.domain.receipt.entity.Receipt;
+import example.com.moneymergebe.domain.receipt.entity.ReceiptLike;
+import example.com.moneymergebe.domain.receipt.entity.ReceiptLog;
+import example.com.moneymergebe.domain.receipt.repository.ReceiptLikeRepository;
+import example.com.moneymergebe.domain.receipt.repository.ReceiptLogRepository;
+import example.com.moneymergebe.domain.receipt.repository.ReceiptRepository;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
 import example.com.moneymergebe.domain.record.entity.Record;
 import example.com.moneymergebe.domain.record.entity.RecordType;
@@ -15,6 +21,9 @@ import example.com.moneymergebe.domain.user.repository.UserRepository;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -29,6 +38,10 @@ public class Scheduler {
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final BookRecordRepository bookRecordRepository;
+    private final ReceiptLikeRepository receiptLikeRepository;
+    private final ReceiptLogRepository receiptLogRepository;
+    private final ReceiptRepository receiptRepository;
+    private final Random random = new Random();
 
     private static final int MONTH_GOAL_POINT = 200;
     private static final int YEAR_GOAL_POINT = 1000;
@@ -40,6 +53,26 @@ public class Scheduler {
         List<User> userList = userRepository.findAll();
         for(User user : userList) {
             user.updateAttendance();
+        }
+    }
+
+    // 매일 자정 영수증 배정
+    @Scheduled(cron = "0 0 0 * * *")
+    @Transactional
+    public void deliverReceipt() {
+        List<User> userList = userRepository.findAll();
+        if(userList.isEmpty() || userList.size() == 1) return;
+        for(User user : userList) {
+            if(user.getReceivedReceiptId() == null) {
+                Receipt receipt;
+                if(user.getClusterId() != null) receipt = randomReceipt(userRepository.findAllByClusterId(user.getClusterId()), user);
+                else receipt = randomReceipt(userList, user);
+
+                if(receipt != null) {
+                    user.setReceivedReceiptId(receipt.getReceiptId());
+                    receiptLogRepository.save(ReceiptLog.builder().receipt(receipt).user(user).build());
+                }
+            }
         }
     }
 
@@ -116,5 +149,34 @@ public class Scheduler {
         }
 
         return expensesSum;
+    }
+
+    private Receipt randomReceipt(List<User> cluster, User user) {
+        List<Receipt> availableReceipts;
+        int num = 0;
+        do {
+            User randomUser = randomUser(cluster, user); // 사용자와 같은 그룹에 속하는 임의의 사용자
+            List<ReceiptLike> receiptLikeList = receiptLikeRepository.findAllByUser(randomUser); // 임의의 사용자가 좋아요를 누른 영수증 목록
+            availableReceipts = receiptLikeList.stream()
+                .map(ReceiptLike::getReceipt)
+                .filter(receipt -> !receiptLogRepository.existsByUserAndReceipt(user, receipt) && receipt.isShared())
+                .toList();
+            num++;
+            if(num > 5) break;
+        } while(availableReceipts.isEmpty()); // 좋아요를 누른 영수증이 없으면 다시 임의의 사용자를 고름
+
+        if(availableReceipts.isEmpty()) {
+            List<Receipt> sharedReceipts = receiptRepository.findBySharedTrueAndUserNot(user);
+            return sharedReceipts.get(random.nextInt(sharedReceipts.size()));
+        }
+        return availableReceipts.get(random.nextInt(availableReceipts.size())); // 임의의 영수증
+    }
+
+    private User randomUser(List<User> cluster, User user) {
+        User randomUser;
+        do{
+            randomUser = cluster.get(random.nextInt(cluster.size()));
+        } while(Objects.equals(randomUser.getUserId(), user.getUserId()));
+        return randomUser;
     }
 }
