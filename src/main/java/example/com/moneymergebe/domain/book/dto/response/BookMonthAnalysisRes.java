@@ -1,6 +1,5 @@
 package example.com.moneymergebe.domain.book.dto.response;
 
-import example.com.moneymergebe.domain.book.dto.response.CategoryAnalysisRes;
 import java.util.List;
 import lombok.Getter;
 

@@ -156,11 +156,20 @@ public class BookController {
     }
 
     /**
-     * 가계부 월별 조회
+     * 가계부 월별 분석
      */
     @GetMapping("/{bookId}/analysis")
-    public CommonResponse<BookMonthAnalysisRes> analysisBook(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public CommonResponse<BookMonthAnalysisRes> analyzeBook(@AuthenticationPrincipal UserDetailsImpl userDetails,
         @PathVariable Long bookId, @RequestParam(name = "year") int year, @RequestParam(name = "month") int month) {
         return CommonResponse.success(bookService.analyzeBook(userDetails.getUser().getUserId(), bookId, year, month));
+    }
+
+    /**
+     * 가계부 멤버별 분석
+     */
+    @GetMapping("/{bookId}/analysis-member")
+    public CommonResponse<BookMemberAnalysisRes> analyzeMember(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long bookId, @RequestParam(name = "year") int year, @RequestParam(name = "month") int month) {
+        return CommonResponse.success(bookService.analyzeMember(userDetails.getUser().getUserId(), bookId, year, month));
     }
 }
