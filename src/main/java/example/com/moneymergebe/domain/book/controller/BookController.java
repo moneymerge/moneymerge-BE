@@ -3,6 +3,7 @@ package example.com.moneymergebe.domain.book.controller;
 import example.com.moneymergebe.domain.book.dto.request.*;
 import example.com.moneymergebe.domain.book.dto.response.*;
 import example.com.moneymergebe.domain.book.service.BookService;
+import example.com.moneymergebe.domain.book.dto.response.BookMonthAnalysisRes;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -152,5 +153,23 @@ public class BookController {
     public CommonResponse<BookDeleteRes> deleteBook(@AuthenticationPrincipal UserDetailsImpl userDetails,
         @PathVariable Long bookId) {
         return CommonResponse.success(bookService.deleteBook(userDetails.getUser().getUserId(), bookId));
+    }
+
+    /**
+     * 가계부 월별 분석
+     */
+    @GetMapping("/{bookId}/analysis")
+    public CommonResponse<BookMonthAnalysisRes> analyzeBook(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long bookId, @RequestParam(name = "year") int year, @RequestParam(name = "month") int month) {
+        return CommonResponse.success(bookService.analyzeBook(userDetails.getUser().getUserId(), bookId, year, month));
+    }
+
+    /**
+     * 가계부 멤버별 분석
+     */
+    @GetMapping("/{bookId}/analysis-member")
+    public CommonResponse<BookMemberAnalysisRes> analyzeMember(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long bookId, @RequestParam(name = "year") int year, @RequestParam(name = "month") int month) {
+        return CommonResponse.success(bookService.analyzeMember(userDetails.getUser().getUserId(), bookId, year, month));
     }
 }

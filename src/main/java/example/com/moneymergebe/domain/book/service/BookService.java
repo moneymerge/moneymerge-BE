@@ -1,13 +1,21 @@
 package example.com.moneymergebe.domain.book.service;
 
+import static example.com.moneymergebe.domain.record.entity.RecordType.EXPENSE;
+import static example.com.moneymergebe.domain.record.entity.RecordType.INCOME;
+
 import example.com.moneymergebe.domain.book.dto.request.*;
 import example.com.moneymergebe.domain.book.dto.response.*;
 import example.com.moneymergebe.domain.book.entity.Book;
+import example.com.moneymergebe.domain.book.entity.BookRecord;
 import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.book.repository.BookRecordRepository;
 import example.com.moneymergebe.domain.book.repository.BookRepository;
 import example.com.moneymergebe.domain.book.repository.BookUserRepository;
+import example.com.moneymergebe.domain.category.entity.Category;
+import example.com.moneymergebe.domain.category.repository.CategoryRepository;
+import example.com.moneymergebe.domain.book.dto.response.BookMonthAnalysisRes;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
+import example.com.moneymergebe.domain.record.entity.Record;
 import example.com.moneymergebe.domain.record.entity.RecordType;
 import example.com.moneymergebe.domain.record.service.RecordService;
 import example.com.moneymergebe.domain.user.dto.response.UserGetRes;
@@ -17,6 +25,9 @@ import example.com.moneymergebe.global.exception.GlobalException;
 import example.com.moneymergebe.global.validator.BookUserValidator;
 import example.com.moneymergebe.global.validator.BookValidator;
 import example.com.moneymergebe.global.validator.UserValidator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,6 +46,7 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final BookRecordRepository bookRecordRepository;
+    private final CategoryRepository categoryRepository;
     private final RecordService recordService;
 
     /**
@@ -114,7 +126,7 @@ public class BookService {
             if(recordType.equals(RecordType.INCOME.getValue())){
                 income += res.getAmount();
             }
-            else if(recordType.equals(RecordType.EXPENSE.getValue())){
+            else if(recordType.equals(EXPENSE.getValue())){
                 outcome += res.getAmount();
             }
         }
@@ -274,6 +286,158 @@ public class BookService {
         return new BookDeleteRes();
     }
 
+    /**
+     * 가계부 월별 조회
+     */
+    @Transactional(readOnly = true)
+    public BookMonthAnalysisRes analyzeBook(Long userId, Long bookId, int year, int month) {
+        User user = findUser(userId);
+        Book book = findBook(bookId);
+
+        checkBookMember(user, book);
+
+        List<Category> categoryList = categoryRepository.findAllByBook(book);
+
+        List<Record> recordList = findRecordList(year, month, book);
+
+        // 전체 합산
+        int totalIncomeSum = getAmountSum(recordList, INCOME);
+        int totalExpenseSum = getAmountSum(recordList, EXPENSE);
+
+        // 카테고리별 합산
+        Map<Category, Integer> categoryMap = new HashMap<>();
+        for(Record record : recordList) {
+            if(record.getRecordType() == EXPENSE)
+                categoryMap.put(record.getCategory(), categoryMap.getOrDefault(record.getCategory(), 0) + record.getAmount());
+        }
+
+        List<CategoryAnalysisRes> categoryResList = new ArrayList<>();
+        for(Category category : categoryList) {
+            int sum = categoryMap.getOrDefault(category, 0);
+            if(sum != 0) categoryResList.add(new CategoryAnalysisRes(category.getCategoryId(), category.getCategory(), sum));
+        }
+
+        // 1월부터 월별 분석
+        List<MonthAnalysisRes> monthResList = new ArrayList<>();
+        for (int i = 1; i < month; i++) {
+            List<Record> recordListInMonth = findRecordList(year, i, book);
+            int incomeSum = 0;
+            int expenseSum = 0;
+            for (Record record : recordListInMonth) {
+                switch(record.getRecordType()) {
+                    case EXPENSE -> expenseSum += record.getAmount();
+                    case INCOME -> incomeSum += record.getAmount();
+                }
+            }
+            monthResList.add(new MonthAnalysisRes(i, incomeSum, expenseSum));
+        }
+        // 현재 월
+        monthResList.add(new MonthAnalysisRes(month, totalIncomeSum, totalExpenseSum));
+
+        return new BookMonthAnalysisRes(totalIncomeSum, totalExpenseSum, categoryResList, monthResList);
+    }
+
+    /**
+     * 가계부 멤버별 조회
+     */
+    @Transactional(readOnly = true)
+    public BookMemberAnalysisRes analyzeMember(Long userId, Long bookId, int year, int month) {
+        User user = findUser(userId);
+        Book book = findBook(bookId);
+
+        checkBookMember(user, book);
+
+        List<Category> categoryList = categoryRepository.findAllByBook(book);
+        List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
+
+        List<Record> recordList = findRecordList(year, month, book); // 가계부 전체 레코드
+
+        // 전체 합산
+        int totalIncomeSum = getAmountSum(recordList, INCOME);
+        int totalExpenseSum = getAmountSum(recordList, EXPENSE);
+
+        // 멤버별
+        List<MemberIncomeExpenseRes> incomeExpenseRes = new ArrayList<>();
+        List<MemberCategoryAnalysisRes> categoryRes = new ArrayList<>();
+        List<MemberMonthAnalysisRes> monthRes = new ArrayList<>();
+
+        for(BookUser bookUser : bookUserList) {
+            // 수입 지출
+            int incomeSum = getAmountSumByUser(recordList, INCOME, bookUser.getUser());
+            int expenseSum = getAmountSumByUser(recordList, EXPENSE, bookUser.getUser());
+
+            incomeExpenseRes.add(new MemberIncomeExpenseRes(bookUser.getUser().getUserId(), bookUser.getName(), incomeSum, expenseSum));
+
+            // 카테고리
+            Map<Category, Integer> categoryMap = new HashMap<>();
+            for(Record record : recordList) {
+                if(record.getRecordType() == EXPENSE && Objects.equals(record.getUser().getUserId(),
+                    bookUser.getUser().getUserId()))
+                    categoryMap.put(record.getCategory(), categoryMap.getOrDefault(record.getCategory(), 0) + record.getAmount());
+            }
+
+            List<CategoryAnalysisRes> categoryResList = new ArrayList<>();
+            for(Category category : categoryList) {
+                int sum = categoryMap.getOrDefault(category, 0);
+                if(sum != 0) categoryResList.add(new CategoryAnalysisRes(category.getCategoryId(), category.getCategory(), sum));
+            }
+
+            categoryRes.add(new MemberCategoryAnalysisRes(bookUser.getUser().getUserId(), bookUser.getName(), categoryResList));
+        }
+
+        // 월별
+        for(BookUser bookUser : bookUserList) {
+            List<MonthAnalysisRes> monthResList = new ArrayList<>();
+            for (int i = 1; i <= month; i++) {
+                List<Record> recordListInMonth = findRecordList(year, i, book);
+                int monthIncomeSum = 0;
+                int monthExpenseSum = 0;
+                for (Record record : recordListInMonth) {
+                    if(Objects.equals(record.getUser().getUserId(), bookUser.getUser().getUserId())) {
+                        switch(record.getRecordType()) {
+                            case INCOME -> monthIncomeSum += record.getAmount();
+                            case EXPENSE -> monthExpenseSum += record.getAmount();
+                        }
+                    }
+                }
+                monthResList.add(new MonthAnalysisRes(i, monthIncomeSum, monthExpenseSum));
+            }
+            monthRes.add(new MemberMonthAnalysisRes(bookUser.getUser().getUserId(), bookUser.getName(), monthResList));
+        }
+
+        return new BookMemberAnalysisRes(totalIncomeSum, totalExpenseSum, incomeExpenseRes, categoryRes, monthRes);
+    }
+
+    private int getAmountSum(List<Record> recordList, RecordType type) {
+        return recordList.stream()
+            .filter(record -> record.getRecordType() == type)
+            .mapToInt(Record::getAmount)
+            .sum(); // 모든 amount 값을 합산
+    }
+
+    private int getAmountSumByUser(List<Record> recordList, RecordType type, User user) {
+        return recordList.stream()
+            .filter(record -> record.getRecordType() == type && Objects.equals(
+                record.getUser().getUserId(), user.getUserId()))
+            .mapToInt(Record::getAmount)
+            .sum();
+    }
+
+    private List<Record> findRecordList(int year, int month, Book book) {
+        LocalDate startDate = LocalDate.of(year, month, 1); // 목표 계산 시작일
+        LocalDate endDate = LocalDate.of(year, month, startDate.lengthOfMonth());
+
+        List<BookRecord> bookRecordList = bookRecordRepository.findAllByBook(book);
+        List<Record> list = new ArrayList<>();
+        for (BookRecord bookRecord : bookRecordList) {
+            Record record = bookRecord.getRecord();
+            if(!record.getDate().isBefore(startDate) && !record.getDate().isAfter(endDate)) {
+                list.add(record);
+            }
+        }
+
+        return list;
+    }
 
     /**
      * @throws GlobalException userId에 해당하는 사용자가 존재하지 않는 경우 예외 발생
