@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import example.com.moneymergebe.domain.user.service.KakaoService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,15 +32,15 @@ public class KakaoController {
 
     // 카카오 로그인
     @GetMapping("/auth/kakao/callback")
-    public String kakaoLogin(@RequestParam String code, HttpServletResponse res)
-        throws JsonProcessingException {
+    public void kakaoLogin(@RequestParam String code, HttpServletResponse res)
+        throws IOException {
         HashMap<String, String> tokens = kakaoService.kakaoLogin(code);
 
         addCookie(tokens.get(ACCESS_TOKEN_HEADER), ACCESS_TOKEN_HEADER, res);
         addCookie(tokens.get(REFRESH_TOKEN_HEADER), REFRESH_TOKEN_HEADER, res);
 
         log.info("카카오 로그인 완료");
-        return "login"; // 로그인 완료시 이동할 페이지
+        res.sendRedirect("http://localhost:3000"); // 로그인 완료시 이동할 페이지
     }
 
     private void addCookie(String cookieValue, String header, HttpServletResponse res) {

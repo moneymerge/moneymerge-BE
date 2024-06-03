@@ -61,8 +61,8 @@ public class User extends BaseEntity {
 
 //    private Integer clusterId = null;
 
-    @OneToMany(mappedBy = "user")
-    private List<BookUser> bookUserList = new ArrayList<>();
+//    @OneToMany(mappedBy = "user")
+//    private List<BookUser> bookUserList = new ArrayList<>();
 
     @Builder
     private User(
