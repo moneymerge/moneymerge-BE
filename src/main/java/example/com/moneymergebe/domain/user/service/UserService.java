@@ -2,9 +2,9 @@ package example.com.moneymergebe.domain.user.service;
 
 import example.com.moneymergebe.domain.book.entity.Book;
 import example.com.moneymergebe.domain.book.entity.BookUser;
+import example.com.moneymergebe.domain.book.repository.BookUserRepository;
 import example.com.moneymergebe.domain.character.entity.Character;
 import example.com.moneymergebe.domain.character.repository.CharacterRepository;
-import example.com.moneymergebe.domain.notification.entity.Notification;
 import example.com.moneymergebe.domain.notification.repository.NotificationRepository;
 import example.com.moneymergebe.domain.user.dto.request.UserImageReq;
 import example.com.moneymergebe.domain.user.dto.request.UserNameReq;
@@ -39,6 +39,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final CharacterRepository characterRepository;
     private final NotificationRepository notificationRepository;
+    private final BookUserRepository bookUserRepository;
     private final S3Util s3Util;
 
     @Value("${default.image.url}")
@@ -54,7 +55,7 @@ public class UserService {
     public UserBaseInfoRes getBaseInfo(Long userId) {
         User user = findUser(userId);
         List<Book> bookList = new ArrayList<>();
-        for(BookUser bookUser : user.getBookUserList()) {
+        for(BookUser bookUser : bookUserRepository.findAllByUser(user)) {
             bookList.add(bookUser.getBook());
         }
         int count = notificationRepository.countAllByUserAndIsReadIsFalse(user);
