@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
     Board findByBoardId(Long boardId);
+    Long countAllBy();
+    Long countAllByBoardType(BoardType boardType);
     Page<Board> findAllByBoardType(Pageable pageable, BoardType boardType);
 
     Page<Board> findByTitleContaining(Pageable pageable, String searchKeyword);
