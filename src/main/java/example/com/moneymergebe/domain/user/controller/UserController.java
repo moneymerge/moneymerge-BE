@@ -160,7 +160,6 @@ public class UserController {
         // 블랙리스트 처리: Redis에 저장
         redisUtil.set(refreshToken, LOGOUT_VALUE, jwtUtil.getExpiration(refreshToken));
 
-        // TODO: 쿠키 삭제(FE)
         deleteCookie(response, JwtUtil.ACCESS_TOKEN_HEADER);
         deleteCookie(response, JwtUtil.REFRESH_TOKEN_HEADER);
 

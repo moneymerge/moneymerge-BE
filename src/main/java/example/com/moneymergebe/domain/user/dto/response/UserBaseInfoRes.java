@@ -13,6 +13,7 @@ public class UserBaseInfoRes {
     private String username;
     private String profileUrl;
     private boolean hasNewNotification;
+    private Long receivedReceiptId;
     private List<BookGetRes> bookList = new ArrayList<>();
 
     public UserBaseInfoRes(User user, boolean hasNewNotification, List<Book> bookList) {
@@ -20,6 +21,7 @@ public class UserBaseInfoRes {
         this.username = user.getUsername();
         this.profileUrl = user.getProfileUrl();
         this.hasNewNotification = hasNewNotification;
+        this.receivedReceiptId = user.getReceivedReceiptId();
         for(Book book : bookList) {
             this.bookList.add(new BookGetRes(book));
         }
