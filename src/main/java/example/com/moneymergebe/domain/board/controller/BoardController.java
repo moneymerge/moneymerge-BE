@@ -6,6 +6,7 @@ import example.com.moneymergebe.domain.board.dto.request.BoardModifyReq;
 import example.com.moneymergebe.domain.board.dto.request.BoardSaveReq;
 import example.com.moneymergebe.domain.board.dto.response.*;
 import example.com.moneymergebe.domain.board.entity.BoardType;
+import example.com.moneymergebe.domain.board.repository.BoardRepository;
 import example.com.moneymergebe.domain.board.service.BoardService;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
@@ -21,6 +22,7 @@ import java.util.List;
 @RequestMapping("/api/boards")
 public class BoardController {
     private final BoardService boardService;
+    private final BoardRepository boardRepository;
 
     private static final String DEFAULT_PAGE = "1";
     private static final String DEFAULT_SIZE = "10";
@@ -63,6 +65,18 @@ public class BoardController {
             return CommonResponse.success(boardService.getAllBoardsByBoardType(page -1, size, sortBy, isAsc, boardType)); // 특정 게시판 게시글 전체 조회
         } else {
             return CommonResponse.success(boardService.getAllBoards(page -1, size, sortBy, isAsc)); // 게시글 전체 조회
+        }
+    }
+    /**
+     * 게시글 수 조회 (pagination x)
+     */
+    @GetMapping("/count")
+    public Long getAllBoardsWithoutPage(
+            @RequestParam(required = false) BoardType boardType) {
+        if (boardType != null) {
+            return boardRepository.countAllByBoardType(boardType); // 특정 게시판 게시글 전체 조회
+        } else {
+            return boardRepository.countAllBy(); // 게시글 전체 조회
         }
     }
 
