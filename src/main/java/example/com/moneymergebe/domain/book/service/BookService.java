@@ -61,10 +61,12 @@ public class BookService {
                 .title(req.getTitle())
                 .yearGoal(req.getYearGoal())
                 .monthGoal(req.getMonthGoal())
-                .color(req.getColor())
+                .color(req.getBookColor())
                 .build()
         );
 
+        BookUser bookUser = bookUserRepository.save(BookUser.builder().book(book).user(findUser(req.getUserId())).build());
+        bookUser.updateUserColor(req.getUserColor());
         for (Long userId : req.getUserList()) {
             User user = findUser(userId);
             bookUserRepository.save(BookUser.builder().book(book).user(user).build());

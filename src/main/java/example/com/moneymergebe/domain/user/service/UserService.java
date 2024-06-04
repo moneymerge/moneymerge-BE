@@ -17,6 +17,8 @@ import example.com.moneymergebe.domain.user.dto.response.UserInfoRes;
 import example.com.moneymergebe.domain.user.dto.response.UserNameRes;
 import example.com.moneymergebe.domain.user.dto.response.UserPointRes;
 import example.com.moneymergebe.domain.user.dto.response.UserProfileRes;
+import example.com.moneymergebe.domain.user.dto.response.UserSearchListRes;
+import example.com.moneymergebe.domain.user.dto.response.UserSearchRes;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
 import example.com.moneymergebe.global.exception.GlobalException;
@@ -150,6 +152,16 @@ public class UserService {
         User user = findUser(userId);
         Character character = findCharacter(user.getCharacterId());
         return new UserCharacterRes(character);
+    }
+
+    /**
+     * 초대를 위한 사용자 조회
+     */
+    @Transactional(readOnly = true)
+    public UserSearchListRes searchUser(Long userId, String email) {
+        List<User> userList = userRepository.findAllByEmailContains(email);
+        List<UserSearchRes> resList = userList.stream().filter(user -> !user.getUserId().equals(userId)).map(UserSearchRes::new).toList();
+        return new UserSearchListRes(resList);
     }
 
     /**

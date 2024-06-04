@@ -92,7 +92,7 @@ public class ReceiptService {
             receiptLikeRepository.delete(receiptLike);
         }
 
-        return new ReceiptLikeRes();
+        return new ReceiptLikeRes(receiptLikeRepository.countByReceipt(receipt));
     }
 
     /**
