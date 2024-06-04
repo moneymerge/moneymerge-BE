@@ -1,8 +1,12 @@
 package example.com.moneymergebe.domain.receipt.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
 
-@JsonIgnoreProperties
+@Getter
 public class ReceiptLikeRes {
+    private int likeCount;
 
+    public ReceiptLikeRes(int likeCount) {
+        this.likeCount = likeCount;
+    }
 }

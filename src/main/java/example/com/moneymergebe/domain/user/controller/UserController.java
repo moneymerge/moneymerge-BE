@@ -12,6 +12,7 @@ import example.com.moneymergebe.domain.user.dto.response.UserLogoutRes;
 import example.com.moneymergebe.domain.user.dto.response.UserNameRes;
 import example.com.moneymergebe.domain.user.dto.response.UserPointRes;
 import example.com.moneymergebe.domain.user.dto.response.UserProfileRes;
+import example.com.moneymergebe.domain.user.dto.response.UserSearchListRes;
 import example.com.moneymergebe.domain.user.service.UserService;
 import example.com.moneymergebe.global.jwt.JwtUtil;
 import example.com.moneymergebe.global.redis.RedisUtil;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -146,6 +148,18 @@ public class UserController {
     @GetMapping("/character")
     public CommonResponse<UserCharacterRes> getUserCharacter(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return CommonResponse.success(userService.getUserCharacter(userDetails.getUser().getUserId()));
+    }
+
+    /**
+     * 초대를 위한 사용자 조회
+     * @param userDetails 조회하는 사용자 정보
+     * @return (조회하는 사용자 제외) 입력하는 문자열과 일치하는 이메일을 가진 사용자
+     */
+    @ResponseBody
+    @GetMapping("/search")
+    public CommonResponse<UserSearchListRes> searchUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @RequestParam String email) {
+        return CommonResponse.success(userService.searchUser(userDetails.getUser().getUserId(), email));
     }
 
     /**
