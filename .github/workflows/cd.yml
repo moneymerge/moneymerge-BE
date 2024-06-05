@@ -81,7 +81,7 @@ jobs:
         if: contains(github.ref, 'develop') || contains(github.ref, 'main')
         uses: appleboy/ssh-action@master
         with:
-          host: ''
+          host: ${{ secrets.HOST_NAME }}
           username: ${{ secrets.USER_NAME }}
           key: ${{ secrets.AWS_PRIVATE_KEY }}
           port: ${{ secrets.AWS_PORT }}
