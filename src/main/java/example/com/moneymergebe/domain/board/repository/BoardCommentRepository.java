@@ -9,7 +9,7 @@ import java.util.List;
 public interface BoardCommentRepository extends JpaRepository<BoardComment, Long> {
     List<BoardComment> findAllByBoard(Board board);
 
-    void deleteAllByBoard(Board board);
+    int countByBoard(Board board);
 
     BoardComment findByBoardCommentId(Long boardCommentId);
 }

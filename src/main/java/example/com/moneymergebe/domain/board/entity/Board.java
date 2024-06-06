@@ -41,8 +41,6 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private int likes;
 
-
-
     @Builder
     private Board(BoardType boardType, String title, String content, String image, User user, int likes){
         this.boardType=boardType;

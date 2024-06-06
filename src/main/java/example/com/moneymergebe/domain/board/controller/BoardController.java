@@ -48,7 +48,7 @@ public class BoardController {
      * 게시글 상세 조회
      */
     @GetMapping("/{boardId}")
-    public CommonResponse<BoardGetRes> getBoard(@PathVariable Long boardId) {
+    public CommonResponse<BoardGetDetailRes> getBoard(@PathVariable Long boardId) {
 
         return CommonResponse.success(boardService.getBoard(boardId));
     }
@@ -90,7 +90,7 @@ public class BoardController {
     public CommonResponse<BoardModifyRes> modifyBoard(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long boardId,
-            @RequestPart BoardModifyReq req,
+            BoardModifyReq req,
             @RequestPart(required = false) MultipartFile multipartFile) {
         req.setUserId(userDetails.getUser().getUserId());
         req.setBoardId(boardId);

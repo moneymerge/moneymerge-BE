@@ -2,15 +2,12 @@ package example.com.moneymergebe.domain.board.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import example.com.moneymergebe.domain.board.entity.Board;
-import example.com.moneymergebe.domain.board.entity.BoardType;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Getter
-public class BoardGetRes {
+public class BoardGetDetailRes {
     private Long boardId;
     private String boardType;
     private String title;
@@ -22,9 +19,10 @@ public class BoardGetRes {
     private String createdAt;
     private String modifiedAt;
     private int likes;
-    private int comments;
 
-    public BoardGetRes(Board board, int comments) {
+    private List<BoardCommentGetRes> commentGetResList;
+
+    public BoardGetDetailRes(Board board, List<BoardCommentGetRes> commentGetResList) {
         this.boardId = board.getBoardId();
         this.boardType = board.getBoardType().getValue();
         this.title = board.getTitle();
@@ -35,6 +33,7 @@ public class BoardGetRes {
         this.createdAt = board.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.modifiedAt = board.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.likes = board.getLikes();
-        this.comments = comments;
+        this.commentGetResList = commentGetResList;
     }
 }
+
