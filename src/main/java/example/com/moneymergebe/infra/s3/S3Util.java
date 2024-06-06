@@ -16,10 +16,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3Util {
@@ -73,6 +75,7 @@ public class S3Util {
                 bucketName, filePath.getPath() + fileName, multipartFile.getInputStream(), metadata);
         } catch (Exception e) {
             // 업로드 중에 예외 발생 시 전역 예외(GlobalException) 발생
+            log.info("error message: {}", e.getMessage());
             throw new GlobalException(SYSTEM_ERROR);
         }
         // 업로드한 파일의 URL 반환

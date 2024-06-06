@@ -10,6 +10,7 @@ import example.com.moneymergebe.domain.board.repository.BoardRepository;
 import example.com.moneymergebe.domain.board.service.BoardService;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -36,8 +37,9 @@ public class BoardController {
     @PostMapping
     public CommonResponse<BoardSaveRes> saveBoard(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestPart BoardSaveReq req,
-            @RequestPart MultipartFile multipartFile) {
+            @Valid BoardSaveReq req,
+            @RequestPart(required = false) MultipartFile multipartFile
+        ) {
         req.setUserId(userDetails.getUser().getUserId());
         return CommonResponse.success(boardService.saveBoard(req, multipartFile));
     }
@@ -89,7 +91,7 @@ public class BoardController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long boardId,
             @RequestPart BoardModifyReq req,
-            @RequestPart MultipartFile multipartFile) {
+            @RequestPart(required = false) MultipartFile multipartFile) {
         req.setUserId(userDetails.getUser().getUserId());
         req.setBoardId(boardId);
         req.setImage(multipartFile);

@@ -52,7 +52,6 @@ public class BoardService {
     @Transactional
     public BoardSaveRes saveBoard(BoardSaveReq req, MultipartFile multipartFile) {
         User user = findUser(req.getUserId());
-
         String imageUrl = null;
         if (multipartFile != null && !multipartFile.isEmpty()) { // 새로 입력한 이미지 파일이 있는 경우
             checkImage(multipartFile); // 이미지 파일인지 확인
