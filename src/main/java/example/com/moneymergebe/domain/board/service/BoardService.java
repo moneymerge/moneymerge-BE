@@ -67,16 +67,16 @@ public class BoardService {
      * 게시글 상세 조회
      */
     @Transactional(readOnly = true)
-    public BoardGetRes getBoard(Long boardId) {
+    public BoardGetDetailRes getBoard(Long boardId) {
         Board board = findBoard(boardId);
 
         // 게시글 댓글 목록
         List<BoardCommentGetRes> commentGetResList = boardCommentRepository.findAllByBoard(board)
                 .stream().map(
-                        boardComment -> new BoardCommentGetRes(boardComment)
+                        boardComment -> new BoardCommentGetRes(boardComment, boardComment.getUser().getProfileUrl())
                 ).toList();
 
-        return new BoardGetRes(board, commentGetResList);
+        return new BoardGetDetailRes(board, commentGetResList);
     }
 
     /**
@@ -88,18 +88,7 @@ public class BoardService {
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Board> boardList = boardRepository.findAll(pageable);
-        List<BoardGetRes> boardGetResList = new ArrayList<>();
-        for (Board board : boardList) {
-
-            List<BoardCommentGetRes> commentGetResList = boardCommentRepository.findAllByBoard(board)
-                    .stream().map(
-                            boardComment -> new BoardCommentGetRes(boardComment)
-                    ).toList();
-
-            boardGetResList.add(new BoardGetRes(board, commentGetResList));
-        }
-        return boardGetResList;
+        return boardRepository.findAll(pageable).stream().map(board -> new BoardGetRes(board, boardCommentRepository.countByBoard(board))).toList();
     }
 
     /**
@@ -111,18 +100,7 @@ public class BoardService {
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Board> boardList = boardRepository.findAllByBoardType(pageable, boardType);
-        List<BoardGetRes> boardGetResList = new ArrayList<>();
-        for (Board board : boardList) {
-
-            List<BoardCommentGetRes> commentGetResList = boardCommentRepository.findAllByBoard(board)
-                    .stream().map(
-                            boardComment -> new BoardCommentGetRes(boardComment)
-                    ).toList();
-
-            boardGetResList.add(new BoardGetRes(board, commentGetResList));
-        }
-        return boardGetResList;
+        return boardRepository.findAllByBoardType(pageable, boardType).stream().map(board -> new BoardGetRes(board, boardCommentRepository.countByBoard(board))).toList();
     }
 
 
@@ -137,7 +115,7 @@ public class BoardService {
 
         UserValidator.checkUser(user, board.getUser()); // 작성자와 수정자가 동일한지 검사
 
-        String imageUrl = board.getImage(); // 기존 프로필 이미지
+        String imageUrl = board.getImage();
         if (req.getImage() != null && !req.getImage().isEmpty()) { // 새로 입력한 이미지 파일이 있는 경우
             if (s3Util.exists(imageUrl, S3Util.FilePath.BOARD)) { // 기존 이미지가 존재하는 경우
                 s3Util.deleteFile(imageUrl, S3Util.FilePath.BOARD); // 기존 이미지 삭제
@@ -186,7 +164,7 @@ public class BoardService {
             boardLikeRepository.delete(boardLike);
         }
 
-        return new BoardLikeRes();
+        return new BoardLikeRes(board.getLikes());
     }
 
     /**
@@ -256,7 +234,7 @@ public class BoardService {
             boardCommentLikeRepository.delete(boardCommentLike);
         }
 
-        return new BoardCommentLikeRes();
+        return new BoardCommentLikeRes(boardComment.getLikes());
     }
 
     /**
@@ -287,17 +265,8 @@ public class BoardService {
             default:
                 throw new IllegalArgumentException("유효한 range값이 아닙니다.");
         }
-        List<BoardGetRes> boardGetResList = new ArrayList<>();
-        for (Board board : boardList) {
 
-            List<BoardCommentGetRes> commentGetResList = boardCommentRepository.findAllByBoard(board)
-                    .stream().map(
-                            boardComment -> new BoardCommentGetRes(boardComment)
-                    ).toList();
-
-            boardGetResList.add(new BoardGetRes(board, commentGetResList));
-        }
-        return boardGetResList;
+        return boardList.stream().map(board -> new BoardGetRes(board, boardCommentRepository.countByBoard(board))).toList();
     }
 
     /**

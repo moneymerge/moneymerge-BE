@@ -97,4 +97,4 @@ cloud:
 
 default:
   image:
-    url: s3://moneymerge/profile/default_profile_image.jpg
+    url: https://moneymerge.s3.ap-northeast-2.amazonaws.com/profile/default_profile_image.jpg

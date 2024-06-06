@@ -6,7 +6,6 @@ import example.com.moneymergebe.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BoardCommentLikeRepository extends JpaRepository<BoardCommentLike, Long> {
-    void deleteAllByBoardComment(BoardComment boardComment);
 
     BoardCommentLike findByUserAndBoardComment(User user, BoardComment boardComment);
 }

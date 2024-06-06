@@ -1,7 +1,12 @@
 package example.com.moneymergebe.domain.board.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
 
-@JsonIgnoreProperties
+@Getter
 public class BoardLikeRes {
+    private int likes;
+
+    public BoardLikeRes(int likes) {
+        this.likes = likes;
+    }
 }
