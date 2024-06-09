@@ -3,8 +3,6 @@ package example.com.moneymergebe.infra.s3;
 import static example.com.moneymergebe.global.response.ResultCode.MAXIMUM_UPLOAD_FILE_SIZE;
 import static example.com.moneymergebe.global.response.ResultCode.NOT_FOUND_FILE;
 import static example.com.moneymergebe.global.response.ResultCode.SYSTEM_ERROR;
-import static org.apache.http.entity.ContentType.IMAGE_JPEG;
-import static org.apache.http.entity.ContentType.IMAGE_PNG;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -30,6 +28,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class S3Util {
 
     private final AmazonS3Client amazonS3Client;
+    private static final String IMAGE_JPG = "image/jpeg";
+    private static final String IMAGE_PNG = "image/png";
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
@@ -61,7 +61,7 @@ public class S3Util {
 
         // 이미지 파일인지 확인
         String fileType = multipartFile.getContentType();
-        if(fileType == null || (!fileType.equals(IMAGE_JPEG) && !fileType.equals(IMAGE_PNG))) {
+        if(fileType == null || (!fileType.equals(IMAGE_JPG) && !fileType.equals(IMAGE_PNG))) {
             throw new GlobalException(ResultCode.INVALID_IMAGE_FILE);
         }
 

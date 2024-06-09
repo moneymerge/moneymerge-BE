@@ -47,9 +47,6 @@ public class UserService {
     @Value("${default.image.url}")
     private String defaultProfileImage;
 
-    private static final String IMAGE_JPG = "image/jpeg";
-    private static final String IMAGE_PNG = "image/png";
-
     /**
      * 기본 정보 조회
      */
@@ -117,7 +114,6 @@ public class UserService {
             if (!profileUrl.equals(defaultProfileImage) && s3Util.exists(profileUrl, FilePath.PROFILE)) { // 기존 이미지가 기본 프로필이 아니고 존재하는 경우
                 s3Util.deleteFile(profileUrl, FilePath.PROFILE); // 기존 이미지 삭제
             }
-            checkImage(req.getImage()); // 이미지 파일인지 확인
 
             profileUrl = s3Util.uploadFile(req.getImage(), FilePath.PROFILE); // 업로드 후 프로필로 설정
         }
@@ -127,13 +123,6 @@ public class UserService {
         return new UserImageRes();
     }
 
-    private void checkImage(MultipartFile multipartFile) {
-        String fileType = multipartFile.getContentType();
-
-        if(fileType == null || (!fileType.equals(IMAGE_JPG) && !fileType.equals(IMAGE_PNG))) {
-            throw new GlobalException(ResultCode.INVALID_IMAGE_FILE);
-        }
-    }
 
     /**
      * 사용자 포인트 조회
