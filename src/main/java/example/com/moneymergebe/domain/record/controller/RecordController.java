@@ -29,7 +29,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,10 +47,10 @@ public class RecordController {
      */
     @PostMapping
     public CommonResponse<RecordSaveRes> saveRecord(@AuthenticationPrincipal UserDetailsImpl userDetails,
-        @PathVariable Long bookId, @RequestBody RecordSaveReq req) {
+        @PathVariable Long bookId, RecordSaveReq req, @RequestPart(required = false) MultipartFile multipartFile) {
         req.setUserId(userDetails.getUser().getUserId());
         req.setBookId(bookId);
-        return CommonResponse.success(recordService.saveRecord(req));
+        return CommonResponse.success(recordService.saveRecord(req, multipartFile));
     }
 
     /**
@@ -86,11 +88,11 @@ public class RecordController {
      */
     @PutMapping("/{recordId}")
     public CommonResponse<RecordModifyRes> modifyRecord(@AuthenticationPrincipal UserDetailsImpl userDetails,
-        @PathVariable Long bookId, @PathVariable Long recordId, @RequestBody RecordModifyReq req) {
+        @PathVariable Long bookId, @PathVariable Long recordId, RecordModifyReq req, @RequestPart(required = false) MultipartFile multipartFile) {
         req.setUserId(userDetails.getUser().getUserId());
         req.setBookId(bookId);
         req.setRecordId(recordId);
-        return CommonResponse.success(recordService.modifyRecord(req));
+        return CommonResponse.success(recordService.modifyRecord(req, multipartFile));
     }
 
     /**

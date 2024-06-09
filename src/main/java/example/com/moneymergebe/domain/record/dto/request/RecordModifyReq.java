@@ -18,8 +18,6 @@ public class RecordModifyReq {
     private AssetType assetType;
     private String content;
     private String memo;
-    @Nullable
-    private String image;
     private Long userId;
     private Long[] bookList; // 현재 가계부 ID 포함
     private Long categoryId;
