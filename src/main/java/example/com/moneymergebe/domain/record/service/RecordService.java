@@ -13,19 +13,7 @@ import example.com.moneymergebe.domain.record.dto.request.RecordCommentModifyReq
 import example.com.moneymergebe.domain.record.dto.request.RecordCommentSaveReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordModifyReq;
 import example.com.moneymergebe.domain.record.dto.request.RecordSaveReq;
-import example.com.moneymergebe.domain.record.dto.response.RecordCommentDeleteRes;
-import example.com.moneymergebe.domain.record.dto.response.RecordCommentGetRes;
-import example.com.moneymergebe.domain.record.dto.response.RecordCommentModifyRes;
-import example.com.moneymergebe.domain.record.dto.response.RecordCommentSaveRes;
-import example.com.moneymergebe.domain.record.dto.response.RecordDeleteRes;
-import example.com.moneymergebe.domain.record.dto.response.RecordDislikeRes;
-import example.com.moneymergebe.domain.record.dto.response.RecordGetDislikeRes;
-import example.com.moneymergebe.domain.record.dto.response.RecordGetLikeRes;
-import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
-import example.com.moneymergebe.domain.record.dto.response.RecordGetRes;
-import example.com.moneymergebe.domain.record.dto.response.RecordLikeRes;
-import example.com.moneymergebe.domain.record.dto.response.RecordModifyRes;
-import example.com.moneymergebe.domain.record.dto.response.RecordSaveRes;
+import example.com.moneymergebe.domain.record.dto.response.*;
 import example.com.moneymergebe.domain.record.entity.Record;
 import example.com.moneymergebe.domain.record.entity.RecordComment;
 import example.com.moneymergebe.domain.record.entity.RecordReaction;
@@ -35,24 +23,21 @@ import example.com.moneymergebe.domain.record.repository.RecordRepository;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
 import example.com.moneymergebe.global.exception.GlobalException;
-import example.com.moneymergebe.global.validator.BookRecordValidator;
-import example.com.moneymergebe.global.validator.BookUserValidator;
-import example.com.moneymergebe.global.validator.BookValidator;
-import example.com.moneymergebe.global.validator.CategoryValidator;
-import example.com.moneymergebe.global.validator.RecordCommentValidator;
-import example.com.moneymergebe.global.validator.RecordValidator;
-import example.com.moneymergebe.global.validator.UserValidator;
+import example.com.moneymergebe.global.validator.*;
 import example.com.moneymergebe.infra.s3.S3Util;
 import example.com.moneymergebe.infra.s3.S3Util.FilePath;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RecordService {
@@ -362,6 +347,7 @@ public class RecordService {
      * @throws GlobalException categoryId 해당하는 카테고리가 존재하지 않는 경우 예외 발생
      */
     private Category findCategory(Long categoryId) {
+        log.info("categoryId: {}", categoryId);
         Category category = categoryRepository.findByCategoryId(categoryId);
         CategoryValidator.validate(category);
         return category;
