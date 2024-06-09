@@ -3,6 +3,8 @@ package example.com.moneymergebe.infra.s3;
 import static example.com.moneymergebe.global.response.ResultCode.MAXIMUM_UPLOAD_FILE_SIZE;
 import static example.com.moneymergebe.global.response.ResultCode.NOT_FOUND_FILE;
 import static example.com.moneymergebe.global.response.ResultCode.SYSTEM_ERROR;
+import static org.apache.http.entity.ContentType.IMAGE_JPEG;
+import static org.apache.http.entity.ContentType.IMAGE_PNG;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -10,6 +12,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
 import example.com.moneymergebe.global.exception.GlobalException;
+import example.com.moneymergebe.global.response.ResultCode;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -54,6 +57,12 @@ public class S3Util {
         // 업로드할 파일이 존재하지 않거나 비어있으면 null 반환
         if (multipartFile == null || multipartFile.isEmpty()) {
             return null;
+        }
+
+        // 이미지 파일인지 확인
+        String fileType = multipartFile.getContentType();
+        if(fileType == null || (!fileType.equals(IMAGE_JPEG) && !fileType.equals(IMAGE_PNG))) {
+            throw new GlobalException(ResultCode.INVALID_IMAGE_FILE);
         }
 
         // 각 파일의 크기 확인

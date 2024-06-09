@@ -42,6 +42,8 @@ import example.com.moneymergebe.global.validator.CategoryValidator;
 import example.com.moneymergebe.global.validator.RecordCommentValidator;
 import example.com.moneymergebe.global.validator.RecordValidator;
 import example.com.moneymergebe.global.validator.UserValidator;
+import example.com.moneymergebe.infra.s3.S3Util;
+import example.com.moneymergebe.infra.s3.S3Util.FilePath;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -49,6 +51,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -61,16 +64,21 @@ public class RecordService {
     private final RecordCommentRepository recordCommentRepository;
     private final RecordReactionRepository recordReactionRepository;
     private final CategoryRepository categoryRepository;
+    private final S3Util s3Util;
 
     /**
      * 레코드 생성
      */
     @Transactional
-    public RecordSaveRes saveRecord(RecordSaveReq req) {
+    public RecordSaveRes saveRecord(RecordSaveReq req, MultipartFile multipartFile) {
         User user = findUser(req.getUserId());
         Category category = findCategory(req.getCategoryId());
+        String imageUrl = null;
+
+        imageUrl = s3Util.uploadFile(multipartFile, FilePath.RECORD); // 업로드 후 게시글 사진으로 설정
+
         Record record = recordRepository.save(Record.builder().date(req.getDate()).recordType(req.getRecordType()).amount(req.getAmount()).assetType(req.getAssetType())
-            .content(req.getContent()).memo(req.getMemo()).image(req.getImage()).user(user).category(category).build());
+            .content(req.getContent()).memo(req.getMemo()).image(imageUrl).user(user).category(category).build());
 
         for(Long bookId : req.getBookList()) {
             Book book = findBook(bookId);
@@ -145,7 +153,7 @@ public class RecordService {
      * 레코드 수정
      */
     @Transactional
-    public RecordModifyRes modifyRecord(RecordModifyReq req) {
+    public RecordModifyRes modifyRecord(RecordModifyReq req, MultipartFile multipartFile) {
         User user = findUser(req.getUserId());
         Book book = findBook(req.getBookId());
         Record record = findRecord(req.getRecordId());
@@ -155,7 +163,16 @@ public class RecordService {
 
         bookRecordRepository.deleteAllByRecord(record); // 레코드의 기존 가계부 삭제
         Category category = findCategory(req.getCategoryId());
-        record.update(req, category); // 레코드 수정
+
+        String imageUrl = record.getImage();
+        if (multipartFile != null && !multipartFile.isEmpty()) { // 새로 입력한 이미지 파일이 있는 경우
+            if (s3Util.exists(imageUrl, FilePath.RECORD)) { // 기존 이미지가 존재하는 경우
+                s3Util.deleteFile(imageUrl, FilePath.RECORD); // 기존 이미지 삭제
+            }
+            imageUrl = s3Util.uploadFile(multipartFile, FilePath.RECORD); // 업로드 후 게시글 사진으로 설정
+        }
+
+        record.update(req, category, imageUrl); // 레코드 수정
 
         for(Long bookId : req.getBookList()) { // 레코드와 가계부 연관관계 설정
             Book chosenBook = findBook(bookId);

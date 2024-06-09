@@ -27,8 +27,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -53,10 +51,8 @@ public class BoardService {
     public BoardSaveRes saveBoard(BoardSaveReq req, MultipartFile multipartFile) {
         User user = findUser(req.getUserId());
         String imageUrl = null;
-        if (multipartFile != null && !multipartFile.isEmpty()) { // 새로 입력한 이미지 파일이 있는 경우
-            checkImage(multipartFile); // 이미지 파일인지 확인
-            imageUrl = s3Util.uploadFile(multipartFile, S3Util.FilePath.BOARD); // 업로드 후 게시글 사진으로 설정
-        }
+        imageUrl = s3Util.uploadFile(multipartFile, S3Util.FilePath.BOARD); // 업로드 후 게시글 사진으로 설정
+
 
         Board board = boardRepository.save(Board.builder().boardType(req.getBoardType()).title(req.getTitle()).content(req.getContent()).image(imageUrl).user(user).likes(0).build());
 
@@ -120,7 +116,6 @@ public class BoardService {
             if (s3Util.exists(imageUrl, S3Util.FilePath.BOARD)) { // 기존 이미지가 존재하는 경우
                 s3Util.deleteFile(imageUrl, S3Util.FilePath.BOARD); // 기존 이미지 삭제
             }
-            checkImage(req.getImage()); // 이미지 파일인지 확인
             imageUrl = s3Util.uploadFile(req.getImage(), S3Util.FilePath.BOARD); // 업로드 후 게시글 사진으로 설정
         }
 
@@ -293,13 +288,5 @@ public class BoardService {
         BoardComment boardComment = boardCommentRepository.findByBoardCommentId(boardCommentId);
         BoardCommentValidator.validate(boardComment);
         return boardComment;
-    }
-
-    private void checkImage(MultipartFile multipartFile) {
-        String fileType = multipartFile.getContentType();
-
-        if(fileType == null || (!fileType.equals(IMAGE_JPG) && !fileType.equals(IMAGE_PNG))) {
-            throw new GlobalException(ResultCode.INVALID_IMAGE_FILE);
-        }
     }
 }

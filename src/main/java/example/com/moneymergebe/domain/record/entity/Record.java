@@ -77,14 +77,14 @@ public class Record extends BaseEntity {
         this.category = category;
     }
 
-    public void update(RecordModifyReq req, Category category) {
+    public void update(RecordModifyReq req, Category category, String image) {
         this.date = req.getDate();
         this.recordType = req.getRecordType();
         this.amount = req.getAmount();
         this.assetType = req.getAssetType();
         this.content = req.getContent();
         this.memo = req.getMemo();
-        this.image = req.getImage();
+        this.image = image;
         this.category = category;
     }
 }
