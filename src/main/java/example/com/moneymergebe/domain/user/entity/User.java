@@ -109,6 +109,9 @@ public class User extends BaseEntity {
     public void updateAttendance() {
         this.attendance = false;
     }
+    public void checkAttendance() {
+        this.attendance = true;
+    }
 
     public void updateReceivedReceiptId() {
         this.receivedReceiptId = null;

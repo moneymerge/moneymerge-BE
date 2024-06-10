@@ -6,6 +6,8 @@ import static example.com.moneymergebe.global.jwt.JwtUtil.REFRESH_TOKEN_HEADER;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonParser;
+import example.com.moneymergebe.domain.point.entity.Point;
+import example.com.moneymergebe.domain.point.repository.PointRepository;
 import example.com.moneymergebe.domain.user.dto.request.NaverInsertReq;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.entity.UserRole;
@@ -32,6 +34,7 @@ import org.springframework.stereotype.Service;
 public class NaverService {
 
     private final UserRepository userRepository;
+    private final PointRepository pointRepository;
     private final JwtUtil jwtUtil;
 
     @Value("${spring.security.oauth2.client.registration.naver.client-id}")
@@ -64,6 +67,8 @@ public class NaverService {
     private static final String KEY_ACCESS_TOKEN = "accessToken";
     private static final String KEY_REFRESH_TOKEN = "refreshToken";
     private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String ATTENDANCE = "출석";
+    private static final int ATTENDANCE_POINT = 100;
 
     public String getNaverLoginPage() {
         String state = new BigInteger(130, new SecureRandom()).toString();
@@ -104,7 +109,12 @@ public class NaverService {
             user = userRepository.save(newUser);
         }
 
-        // TODO: attendance가 false라면 출석 포인트 적립 후 true로 변경
+        // attendance가 false라면 출석 포인트 적립 후 true로 변경
+        if(!user.isAttendance()) {
+            pointRepository.save(
+                Point.builder().detail(ATTENDANCE).points(ATTENDANCE_POINT).user(user).build());
+            user.checkAttendance();
+        }
 
         // 반환할 토큰 생성
         HashMap<String, String> returnTokens = new HashMap<>();

@@ -6,24 +6,19 @@ import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.book.repository.BookRecordRepository;
 import example.com.moneymergebe.domain.book.repository.BookRepository;
 import example.com.moneymergebe.domain.book.repository.BookUserRepository;
-import example.com.moneymergebe.domain.receipt.entity.Receipt;
-import example.com.moneymergebe.domain.receipt.entity.ReceiptLike;
-import example.com.moneymergebe.domain.receipt.entity.ReceiptLog;
+import example.com.moneymergebe.domain.point.entity.Point;
+import example.com.moneymergebe.domain.point.repository.PointRepository;
 import example.com.moneymergebe.domain.receipt.repository.ReceiptLikeRepository;
 import example.com.moneymergebe.domain.receipt.repository.ReceiptLogRepository;
 import example.com.moneymergebe.domain.receipt.repository.ReceiptRepository;
-import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
 import example.com.moneymergebe.domain.record.entity.Record;
 import example.com.moneymergebe.domain.record.entity.RecordType;
-import example.com.moneymergebe.domain.record.repository.RecordRepository;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -38,13 +33,12 @@ public class Scheduler {
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final BookRecordRepository bookRecordRepository;
-    private final ReceiptLikeRepository receiptLikeRepository;
-    private final ReceiptLogRepository receiptLogRepository;
-    private final ReceiptRepository receiptRepository;
-    private final Random random = new Random();
+    private final PointRepository pointRepository;
 
-    private static final int MONTH_GOAL_POINT = 200;
-    private static final int YEAR_GOAL_POINT = 1000;
+    private static final int MONTH_GOAL_POINT = 1000;
+    private static final String MONTH_GOAL = "이번 달 목표 달성";
+    private static final int YEAR_GOAL_POINT = 5000;
+    private static final String YEAR_GOAL = "올해 목표 달성";
 
     // 매일 자정 출석여부를 false로 & 공유 받은 영수증 null로
     @Scheduled(cron = "0 0 0 * * *")
@@ -108,6 +102,7 @@ public class Scheduler {
                     for(BookUser bookUser : bookUserList) {
                         User user = bookUser.getUser();
                         user.updatePoints(user.getPoints() + MONTH_GOAL_POINT);
+                        pointRepository.save(Point.builder().detail(MONTH_GOAL).points(MONTH_GOAL_POINT).user(user).build());
                     }
                 }
             }
@@ -133,6 +128,7 @@ public class Scheduler {
                 for(BookUser bookUser : bookUserList) {
                     User user = bookUser.getUser();
                     user.updatePoints(user.getPoints() + YEAR_GOAL_POINT);
+                    pointRepository.save(Point.builder().detail(YEAR_GOAL).points(YEAR_GOAL_POINT).user(user).build());
                 }
             }
         }
