@@ -74,6 +74,7 @@ public class Scheduler {
 
     // 매달 기준일에 월 목표 달성 여부 확인
     @Scheduled(cron = "0 0 0 * * *")
+    @Transactional
     public void checkMonthGoal() {
 
         List<Book> bookList = bookRepository.findAll(); // 모든 가계부를 가져옴
@@ -113,6 +114,7 @@ public class Scheduler {
 
     // 12월 31일에 올해 목표 달성 여부 확인
     @Scheduled(cron = "0 0 0 1 1 ?")
+    @Transactional
     public void checkYearGoal() {
         List<Book> bookList = bookRepository.findAll(); // 모든 가계부를 가져옴
 
