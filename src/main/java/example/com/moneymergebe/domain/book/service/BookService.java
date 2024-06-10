@@ -102,7 +102,7 @@ public class BookService {
         User user = findUser(userId);
         Book book = findBook(bookId);
 
-        checkBookMember(user, book); // 가계부 권한 검사
+        BookUser bookUserInAccess = checkBookMember(user, book); // 가계부 권한 검사
 
         //가계부 사용자 목록
         List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
@@ -134,7 +134,7 @@ public class BookService {
         }
         total = income - outcome;
 
-        return new BookGetRes(book, userGetResList, income, outcome, total);
+        return new BookGetRes(book, userGetResList, bookUserInAccess, income, outcome, total);
     }
 
 
