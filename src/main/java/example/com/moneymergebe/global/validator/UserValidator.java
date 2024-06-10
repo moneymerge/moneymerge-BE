@@ -22,6 +22,10 @@ public class UserValidator {
         if(!accessor.getUserId().equals(author.getUserId())) throw new GlobalException(UNAUTHORIZED);
     }
 
+    public static void checkTodayDrawStatus(User user) {
+        if(user.isTodayDrawStatus()) throw new GlobalException(ALREADY_HAS_DRAWN);
+    }
+
     private static boolean checkIsNull(User user) {
         return user == null;
     }

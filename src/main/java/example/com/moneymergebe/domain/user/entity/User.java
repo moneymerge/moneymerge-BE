@@ -59,6 +59,9 @@ public class User extends BaseEntity {
     @Setter
     private Long receivedReceiptId = null;
 
+    @Setter
+    private boolean todayDrawStatus = false;
+
 //    private Integer clusterId = null;
 
 //    @OneToMany(mappedBy = "user")

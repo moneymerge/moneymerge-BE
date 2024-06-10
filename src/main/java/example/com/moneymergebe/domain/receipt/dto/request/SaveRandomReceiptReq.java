@@ -5,4 +5,8 @@ import lombok.Getter;
 @Getter
 public class SaveRandomReceiptReq {
     private Long pickReceiptId;
+
+    public SaveRandomReceiptReq(Long pickReceiptId) {
+        this.pickReceiptId = pickReceiptId;
+    }
 }

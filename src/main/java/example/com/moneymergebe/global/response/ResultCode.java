@@ -44,6 +44,7 @@ public enum ResultCode {
 
     // 영수증 7000번대
     NOT_FOUND_RECEIPT(HttpStatus.NOT_FOUND, 7000, "영수증을 찾을 수 없습니다."),
+    ALREADY_HAS_DRAWN(HttpStatus.BAD_REQUEST, 7001, "하루 당 한 번만 뽑기 가능합니다."),
 
     // 게시글 8000번대
     NOT_FOUND_BOARD(HttpStatus.NOT_FOUND, 8000, "게시글을 찾을 수 없습니다."),

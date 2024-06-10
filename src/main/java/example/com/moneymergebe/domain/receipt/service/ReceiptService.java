@@ -141,9 +141,10 @@ public class ReceiptService {
     /**
      * 랜덤 영수증 목록 (최대 6개)
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public RandomReceiptRes getRandomReceipts(Long userId) {
         User user = findUser(userId);
+        UserValidator.checkTodayDrawStatus(user); // 추첨을 했는지 체크
         List<Receipt> receiptList = receiptRepository.findAllBySharedTrueAndUserNot(user);
 
         // 무작위로 섞기
@@ -161,6 +162,12 @@ public class ReceiptService {
     @Transactional
     public SaveRandomReceiptRes saveRandomReceipt(Long userId, SaveRandomReceiptReq req) {
         User user = findUser(userId);
+        UserValidator.checkTodayDrawStatus(user); // 추첨을 했는지 체크
+        user.setTodayDrawStatus(true);
+
+        Receipt receipt = receiptRepository.findByReceiptId(req.getPickReceiptId());
+        ReceiptValidator.validate(receipt);
+
         user.updateReceivedReceiptId(req.getPickReceiptId());
 
         return new SaveRandomReceiptRes();
