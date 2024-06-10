@@ -6,6 +6,7 @@ import example.com.moneymergebe.domain.character.dto.response.CharacterBuyRes;
 import example.com.moneymergebe.domain.character.dto.response.CharacterChangeRes;
 import example.com.moneymergebe.domain.character.dto.response.CharacterGetRes;
 import example.com.moneymergebe.domain.character.dto.response.CharacterShopGetRes;
+import example.com.moneymergebe.domain.character.dto.response.OwnCharacterRes;
 import example.com.moneymergebe.domain.character.service.CharacterService;
 import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
@@ -45,6 +46,18 @@ public class CharacterController {
         @RequestParam(value = "isAsc", defaultValue = DEFAULT_IS_ASC) boolean isAsc
     ) {
         return CommonResponse.success(characterService.getUserCharacters(userDetails.getUser().getUserId(), page - 1, size, sortBy, isAsc));
+    }
+
+    /**
+     * 소유 캐릭터 ID 리스트 조회
+     * @param userDetails 사용자 정보
+     * @return 사용자 소유 캐릭터 ID 리스트
+     */
+    @GetMapping("/own")
+    public CommonResponse<OwnCharacterRes> getUserOwnCharacters(
+        @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        return CommonResponse.success(characterService.getUserOwnCharacters(userDetails.getUser().getUserId()));
     }
 
     /**
