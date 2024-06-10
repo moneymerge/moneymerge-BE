@@ -48,6 +48,7 @@ public class Scheduler {
         for(User user : userList) {
             user.updateAttendance();
             user.updateReceivedReceiptId();
+            user.setTodayDrawStatus(false);
         }
     }
 
