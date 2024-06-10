@@ -6,8 +6,11 @@ import example.com.moneymergebe.domain.character.dto.response.CharacterBuyRes;
 import example.com.moneymergebe.domain.character.dto.response.CharacterChangeRes;
 import example.com.moneymergebe.domain.character.dto.response.CharacterGetRes;
 import example.com.moneymergebe.domain.character.dto.response.CharacterShopGetRes;
+import example.com.moneymergebe.domain.character.dto.response.OwnCharacterRes;
 import example.com.moneymergebe.domain.character.entity.Character;
 import example.com.moneymergebe.domain.character.repository.CharacterRepository;
+import example.com.moneymergebe.domain.point.entity.Point;
+import example.com.moneymergebe.domain.point.repository.PointRepository;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.entity.UserCharacter;
 import example.com.moneymergebe.domain.user.repository.UserCharacterRepository;
@@ -16,6 +19,7 @@ import example.com.moneymergebe.global.exception.GlobalException;
 import example.com.moneymergebe.global.validator.CharacterValidator;
 import example.com.moneymergebe.global.validator.UserCharacterValidator;
 import example.com.moneymergebe.global.validator.UserValidator;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +35,8 @@ public class CharacterService {
     private final UserCharacterRepository userCharacterRepository;
     private final CharacterRepository characterRepository;
     private final UserRepository userRepository;
+    private final PointRepository pointRepository;
+    private final static String PURCHASE_CHARACTER = "캐릭터 구매";
 
     /**
      * 소유 캐릭터 조회
@@ -43,6 +49,21 @@ public class CharacterService {
         Pageable pageable = PageRequest.of(page, size, sort);
 
         return userCharacterRepository.findAllByUser(user, pageable).map(CharacterGetRes::new);
+    }
+
+    /**
+     * 소유 캐릭터 ID 리스트 조회
+     */
+    @Transactional(readOnly = true)
+    public OwnCharacterRes getUserOwnCharacters(Long userId) {
+        User user = findUser(userId);
+        List<UserCharacter> characters = userCharacterRepository.findAllByUser(user);
+        Long[] characterList = new Long[characters.size()];
+        for (int i = 0; i < characters.size(); i++) {
+            characterList[i] = characters.get(i).getCharacter().getCharacterId();
+        }
+
+        return new OwnCharacterRes(characterList);
     }
 
     /**
@@ -86,6 +107,8 @@ public class CharacterService {
         UserCharacter userCharacter = UserCharacter.builder().user(user).character(character).build();
         userCharacterRepository.save(userCharacter);
         user.updatePoints(user.getPoints() - character.getPoints());
+
+        pointRepository.save(Point.builder().detail(PURCHASE_CHARACTER).points(-1*character.getPoints()).user(user).build());
 
         return new CharacterBuyRes();
     }
