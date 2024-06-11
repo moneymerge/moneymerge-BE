@@ -1,5 +1,7 @@
 package example.com.moneymergebe.domain.board.service;
 
+import static example.com.moneymergebe.global.response.ResultCode.NOT_FOUND_RANGE;
+
 import example.com.moneymergebe.domain.board.dto.request.BoardCommentModifyReq;
 import example.com.moneymergebe.domain.board.dto.request.BoardCommentSaveReq;
 import example.com.moneymergebe.domain.board.dto.request.BoardModifyReq;
@@ -41,9 +43,6 @@ public class BoardService {
     private final BoardCommentLikeRepository boardCommentLikeRepository;
     private final S3Util s3Util;
 
-    private static final String IMAGE_JPG = "image/jpeg";
-    private static final String IMAGE_PNG = "image/png";
-
     /**
      * 게시글 생성
      */
@@ -79,24 +78,24 @@ public class BoardService {
      * 게시글 전체 조회
      */
     @Transactional(readOnly = true)
-    public List<BoardGetRes> getAllBoards(int page, int size, String sortBy, boolean isAsc) {
+    public Page<BoardGetRes> getAllBoards(int page, int size, String sortBy, boolean isAsc) {
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return boardRepository.findAll(pageable).stream().map(board -> new BoardGetRes(board, boardCommentRepository.countByBoard(board))).toList();
+        return boardRepository.findAll(pageable).map(board -> new BoardGetRes(board, boardCommentRepository.countByBoard(board)));
     }
 
     /**
      * 특정 게시판 게시글 전체 조회
      */
     @Transactional(readOnly = true)
-    public List<BoardGetRes> getAllBoardsByBoardType(int page, int size, String sortBy, boolean isAsc, BoardType boardType) {
+    public Page<BoardGetRes> getAllBoardsByBoardType(int page, int size, String sortBy, boolean isAsc, BoardType boardType) {
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return boardRepository.findAllByBoardType(pageable, boardType).stream().map(board -> new BoardGetRes(board, boardCommentRepository.countByBoard(board))).toList();
+        return boardRepository.findAllByBoardType(pageable, boardType).map(board -> new BoardGetRes(board, boardCommentRepository.countByBoard(board)));
     }
 
 
@@ -236,7 +235,36 @@ public class BoardService {
      * 게시글 검색 기능
      */
     @Transactional
-    public List<BoardGetRes> searchBoard(int page, int size, String sortBy, boolean isAsc, String range, String searchKeyword) {
+    public Page<BoardGetRes> searchBoard(int page, int size, String sortBy, boolean isAsc, String range, BoardType boardType, String searchKeyword) {
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Board> boardList = null;
+        switch (range) {
+            case "titleAndContent":
+                boardList = boardRepository.findByBoardTypeAndTitleContainingOrContentContaining(pageable, boardType, searchKeyword, searchKeyword);
+                log.info(range);
+                break;
+            case "title":
+                boardList = boardRepository.findByBoardTypeAndTitleContaining(pageable, boardType, searchKeyword);
+                break;
+            case "content":
+                boardList = boardRepository.findByBoardTypeAndContentContaining(pageable, boardType, searchKeyword);
+                break;
+            case "user":
+                User user = userRepository.findByUsername(searchKeyword);
+                boardList = boardRepository.findByBoardTypeAndUser(pageable, boardType, user);
+                break;
+            default:
+                throw new GlobalException(NOT_FOUND_RANGE);
+        }
+
+        return boardList.map(board -> new BoardGetRes(board, boardCommentRepository.countByBoard(board)));
+    }
+
+    @Transactional
+    public Page<BoardGetRes> searchBoard(int page, int size, String sortBy, boolean isAsc, String range, String searchKeyword) {
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
@@ -261,7 +289,7 @@ public class BoardService {
                 throw new IllegalArgumentException("유효한 range값이 아닙니다.");
         }
 
-        return boardList.stream().map(board -> new BoardGetRes(board, boardCommentRepository.countByBoard(board))).toList();
+        return boardList.map(board -> new BoardGetRes(board, boardCommentRepository.countByBoard(board)));
     }
 
     /**
