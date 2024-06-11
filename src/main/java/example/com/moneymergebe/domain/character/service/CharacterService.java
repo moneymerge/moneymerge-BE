@@ -106,7 +106,7 @@ public class CharacterService {
 
         UserCharacter userCharacter = UserCharacter.builder().user(user).character(character).build();
         userCharacterRepository.save(userCharacter);
-        user.updatePoints(user.getPoints() - character.getPoints());
+        user.updatePoints(-1*character.getPoints());
 
         pointRepository.save(Point.builder().detail(PURCHASE_CHARACTER).points(-1*character.getPoints()).user(user).build());
 

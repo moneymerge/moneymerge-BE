@@ -14,6 +14,8 @@ import example.com.moneymergebe.domain.book.repository.BookUserRepository;
 import example.com.moneymergebe.domain.category.entity.Category;
 import example.com.moneymergebe.domain.category.repository.CategoryRepository;
 import example.com.moneymergebe.domain.book.dto.response.BookMonthAnalysisRes;
+import example.com.moneymergebe.domain.point.entity.Point;
+import example.com.moneymergebe.domain.point.repository.PointRepository;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
 import example.com.moneymergebe.domain.record.entity.Record;
 import example.com.moneymergebe.domain.record.entity.RecordType;
@@ -48,6 +50,12 @@ public class BookService {
     private final BookRecordRepository bookRecordRepository;
     private final CategoryRepository categoryRepository;
     private final RecordService recordService;
+    private final PointRepository pointRepository;
+
+    private final static int MONTH_GOAL_CHANGE_POINT = -500;
+    private final static int YEAR_GOAL_CHANGE_POINT = -1000;
+    private final static String MONTH_GOAL_CHANGE = "월 목표 수정";
+    private final static String YEAR_GOAL_CHANGE = "연 목표 수정";
 
     /**
      * 가계부 생성
@@ -104,11 +112,17 @@ public class BookService {
 
         BookUser bookUserInAccess = checkBookMember(user, book); // 가계부 권한 검사
 
+        // 삭제 동의
+        int deleteAgreeNum = 0;
+
         //가계부 사용자 목록
         List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
         List<UserGetRes> userGetResList = new ArrayList<>();
         for (BookUser bookUser : bookUserList) {
             userGetResList.add(new UserGetRes(bookUser.getUser().getUserId(), bookUser.getName(), bookUser.getColor()));
+            if(bookUser.isDeleteAgree()) {
+                deleteAgreeNum++;
+            }
         }
 
         //income
@@ -134,7 +148,7 @@ public class BookService {
         }
         total = income - outcome;
 
-        return new BookGetRes(book, userGetResList, bookUserInAccess, income, outcome, total);
+        return new BookGetRes(book, userGetResList, bookUserInAccess, income, outcome, total, deleteAgreeNum);
     }
 
 
@@ -162,7 +176,7 @@ public class BookService {
         checkBookMember(user, book);
 
         // 초대 받는 멤버가 기존 멤버인지 확인
-        User newUser = userRepository.findByEmail(req.getEmail());
+        User newUser = findUser(req.getInvitedUserId());
         newBookMember(newUser, book);
 
         bookUserRepository.save(BookUser.builder().book(book).user(newUser).build());
@@ -237,6 +251,8 @@ public class BookService {
         checkBookMember(user, book);
 
         book.updateYearGoal(req.getYearGoal());
+        user.updatePoints(YEAR_GOAL_CHANGE_POINT);
+        pointRepository.save(Point.builder().detail(YEAR_GOAL_CHANGE).points(YEAR_GOAL_CHANGE_POINT).user(user).build());
 
         return new BookYearGoalRes();
     }
@@ -251,6 +267,8 @@ public class BookService {
         checkBookMember(user, book);
 
         book.updateMonthGoal(req.getMonthGoal());
+        user.updatePoints(MONTH_GOAL_CHANGE_POINT);
+        pointRepository.save(Point.builder().detail(MONTH_GOAL_CHANGE).points(MONTH_GOAL_CHANGE_POINT).user(user).build());
 
         return new BookMonthGoalRes();
     }
