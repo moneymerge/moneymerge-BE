@@ -131,7 +131,7 @@ public class RecordService {
         // 싫어요 개수
         int dislikes = recordReactionRepository.countByRecordAndReaction(record, false);
 
-        return new RecordGetRes(record, bookGetResList, commentGetResList, likes, dislikes);
+        return new RecordGetRes(record, bookGetResList, commentGetResList, likes, dislikes, bookUser.getColor());
     }
 
     /**
