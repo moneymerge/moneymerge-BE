@@ -103,7 +103,7 @@ public class Scheduler {
                     List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
                     for(BookUser bookUser : bookUserList) {
                         User user = bookUser.getUser();
-                        user.updatePoints(user.getPoints() + MONTH_GOAL_POINT);
+                        user.updatePoints(MONTH_GOAL_POINT);
                         pointRepository.save(Point.builder().detail(MONTH_GOAL).points(MONTH_GOAL_POINT).user(user).build());
                     }
                 }
@@ -130,7 +130,7 @@ public class Scheduler {
                 List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
                 for(BookUser bookUser : bookUserList) {
                     User user = bookUser.getUser();
-                    user.updatePoints(user.getPoints() + YEAR_GOAL_POINT);
+                    user.updatePoints(YEAR_GOAL_POINT);
                     pointRepository.save(Point.builder().detail(YEAR_GOAL).points(YEAR_GOAL_POINT).user(user).build());
                 }
             }

@@ -76,7 +76,7 @@ public class BookController {
      */
     @PatchMapping("/{bookId}/book-title")
     public CommonResponse<BookTitleRes> updateBookTitle(@AuthenticationPrincipal UserDetailsImpl userDetails,
-        @RequestBody BookTitleReq req, @PathVariable Long bookId) {
+        @RequestBody @Valid BookTitleReq req, @PathVariable Long bookId) {
         req.setBookId(bookId);
         req.setUserId(userDetails.getUser().getUserId());
         return CommonResponse.success(bookService.updateBookTitle(req));
@@ -98,7 +98,7 @@ public class BookController {
      */
     @PatchMapping("/{bookId}/user-name")
     public CommonResponse<BookUsernameRes> updateUserName(@AuthenticationPrincipal UserDetailsImpl userDetails,
-        @RequestBody BookUsernameReq req, @PathVariable Long bookId) {
+        @RequestBody @Valid BookUsernameReq req, @PathVariable Long bookId) {
         req.setBookId(bookId);
         req.setUserId(userDetails.getUser().getUserId());
         return CommonResponse.success(bookService.updateUsername(req));

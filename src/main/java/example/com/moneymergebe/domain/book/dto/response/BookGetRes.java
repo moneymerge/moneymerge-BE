@@ -13,6 +13,7 @@ public class BookGetRes {
     private String bookColor;
     private String myColor;
     private String myName;
+    private boolean myAgree;
     private Long yearGoal;
     private Long monthGoal;
     private int startDate;
@@ -20,6 +21,7 @@ public class BookGetRes {
     private Long income;
     private Long outcome;
     private Long total;
+    private int deleteAgreeNum;
 
     public BookGetRes(Book book) {
         this.bookId = book.getBookId();
@@ -27,12 +29,13 @@ public class BookGetRes {
         this.bookColor = book.getColor();
     }
 
-    public BookGetRes(Book book, List<UserGetRes> userGetResList, BookUser bookUser, Long income, Long outcome, Long total) {
+    public BookGetRes(Book book, List<UserGetRes> userGetResList, BookUser bookUser, Long income, Long outcome, Long total, int deleteAgreeNum) {
         this.bookId = book.getBookId();
         this.bookTitle = book.getTitle();
         this.bookColor = book.getColor();
         this.myColor = bookUser.getColor();
         this.myName = bookUser.getName();
+        this.myAgree = bookUser.isDeleteAgree();
         this.yearGoal = book.getYearGoal();
         this.monthGoal = book.getMonthGoal();
         this.startDate = book.getStartDate();
@@ -40,5 +43,6 @@ public class BookGetRes {
         this.income=income;
         this.outcome=outcome;
         this.total=total;
+        this.deleteAgreeNum = deleteAgreeNum;
     }
 }
