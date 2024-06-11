@@ -8,5 +8,5 @@ import lombok.Setter;
 public class BookUsersReq {
     private Long bookId;
     private Long userId; // 초대 요청 멤버
-    private String email; // 초대 받는 멤버
+    private Long invitedUserId; // 초대 받는 멤버
 }
