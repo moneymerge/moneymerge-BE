@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -81,6 +82,7 @@ public class NaverService {
             + state;
     }
 
+    @Transactional
     public HashMap<String, String> naverLogin(String code) throws JsonProcessingException {
         // HTML에서 인증 코드(code)를 요청하여 전달받음
         HashMap<String, String> tokens = getNaverTokens(code); // 인증 코드로 토큰 요청 getNaverTokens
