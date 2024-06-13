@@ -11,7 +11,7 @@ import lombok.Getter;
 public class GetNotificationRes {
     private Long notificationId;
     @Nullable
-    private String content;
+    private String detail;
     private boolean isRead;
     private String createdAt;
     private String type;
@@ -19,10 +19,10 @@ public class GetNotificationRes {
 
     public GetNotificationRes(Notification notification) {
         this.notificationId = notification.getNotificationId();
-        this.content = notification.getContent();
+        this.detail = notification.getDetail();
         this.isRead = notification.isRead();
         this.createdAt = notification.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        this.type = notification.getType().getMessage();
+        this.type = notification.getType().getType();
         this.message = notification.getType().getMessage();
     }
 }

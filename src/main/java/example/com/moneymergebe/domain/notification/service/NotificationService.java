@@ -84,7 +84,7 @@ public class NotificationService {
     @Transactional
     public List<GetNotificationRes> getNotifications(Long userId) {
         User user = findUser(userId);
-        List<Notification> notifications = notificationRepository.findAllByUser(user);
+        List<Notification> notifications = notificationRepository.findAllByUserOrderByCreatedAtDesc(user);
         List<GetNotificationRes> resList = new ArrayList<>();
         for(Notification notification : notifications) {
             notification.read();

@@ -12,6 +12,7 @@ import example.com.moneymergebe.global.response.CommonResponse;
 import example.com.moneymergebe.global.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,7 +58,7 @@ public class BoardController {
      * 게시글 전체 조회
      */
     @GetMapping
-    public CommonResponse<List<BoardGetRes>> getAllBoards(
+    public CommonResponse<Page<BoardGetRes>> getAllBoards(
             @RequestParam(value = "page", defaultValue = DEFAULT_PAGE) int page,
             @RequestParam(value = "size", defaultValue = DEFAULT_SIZE) int size,
             @RequestParam(value = "sortBy", defaultValue = DEFAULT_SORT_BY) String sortBy,
@@ -69,18 +70,18 @@ public class BoardController {
             return CommonResponse.success(boardService.getAllBoards(page -1, size, sortBy, isAsc)); // 게시글 전체 조회
         }
     }
-    /**
-     * 게시글 수 조회 (pagination x)
-     */
-    @GetMapping("/count")
-    public Long getAllBoardsWithoutPage(
-            @RequestParam(required = false) BoardType boardType) {
-        if (boardType != null) {
-            return boardRepository.countAllByBoardType(boardType); // 특정 게시판 게시글 전체 조회
-        } else {
-            return boardRepository.countAllBy(); // 게시글 전체 조회
-        }
-    }
+//    /**
+//     * 게시글 수 조회 (pagination x)
+//     */
+//    @GetMapping("/count")
+//    public Long getAllBoardsWithoutPage(
+//            @RequestParam(required = false) BoardType boardType) {
+//        if (boardType != null) {
+//            return boardRepository.countAllByBoardType(boardType); // 특정 게시판 게시글 전체 조회
+//        } else {
+//            return boardRepository.countAllBy(); // 게시글 전체 조회
+//        }
+//    }
 
 
     /**
@@ -163,13 +164,19 @@ public class BoardController {
      * 게시글 검색 기능
      */
     @GetMapping("/search")
-    public CommonResponse<List<BoardGetRes>> searchBoard(
+    public CommonResponse<Page<BoardGetRes>> searchBoard(
             @RequestParam(value = "page", defaultValue = DEFAULT_PAGE) int page,
             @RequestParam(value = "size", defaultValue = DEFAULT_SIZE) int size,
             @RequestParam(value = "sortBy", defaultValue = DEFAULT_SORT_BY) String sortBy,
             @RequestParam(value = "isAsc", defaultValue = DEFAULT_IS_ASC) boolean isAsc,
             @RequestParam(value = "range", defaultValue = DEFAULT_RANGE) String range,
+            @RequestParam(required = false) BoardType boardType,
             @RequestParam(required = false) String searchKeyword){
-        return CommonResponse.success(boardService.searchBoard(page - 1, size, sortBy, isAsc, range, searchKeyword));
+        if (boardType != null) {
+            return CommonResponse.success(boardService.searchBoard(page - 1, size, sortBy, isAsc, range, boardType, searchKeyword));
+        } else {
+            return CommonResponse.success(boardService.searchBoard(page - 1, size, sortBy, isAsc, range, searchKeyword));
+        }
+
     }
 }

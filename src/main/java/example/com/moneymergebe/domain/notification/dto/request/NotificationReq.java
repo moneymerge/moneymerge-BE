@@ -10,5 +10,5 @@ import lombok.Setter;
 public class NotificationReq {
     private NotificationType type;
     @Nullable
-    private String content;
+    private String detail;
 }

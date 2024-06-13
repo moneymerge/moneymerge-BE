@@ -1,5 +1,9 @@
 package example.com.moneymergebe.domain.receipt.service;
 
+import static example.com.moneymergebe.domain.notification.entity.NotificationType.RECEIPT_ARRIVED;
+
+import example.com.moneymergebe.domain.notification.entity.Notification;
+import example.com.moneymergebe.domain.notification.repository.NotificationRepository;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptModifyReq;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptSaveReq;
 import example.com.moneymergebe.domain.receipt.dto.request.SaveRandomReceiptReq;
@@ -35,6 +39,7 @@ public class ReceiptService {
     private final ReceiptRepository receiptRepository;
     private final ReceiptLikeRepository receiptLikeRepository;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     /**
      * 영수증 월별 조회
@@ -169,6 +174,7 @@ public class ReceiptService {
         ReceiptValidator.validate(receipt);
 
         user.updateReceivedReceiptId(req.getPickReceiptId());
+        notificationRepository.save(new Notification(RECEIPT_ARRIVED, "", user));
 
         return new SaveRandomReceiptRes();
     }

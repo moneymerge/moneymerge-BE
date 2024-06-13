@@ -48,6 +48,7 @@ public enum ResultCode {
 
     // 게시글 8000번대
     NOT_FOUND_BOARD(HttpStatus.NOT_FOUND, 8000, "게시글을 찾을 수 없습니다."),
+    NOT_FOUND_RANGE(HttpStatus.BAD_REQUEST, 8001, "유효한 범위가 아닙니다."),
 
     // 게시글 댓글 9000번대
     NOT_FOUND_BOARD_COMMENT(HttpStatus.NOT_FOUND, 9000, "게시글 댓글을 찾을 수 없습니다."),
