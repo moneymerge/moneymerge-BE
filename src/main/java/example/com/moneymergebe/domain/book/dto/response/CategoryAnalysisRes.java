@@ -6,11 +6,13 @@ import lombok.Getter;
 public class CategoryAnalysisRes {
     private Long categoryId;
     private String categoryName;
-    private int categorySum;
+    private int catExpenseSum;
+    private int catIncomeSum;
 
-    public CategoryAnalysisRes(Long categoryId, String categoryName, int categorySum) {
+    public CategoryAnalysisRes(Long categoryId, String categoryName, int catExpenseSum, int catIncomeSum) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
-        this.categorySum = categorySum;
+        this.catExpenseSum = catExpenseSum;
+        this.catIncomeSum = catIncomeSum;
     }
 }

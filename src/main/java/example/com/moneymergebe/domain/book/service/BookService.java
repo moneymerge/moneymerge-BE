@@ -1,8 +1,5 @@
 package example.com.moneymergebe.domain.book.service;
 
-import static example.com.moneymergebe.domain.record.entity.RecordType.EXPENSE;
-import static example.com.moneymergebe.domain.record.entity.RecordType.INCOME;
-
 import example.com.moneymergebe.domain.book.dto.request.*;
 import example.com.moneymergebe.domain.book.dto.response.*;
 import example.com.moneymergebe.domain.book.entity.Book;
@@ -13,7 +10,6 @@ import example.com.moneymergebe.domain.book.repository.BookRepository;
 import example.com.moneymergebe.domain.book.repository.BookUserRepository;
 import example.com.moneymergebe.domain.category.entity.Category;
 import example.com.moneymergebe.domain.category.repository.CategoryRepository;
-import example.com.moneymergebe.domain.book.dto.response.BookMonthAnalysisRes;
 import example.com.moneymergebe.domain.point.entity.Point;
 import example.com.moneymergebe.domain.point.repository.PointRepository;
 import example.com.moneymergebe.domain.record.dto.response.RecordGetMonthRes;
@@ -27,17 +23,16 @@ import example.com.moneymergebe.global.exception.GlobalException;
 import example.com.moneymergebe.global.validator.BookUserValidator;
 import example.com.moneymergebe.global.validator.BookValidator;
 import example.com.moneymergebe.global.validator.UserValidator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
+import static example.com.moneymergebe.domain.record.entity.RecordType.EXPENSE;
+import static example.com.moneymergebe.domain.record.entity.RecordType.INCOME;
 
 @Slf4j
 @Service
@@ -324,17 +319,25 @@ public class BookService {
         int totalIncomeSum = getAmountSum(recordList, INCOME);
         int totalExpenseSum = getAmountSum(recordList, EXPENSE);
 
-        // 카테고리별 합산
-        Map<Category, Integer> categoryMap = new HashMap<>();
+        // 카테고리별 합산 (지출)
+        Map<Category, Integer> categoryExpenseMap = new HashMap<>();
         for(Record record : recordList) {
             if(record.getRecordType() == EXPENSE)
-                categoryMap.put(record.getCategory(), categoryMap.getOrDefault(record.getCategory(), 0) + record.getAmount());
+                categoryExpenseMap.put(record.getCategory(), categoryExpenseMap.getOrDefault(record.getCategory(), 0) + record.getAmount());
+        }
+        // 카테고리별 합산(수입)
+        Map<Category, Integer> categoryIncomeMap = new HashMap<>();
+        for(Record record : recordList) {
+            if(record.getRecordType() == INCOME)
+                categoryIncomeMap.put(record.getCategory(), categoryIncomeMap.getOrDefault(record.getCategory(), 0) + record.getAmount());
         }
 
         List<CategoryAnalysisRes> categoryResList = new ArrayList<>();
         for(Category category : categoryList) {
-            int sum = categoryMap.getOrDefault(category, 0);
-            if(sum != 0) categoryResList.add(new CategoryAnalysisRes(category.getCategoryId(), category.getCategory(), sum));
+            int catExpenseSum = categoryExpenseMap.getOrDefault(category, 0);
+            int catIncomeSum = categoryIncomeMap.getOrDefault(category, 0);
+//            if(catExpenseSum != 0 && catIncomeSum!=0)
+                categoryResList.add(new CategoryAnalysisRes(category.getCategoryId(), category.getCategory(), catExpenseSum, catIncomeSum));
         }
 
         // 1월부터 월별 분석
@@ -389,17 +392,25 @@ public class BookService {
             incomeExpenseRes.add(new MemberIncomeExpenseRes(bookUser.getUser().getUserId(), bookUser.getName(), incomeSum, expenseSum));
 
             // 카테고리
-            Map<Category, Integer> categoryMap = new HashMap<>();
+            Map<Category, Integer> categoryExpenseMap = new HashMap<>();
             for(Record record : recordList) {
                 if(record.getRecordType() == EXPENSE && Objects.equals(record.getUser().getUserId(),
                     bookUser.getUser().getUserId()))
-                    categoryMap.put(record.getCategory(), categoryMap.getOrDefault(record.getCategory(), 0) + record.getAmount());
+                    categoryExpenseMap.put(record.getCategory(), categoryExpenseMap.getOrDefault(record.getCategory(), 0) + record.getAmount());
+            }
+            Map<Category, Integer> categoryIncomeMap = new HashMap<>();
+            for(Record record : recordList) {
+                if(record.getRecordType() == INCOME && Objects.equals(record.getUser().getUserId(),
+                        bookUser.getUser().getUserId()))
+                    categoryIncomeMap.put(record.getCategory(), categoryIncomeMap.getOrDefault(record.getCategory(), 0) + record.getAmount());
             }
 
             List<CategoryAnalysisRes> categoryResList = new ArrayList<>();
             for(Category category : categoryList) {
-                int sum = categoryMap.getOrDefault(category, 0);
-                if(sum != 0) categoryResList.add(new CategoryAnalysisRes(category.getCategoryId(), category.getCategory(), sum));
+                int catExpenseSum = categoryExpenseMap.getOrDefault(category, 0);
+                int catIncomeSum = categoryIncomeMap.getOrDefault(category, 0);
+//                if(catExpenseSum != 0 && catIncomeSum!=0)
+                    categoryResList.add(new CategoryAnalysisRes(category.getCategoryId(), category.getCategory(), catExpenseSum, catIncomeSum));
             }
 
             categoryRes.add(new MemberCategoryAnalysisRes(bookUser.getUser().getUserId(), bookUser.getName(), categoryResList));
