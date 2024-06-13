@@ -1,16 +1,18 @@
 package example.com.moneymergebe.global.scheduler;
 
+import static example.com.moneymergebe.domain.notification.entity.NotificationType.GOAL_ACHIEVEMENT;
+import static example.com.moneymergebe.domain.notification.entity.NotificationType.GOAL_ACHIEVEMENT_FAILURE;
+
 import example.com.moneymergebe.domain.book.entity.Book;
 import example.com.moneymergebe.domain.book.entity.BookRecord;
 import example.com.moneymergebe.domain.book.entity.BookUser;
 import example.com.moneymergebe.domain.book.repository.BookRecordRepository;
 import example.com.moneymergebe.domain.book.repository.BookRepository;
 import example.com.moneymergebe.domain.book.repository.BookUserRepository;
+import example.com.moneymergebe.domain.notification.entity.Notification;
+import example.com.moneymergebe.domain.notification.repository.NotificationRepository;
 import example.com.moneymergebe.domain.point.entity.Point;
 import example.com.moneymergebe.domain.point.repository.PointRepository;
-import example.com.moneymergebe.domain.receipt.repository.ReceiptLikeRepository;
-import example.com.moneymergebe.domain.receipt.repository.ReceiptLogRepository;
-import example.com.moneymergebe.domain.receipt.repository.ReceiptRepository;
 import example.com.moneymergebe.domain.record.entity.Record;
 import example.com.moneymergebe.domain.record.entity.RecordType;
 import example.com.moneymergebe.domain.user.entity.User;
@@ -18,7 +20,6 @@ import example.com.moneymergebe.domain.user.repository.UserRepository;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -34,6 +35,7 @@ public class Scheduler {
     private final BookUserRepository bookUserRepository;
     private final BookRecordRepository bookRecordRepository;
     private final PointRepository pointRepository;
+    private final NotificationRepository notificationRepository;
 
     private static final int MONTH_GOAL_POINT = 1000;
     private static final String MONTH_GOAL = "이번 달 목표 달성";
@@ -96,15 +98,19 @@ public class Scheduler {
         for(Book book : bookList) {
             // 시작일에 해당하면 월의 총 소비 계산
             if(book.getStartDate() == day) {
-                int expensesSum = findExpenseSum(startDate, endDate, book);
+                int expenseSum = findExpenseSum(startDate, endDate, book);
 
-                // 월 목표가 같거나 크면 가계부 멤버에게 포인트 지급
-                if(expensesSum <= book.getMonthGoal()) {
-                    List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
-                    for(BookUser bookUser : bookUserList) {
-                        User user = bookUser.getUser();
+                List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
+                for(BookUser bookUser : bookUserList) {
+                    User user = bookUser.getUser();
+                    // 월 목표가 같거나 크면 가계부 멤버에게 포인트 지급
+                    if(expenseSum <= book.getMonthGoal()) {
                         user.updatePoints(MONTH_GOAL_POINT);
                         pointRepository.save(Point.builder().detail(MONTH_GOAL).points(MONTH_GOAL_POINT).user(user).build());
+                        notificationRepository.save(new Notification(GOAL_ACHIEVEMENT, Integer.toString(MONTH_GOAL_POINT), user));
+                    }
+                    else {
+                        notificationRepository.save(new Notification(GOAL_ACHIEVEMENT_FAILURE, "월 목표: " + book.getMonthGoal(), user));
                     }
                 }
             }
@@ -123,15 +129,19 @@ public class Scheduler {
 
         // 올해 목표와 올해의 총 소비합 비교
         for(Book book : bookList) {
-            int expensesSum = findExpenseSum(startDate, endDate, book);;
+            int expenseSum = findExpenseSum(startDate, endDate, book);;
 
-            // 올해 목표가 같거나 크면 가계부 멤버에게 포인트 지급
-            if(expensesSum <= book.getYearGoal()) {
-                List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
-                for(BookUser bookUser : bookUserList) {
-                    User user = bookUser.getUser();
+            List<BookUser> bookUserList = bookUserRepository.findAllByBook(book);
+            for(BookUser bookUser : bookUserList) {
+                User user = bookUser.getUser();
+                // 올해 목표가 같거나 크면 가계부 멤버에게 포인트 지급
+                if(expenseSum <= book.getYearGoal()) {
                     user.updatePoints(YEAR_GOAL_POINT);
                     pointRepository.save(Point.builder().detail(YEAR_GOAL).points(YEAR_GOAL_POINT).user(user).build());
+                    notificationRepository.save(new Notification(GOAL_ACHIEVEMENT, Integer.toString(YEAR_GOAL_POINT), user));
+                }
+                else {
+                    notificationRepository.save(new Notification(GOAL_ACHIEVEMENT_FAILURE, "연 목표: " + book.getYearGoal(), user));
                 }
             }
         }

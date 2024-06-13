@@ -28,7 +28,7 @@ public class Notification extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long notificationId;
 
-    private String content;
+    private String detail;
 
     @Column(nullable = false)
     private boolean isRead;
@@ -43,9 +43,16 @@ public class Notification extends BaseEntity {
     private User user;
 
     public Notification(NotificationReq req, boolean isRead, User user) {
-        this.content = req.getContent();
+        this.detail = req.getDetail();
         this.isRead = isRead;
         this.type = req.getType();
+        this.user = user;
+    }
+
+    public Notification(NotificationType type, String detail, User user) {
+        this.detail = detail;
+        this.isRead = false;
+        this.type = type;
         this.user = user;
     }
 
