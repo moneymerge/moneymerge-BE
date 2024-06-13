@@ -1,11 +1,14 @@
 package example.com.moneymergebe.domain.user.service;
 
+import static example.com.moneymergebe.domain.notification.entity.NotificationType.ATTENDANCE_POINT_NOTIFICATION;
 import static example.com.moneymergebe.global.jwt.JwtUtil.ACCESS_TOKEN_HEADER;
 import static example.com.moneymergebe.global.jwt.JwtUtil.REFRESH_TOKEN_HEADER;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonParser;
+import example.com.moneymergebe.domain.notification.entity.Notification;
+import example.com.moneymergebe.domain.notification.repository.NotificationRepository;
 import example.com.moneymergebe.domain.point.entity.Point;
 import example.com.moneymergebe.domain.point.repository.PointRepository;
 import example.com.moneymergebe.domain.user.dto.request.NaverInsertReq;
@@ -36,6 +39,7 @@ public class NaverService {
 
     private final UserRepository userRepository;
     private final PointRepository pointRepository;
+    private final NotificationRepository notificationRepository;
     private final JwtUtil jwtUtil;
 
     @Value("${spring.security.oauth2.client.registration.naver.client-id}")
@@ -116,6 +120,7 @@ public class NaverService {
             pointRepository.save(
                 Point.builder().detail(ATTENDANCE).points(ATTENDANCE_POINT).user(user).build());
             user.checkAttendance();
+            notificationRepository.save(new Notification(ATTENDANCE_POINT_NOTIFICATION, Integer.toString(ATTENDANCE_POINT), user));
         }
 
         // 반환할 토큰 생성
