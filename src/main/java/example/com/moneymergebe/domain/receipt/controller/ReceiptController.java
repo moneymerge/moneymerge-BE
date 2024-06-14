@@ -4,6 +4,7 @@ import example.com.moneymergebe.domain.receipt.dto.request.ReceiptModifyReq;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptSaveReq;
 import example.com.moneymergebe.domain.receipt.dto.request.SaveRandomReceiptReq;
 import example.com.moneymergebe.domain.receipt.dto.response.RandomReceiptRes;
+import example.com.moneymergebe.domain.receipt.dto.response.ReceiptAnalysisRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptDeleteRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptGetMonthRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptGetRes;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -116,5 +118,17 @@ public class ReceiptController {
     @PatchMapping("/random")
     public CommonResponse<SaveRandomReceiptRes> saveRandomReceipt(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody SaveRandomReceiptReq req) {
         return CommonResponse.success((receiptService.saveRandomReceipt(userDetails.getUser().getUserId(), req)));
+    }
+
+    /**
+     * 가계부 월별 분석
+     * @param userDetails 사용자 정보
+     * @param year 연도
+     * @param month 월
+     */
+    @GetMapping("/analysis")
+    public CommonResponse<ReceiptAnalysisRes> analyzeMonthReceipt(@AuthenticationPrincipal UserDetailsImpl userDetails,
+        @RequestParam(name = "year") int year, @RequestParam(name = "month") int month) {
+        return CommonResponse.success(receiptService.analyzeMonthReceipt(userDetails.getUser().getUserId(), year, month));
     }
 }

@@ -3,23 +3,30 @@ package example.com.moneymergebe.domain.receipt.service;
 import static example.com.moneymergebe.domain.notification.entity.NotificationType.RECEIPT_ARRIVED;
 import static example.com.moneymergebe.global.response.ResultCode.ALREADY_WRITTEN_RECEIPT_DATE;
 
+import example.com.moneymergebe.domain.book.dto.response.BookMonthAnalysisRes;
+import example.com.moneymergebe.domain.book.dto.response.MonthAnalysisRes;
+import example.com.moneymergebe.domain.book.entity.Book;
+import example.com.moneymergebe.domain.book.entity.BookRecord;
 import example.com.moneymergebe.domain.notification.entity.Notification;
 import example.com.moneymergebe.domain.notification.repository.NotificationRepository;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptModifyReq;
 import example.com.moneymergebe.domain.receipt.dto.request.ReceiptSaveReq;
 import example.com.moneymergebe.domain.receipt.dto.request.SaveRandomReceiptReq;
 import example.com.moneymergebe.domain.receipt.dto.response.RandomReceiptRes;
+import example.com.moneymergebe.domain.receipt.dto.response.ReceiptAnalysisRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptDeleteRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptGetMonthRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptGetRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptLikeRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptModifyRes;
+import example.com.moneymergebe.domain.receipt.dto.response.ReceiptMonthAnalysisRes;
 import example.com.moneymergebe.domain.receipt.dto.response.ReceiptSaveRes;
 import example.com.moneymergebe.domain.receipt.dto.response.SaveRandomReceiptRes;
 import example.com.moneymergebe.domain.receipt.entity.Receipt;
 import example.com.moneymergebe.domain.receipt.entity.ReceiptLike;
 import example.com.moneymergebe.domain.receipt.repository.ReceiptLikeRepository;
 import example.com.moneymergebe.domain.receipt.repository.ReceiptRepository;
+import example.com.moneymergebe.domain.record.entity.Record;
 import example.com.moneymergebe.domain.user.entity.User;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
 import example.com.moneymergebe.global.exception.GlobalException;
@@ -180,6 +187,37 @@ public class ReceiptService {
         notificationRepository.save(new Notification(RECEIPT_ARRIVED, "", user));
 
         return new SaveRandomReceiptRes();
+    }
+
+    /**
+     * 영수증 월별 분석
+     */
+    @Transactional(readOnly = true)
+    public ReceiptAnalysisRes analyzeMonthReceipt(Long userId, int year, int month) {
+        User user = findUser(userId);
+
+        List<Receipt> receiptList = receiptRepository.findAllByUser(user);
+
+
+        // 1월부터 월별 분석
+        List<ReceiptMonthAnalysisRes> list = new ArrayList<>();
+        for (int i = 1; i <= month; i++) {
+            LocalDate startDate = LocalDate.of(year, i, 1); // 목표 계산 시작일
+            LocalDate endDate = LocalDate.of(year, i, startDate.lengthOfMonth());
+
+            int positive = 0;
+            int negative = 0;
+
+            for(Receipt receipt : receiptList) {
+                if(!receipt.getDate().isBefore(startDate) && !receipt.getDate().isAfter(endDate)) {
+                    positive += receipt.getPositive();
+                    negative += receipt.getNegative();
+                }
+            }
+            list.add(new ReceiptMonthAnalysisRes(i, positive, negative));
+        }
+
+        return new ReceiptAnalysisRes(list);
     }
 
     /**
