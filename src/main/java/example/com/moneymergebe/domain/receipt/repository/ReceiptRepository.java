@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
     Receipt findByReceiptId(Long receiptId);
 
+    Receipt findByDateAndUser(LocalDate date, User user);
+
     List<Receipt> findAllByUserAndDateBetweenOrderByDate(User user, LocalDate startDate, LocalDate endDate);
 
     List<Receipt> findBySharedTrueAndUserNot(User user);

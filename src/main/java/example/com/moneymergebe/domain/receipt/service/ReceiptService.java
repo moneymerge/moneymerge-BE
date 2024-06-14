@@ -1,6 +1,7 @@
 package example.com.moneymergebe.domain.receipt.service;
 
 import static example.com.moneymergebe.domain.notification.entity.NotificationType.RECEIPT_ARRIVED;
+import static example.com.moneymergebe.global.response.ResultCode.ALREADY_WRITTEN_RECEIPT_DATE;
 
 import example.com.moneymergebe.domain.notification.entity.Notification;
 import example.com.moneymergebe.domain.notification.repository.NotificationRepository;
@@ -106,9 +107,11 @@ public class ReceiptService {
     @Transactional
     public ReceiptSaveRes saveReceipt(ReceiptSaveReq req) {
         User user = findUser(req.getUserId());
-        Receipt receipt = Receipt.builder().date(req.getDate()).content(req.getContent()).shared(req.isShared())
-            .positive(req.getPositive()).negative(req.getNegative()).user(user).build();
-        receiptRepository.save(receipt);
+        Receipt receipt = receiptRepository.findByDateAndUser(req.getDate(), user);
+        if(receipt != null) throw new GlobalException(ALREADY_WRITTEN_RECEIPT_DATE);
+
+        receiptRepository.save(Receipt.builder().date(req.getDate()).content(req.getContent()).shared(req.isShared())
+            .positive(req.getPositive()).negative(req.getNegative()).user(user).build());
 
         return new ReceiptSaveRes();
     }
