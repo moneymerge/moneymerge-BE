@@ -5,7 +5,9 @@ import static example.com.moneymergebe.global.jwt.JwtUtil.REFRESH_TOKEN_HEADER;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import example.com.moneymergebe.domain.user.dto.response.LoginRes;
 import example.com.moneymergebe.domain.user.service.NaverService;
+import example.com.moneymergebe.global.response.CommonResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -33,28 +35,10 @@ public class NaverController {
 
     // 네이버 로그인
     @GetMapping("/auth/naver/callback")
-    public void naverLogin(@RequestParam String code, HttpServletResponse res)
+    public CommonResponse<LoginRes> naverLogin(@RequestParam String code)
         throws IOException {
         HashMap<String, String> tokens = naverService.naverLogin(code);
 
-        addCookie(tokens.get(ACCESS_TOKEN_HEADER), ACCESS_TOKEN_HEADER, res);
-        addCookie(tokens.get(REFRESH_TOKEN_HEADER), REFRESH_TOKEN_HEADER, res);
-
-        log.info("네이버 로그인 완료");
-        res.sendRedirect("http://43.203.66.36:3000"); // 로그인 완료시 이동할 페이지
-//        return "login";
-    }
-
-    private void addCookie(String cookieValue, String header, HttpServletResponse res) {
-        Cookie cookieBE = new Cookie(header, cookieValue); // Name-Value
-        cookieBE.setPath("/");
-        cookieBE.setMaxAge(2 * 60 * 60);
-        res.addCookie(cookieBE);
-
-        Cookie cookieFE = new Cookie(header, cookieValue); // Name-Value
-        cookieFE.setDomain("43.203.66.36:3000"); // 쿠키의 도메인 설정
-        cookieFE.setPath("/");
-        cookieFE.setMaxAge(2 * 60 * 60);
-        res.addCookie(cookieFE);
+        return CommonResponse.success(new LoginRes(tokens.get(ACCESS_TOKEN_HEADER), tokens.get(REFRESH_TOKEN_HEADER)));
     }
 }
