@@ -90,8 +90,10 @@ public class RecordService {
         List<RecordGetMonthRes> resList = new ArrayList<>();
         for(BookRecord bookRecord : bookRecordList) {
             Record record = bookRecord.getRecord();
+            User recordUser = bookRecord.getRecord().getUser();
+            BookUser bookRecordUser = checkBookMember(recordUser, book);
             if(!record.getDate().isBefore(startDate) && !record.getDate().isAfter(endDate)) {
-                resList.add(new RecordGetMonthRes(record, bookUser));
+                resList.add(new RecordGetMonthRes(record, bookRecordUser));
             }
         }
 
@@ -112,6 +114,8 @@ public class RecordService {
         BookUser bookUser = checkBookMember(user, book); // 가계부 권한 검사
         checkBookRecord(book, record); // 가계부의 레코드인지 검사
 
+        BookUser bookRecordUser = checkBookMember(record.getUser(), book); // 레코드 작성자
+
         // 레코드 가계부 목록
         List<BookRecord> bookRecordList = bookRecordRepository.findAllByRecord(record);
         List<BookGetRes> bookGetResList = new ArrayList<>();
@@ -131,7 +135,7 @@ public class RecordService {
         // 싫어요 개수
         int dislikes = recordReactionRepository.countByRecordAndReaction(record, false);
 
-        return new RecordGetRes(record, bookGetResList, commentGetResList, likes, dislikes, bookUser.getColor());
+        return new RecordGetRes(record, bookGetResList, commentGetResList, likes, dislikes, bookRecordUser.getColor());
     }
 
     /**
