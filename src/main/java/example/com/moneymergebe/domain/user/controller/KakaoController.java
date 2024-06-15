@@ -45,10 +45,15 @@ public class KakaoController {
     }
 
     private void addCookie(String cookieValue, String header, HttpServletResponse res) {
-        Cookie cookie = new Cookie(header, cookieValue); // Name-Value
-        cookie.setPath("/");
-        cookie.setMaxAge(2 * 60 * 60); //쿠키 유효 기간(s) 2시간
-        // Response 객체에 Cookie 추가
-        res.addCookie(cookie);
+        Cookie cookieBE = new Cookie(header, cookieValue); // Name-Value
+        cookieBE.setPath("/");
+        cookieBE.setMaxAge(2 * 60 * 60);
+        res.addCookie(cookieBE);
+
+        Cookie cookieFE = new Cookie(header, cookieValue); // Name-Value
+        cookieFE.setDomain("43.203.66.36:3000"); // 쿠키의 도메인 설정
+        cookieFE.setPath("/");
+        cookieFE.setMaxAge(2 * 60 * 60);
+        res.addCookie(cookieFE);
     }
 }
