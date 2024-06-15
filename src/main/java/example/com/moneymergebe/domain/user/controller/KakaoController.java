@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Slf4j
 @Controller
@@ -33,6 +34,7 @@ public class KakaoController {
     }
 
     // 카카오 로그인
+    @ResponseBody
     @GetMapping("/auth/kakao/callback")
     public CommonResponse<LoginRes> kakaoLogin(@RequestParam String code, HttpServletResponse res)
         throws IOException {
