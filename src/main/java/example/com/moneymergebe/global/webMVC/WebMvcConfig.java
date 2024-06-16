@@ -9,7 +9,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry){
         registry.addMapping("/**")
-                .allowedOriginPatterns("*")
+            .allowedOrigins("http://cdpn.io", "http://localhost:3000", "http://43.203.66.36:3000")
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true);
