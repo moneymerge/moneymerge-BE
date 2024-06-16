@@ -27,13 +27,13 @@ spring:
             client-secret: ${KAKAO_CLIENT_SECRET} # Client Secret Key
             client-authentication-method: POST
             authorization-grant-type: authorization_code
-            redirect-uri: http://${KAKAO_REDIRECT_URI}/auth/kakao/callback # Redirect URI
+            redirect-uri: ${KAKAO_REDIRECT_URI} # Redirect URI
           naver:
             client-id: ${NAVER_CLIENT_ID} # Client ID
             client-secret: ${NAVER_CLIENT_SECRET} # Client Secret
             client-authentication-method: POST
             authorization-grant-type: authorization_code
-            redirect-uri: http://${NAVER_REDIRECT_URI}/auth/naver/callback # Redirect URL
+            redirect-uri: ${NAVER_REDIRECT_URI} # Redirect URL
             scope:
               - email
               - nickname
