@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,9 +35,10 @@ public class KakaoController {
     }
 
     // 카카오 로그인
+    @CrossOrigin(origins = "http://43.203.66.36:3000")
     @ResponseBody
     @GetMapping("/auth/kakao/callback")
-    public CommonResponse<LoginRes> kakaoLogin(@RequestParam String code, HttpServletResponse res)
+    public CommonResponse<LoginRes> kakaoLogin(@RequestParam String code)
         throws IOException {
         HashMap<String, String> tokens = kakaoService.kakaoLogin(code);
 
