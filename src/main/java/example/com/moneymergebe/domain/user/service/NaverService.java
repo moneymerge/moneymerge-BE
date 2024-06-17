@@ -119,6 +119,7 @@ public class NaverService {
         if(!user.isAttendance()) {
             pointRepository.save(
                 Point.builder().detail(ATTENDANCE).points(ATTENDANCE_POINT).user(user).build());
+            user.updatePoints(ATTENDANCE_POINT);
             user.checkAttendance();
             notificationRepository.save(new Notification(ATTENDANCE_POINT_NOTIFICATION, Integer.toString(ATTENDANCE_POINT), user));
         }
