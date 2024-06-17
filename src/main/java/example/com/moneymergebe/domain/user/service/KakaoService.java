@@ -7,14 +7,17 @@ import static example.com.moneymergebe.global.jwt.JwtUtil.REFRESH_TOKEN_HEADER;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonParser;
+import example.com.moneymergebe.domain.character.repository.CharacterRepository;
 import example.com.moneymergebe.domain.notification.entity.Notification;
 import example.com.moneymergebe.domain.notification.repository.NotificationRepository;
 import example.com.moneymergebe.domain.point.entity.Point;
 import example.com.moneymergebe.domain.point.repository.PointRepository;
 import example.com.moneymergebe.domain.user.dto.request.KakaoInsertReq;
 import example.com.moneymergebe.domain.user.entity.User;
+import example.com.moneymergebe.domain.user.entity.UserCharacter;
 import example.com.moneymergebe.domain.user.entity.UserRole;
 import example.com.moneymergebe.domain.user.entity.UserSocialEnum;
+import example.com.moneymergebe.domain.user.repository.UserCharacterRepository;
 import example.com.moneymergebe.domain.user.repository.UserRepository;
 import example.com.moneymergebe.global.jwt.JwtUtil;
 import java.io.BufferedReader;
@@ -37,6 +40,8 @@ public class KakaoService {
     private final UserRepository userRepository;
     private final PointRepository pointRepository;
     private final NotificationRepository notificationRepository;
+    private final UserCharacterRepository userCharacterRepository;
+    private final CharacterRepository characterRepository;
     private final JwtUtil jwtUtil;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
@@ -112,6 +117,7 @@ public class KakaoService {
                     .build();
 
             user = userRepository.save(newUser);
+            userCharacterRepository.save(UserCharacter.builder().user(user).character(characterRepository.findByCharacterId(1L)).build());
         }
 
         // attendance가 false라면 출석 포인트 적립 후 true로 변경
