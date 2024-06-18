@@ -154,8 +154,8 @@ public class RecordService {
         Category category = findCategory(req.getCategoryId());
 
         String imageUrl = record.getImage();
-        if (imageUrl != null && multipartFile != null && !multipartFile.isEmpty()) { // 새로 입력한 이미지 파일이 있는 경우
-            if (s3Util.exists(imageUrl, FilePath.RECORD)) { // 기존 이미지가 존재하는 경우
+        if (multipartFile != null && !multipartFile.isEmpty()) { // 새로 입력한 이미지 파일이 있는 경우
+            if (imageUrl != null && s3Util.exists(imageUrl, FilePath.RECORD)) { // 기존 이미지가 존재하는 경우
                 s3Util.deleteFile(imageUrl, FilePath.RECORD); // 기존 이미지 삭제
             }
             imageUrl = s3Util.uploadFile(multipartFile, FilePath.RECORD); // 업로드 후 게시글 사진으로 설정
