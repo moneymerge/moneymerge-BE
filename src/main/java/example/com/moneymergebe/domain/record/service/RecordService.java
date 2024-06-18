@@ -93,7 +93,7 @@ public class RecordService {
             User recordUser = bookRecord.getRecord().getUser();
             BookUser bookRecordUser = checkBookMember(recordUser, book);
             if(!record.getDate().isBefore(startDate) && !record.getDate().isAfter(endDate)) {
-                resList.add(new RecordGetMonthRes(record, bookRecordUser));
+                resList.add(new RecordGetMonthRes(record, bookRecordUser, bookId));
             }
         }
 
