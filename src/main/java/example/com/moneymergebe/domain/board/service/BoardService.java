@@ -112,7 +112,7 @@ public class BoardService {
 
         String imageUrl = board.getImage();
         if (req.getImage() != null && !req.getImage().isEmpty()) { // 새로 입력한 이미지 파일이 있는 경우
-            if (s3Util.exists(imageUrl, S3Util.FilePath.BOARD)) { // 기존 이미지가 존재하는 경우
+            if (imageUrl != null && s3Util.exists(imageUrl, S3Util.FilePath.BOARD)) { // 기존 이미지가 존재하는 경우
                 s3Util.deleteFile(imageUrl, S3Util.FilePath.BOARD); // 기존 이미지 삭제
             }
             imageUrl = s3Util.uploadFile(req.getImage(), S3Util.FilePath.BOARD); // 업로드 후 게시글 사진으로 설정
