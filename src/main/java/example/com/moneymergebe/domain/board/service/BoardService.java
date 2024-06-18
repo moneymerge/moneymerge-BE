@@ -181,7 +181,7 @@ public class BoardService {
     public BoardCommentModifyRes modifyRecordComment(BoardCommentModifyReq req) {
         User user = findUser(req.getUserId());
         Board board = findBoard(req.getBoardId());
-        BoardComment boardComment = findBoardComment(req.getBoardId());
+        BoardComment boardComment = findBoardComment(req.getCommentId());
 
         BoardCommentValidator.checkBoardComment(board, boardComment.getBoard()); // 게시글의 댓글인지 검사
         UserValidator.checkUser(user, boardComment.getUser()); // 작성자와 수정자가 동일한지 검사
