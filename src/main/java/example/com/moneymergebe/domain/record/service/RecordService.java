@@ -127,7 +127,7 @@ public class RecordService {
 
         // 레코드 댓글 목록
         List<RecordCommentGetRes> commentGetResList = recordCommentRepository.findAllByRecord(record).stream().map(
-            recordComment -> new RecordCommentGetRes(recordComment, bookUser)
+            recordComment -> new RecordCommentGetRes(recordComment, checkBookMember(recordComment.getUser(), book))
         ).toList();
 
         // 좋아요 개수
